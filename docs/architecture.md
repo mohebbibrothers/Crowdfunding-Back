@@ -12,8 +12,9 @@
 
 هیچ چرخه‌ای میان ۹ اپلیکیشن دامنه وجود ندارد و این انضباط در هر اجرای آزمون توسط گیت معماری `test_bounded_context_acyclic_dag_discipline` به‌صورت تحلیل درخت نحوی (AST) راستی‌آزمایی می‌شود:
 
-```text
-core ──► audit ──► identity ──► notifications ──► benefactors ──► campaigns ──► ledger ──► contributions ──► reporting
+```mermaid
+flowchart LR
+    core --> audit --> identity --> notifications --> benefactors --> campaigns --> ledger --> contributions --> reporting
 ```
 
 | ردیف | ماژول (`src/apps/*`) | مسئولیت محدودشده (Bounded Context) |
