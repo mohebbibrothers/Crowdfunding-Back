@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.hypothesis
+__pycache__
+*.pyc
+.env
+coverage
+coverage.xml
+media
+staticfiles
+docs
+src/tests

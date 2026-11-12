@@ -1,0 +1,41 @@
+# Python & Virtualenvs
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+wheels/
+
+# Environment & Secrets (هرگز کامیت نشوند)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Test, Type & Coverage Artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+coverage.xml
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+
+# Django & Passenger Runtime Artifacts
+staticfiles/
+media/
+var/
+tmp/
+*.sqlite3
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
