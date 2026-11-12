@@ -1,0 +1,4750 @@
+openapi: 3.1.0
+info:
+  title: Crowdfunding-Back API — سامانه کرادفاندینگ خیرخواهانه سهم‌محور
+  version: 1.0.0 (v1)
+  description: سرویس بک‌اند ماژولار، حسابداری دوطرفه ریالی، شفافیت رمزنگاری درخت مرکل،
+    مشارکت سریع ۳۰ ثانیه‌ای، نیت‌نامه معنوی، قلک عام، حامی مضاعف و گزارش اکسل ۸ کاربرگه.
+paths:
+  /api/v1/admin/audit/logs:
+    get:
+      operationId: v1_admin_audit_logs_list
+      description: واکشی رکوردهای حسابرسی از سلکتور.
+      summary: فهرست رکوردهای زنجیرهٔ حسابرسی با فیلتر کنش و هدف
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: target_id
+        schema:
+          type: string
+      - in: query
+        name: target_type
+        schema:
+          type: string
+      tags:
+      - Admin - Audit
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditRecord'
+          description: ''
+  /api/v1/admin/audit/verify:
+    get:
+      operationId: v1_admin_audit_verify
+      description: راستی‌آزمایی زنجیرهٔ هش و لنگرها.
+      summary: بررسی سلامت زنجیرهٔ هش حسابرسی و لنگرهای امضاشده
+      tags:
+      - Admin - Audit
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditChainVerification'
+          description: ''
+  /api/v1/admin/auth/risk-signals:
+    get:
+      operationId: v1_admin_auth_risks_list
+      description: واکشی صفحه‌بندی‌شدهٔ سیگنال‌های ریسک.
+      summary: فهرست سیگنال‌های ریسک امنیتی ورود و توکن‌ها
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - Admin - Identity
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthRiskSignalOutput'
+          description: ''
+  /api/v1/admin/auth/risk-signals/{signal_id}/review:
+    post:
+      operationId: v1_admin_auth_risks_review
+      description: ذخیرهٔ وضعیت بررسی سیگنال.
+      summary: بررسی و تعیین وضعیت سیگنال ریسک احراز هویت
+      parameters:
+      - in: path
+        name: signal_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Identity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRiskReviewInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthRiskSignalOutput'
+          description: ''
+  /api/v1/admin/benefactors:
+    get:
+      operationId: v1_admin_benefactors_list
+      description: فهرست کامل و ایجاد خیریه/نهاد توسط مدیر سامانه.
+      summary: فهرست مدیریتی تمام خیریه‌ها
+      tags:
+      - Admin - Benefactors & Jars
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BenefactorAdmin'
+          description: ''
+    post:
+      operationId: v1_admin_benefactors_create
+      description: فهرست کامل و ایجاد خیریه/نهاد توسط مدیر سامانه.
+      summary: ایجاد خیریه/نهاد نیکوکاری جدید
+      tags:
+      - Admin - Benefactors & Jars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BenefactorWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BenefactorAdmin'
+          description: ''
+  /api/v1/admin/benefactors/{benefactor_id}:
+    get:
+      operationId: v1_admin_benefactors_retrieve
+      description: مشاهده، ویرایش و غیرفعال‌سازی/حذف خیریه توسط مدیر.
+      summary: دریافت مشخصات کامل مدیریتی خیریه
+      parameters:
+      - in: path
+        name: benefactor_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Benefactors & Jars
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BenefactorAdmin'
+          description: ''
+    patch:
+      operationId: v1_admin_benefactors_partial_update
+      description: مشاهده، ویرایش و غیرفعال‌سازی/حذف خیریه توسط مدیر.
+      summary: ویرایش جزئی مشخصات خیریه
+      parameters:
+      - in: path
+        name: benefactor_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Benefactors & Jars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBenefactorPatchRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BenefactorAdmin'
+          description: ''
+    delete:
+      operationId: v1_admin_benefactors_destroy
+      description: مشاهده، ویرایش و غیرفعال‌سازی/حذف خیریه توسط مدیر.
+      summary: حذف خیریهٔ بدون سابقه یا غیرفعال‌سازی ایمن آن
+      parameters:
+      - in: path
+        name: benefactor_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Benefactors & Jars
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                  deactivated:
+                    type: boolean
+                  id:
+                    type: string
+          description: ''
+  /api/v1/admin/campaign-categories:
+    post:
+      operationId: v1_admin_campaign_categories_create
+      description: ایجاد دسته‌بندی موضوعی جدید برای حرکت‌ها.
+      summary: ایجاد دسته‌بندی موضوعی حرکت
+      tags:
+      - Admin - Campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCategoryWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignCategory'
+          description: ''
+  /api/v1/admin/campaigns:
+    get:
+      operationId: v1_admin_campaigns_list
+      description: فهرست کامل مدیریتی و تعریف حرکت سهم‌محور جدید.
+      summary: فهرست مدیریتی همهٔ حرکت‌ها
+      tags:
+      - Admin - Campaigns
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignDetail'
+          description: ''
+    post:
+      operationId: v1_admin_campaigns_create
+      description: فهرست کامل مدیریتی و تعریف حرکت سهم‌محور جدید.
+      summary: تعریف حرکت خیرخواهانهٔ سهم‌محور جدید
+      tags:
+      - Admin - Campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetail'
+          description: ''
+  /api/v1/admin/campaigns/{campaign_id}:
+    get:
+      operationId: v1_admin_campaigns_retrieve
+      description: دریافت و ویرایش حرکت توسط مدیر (با قفل تغییرناپذیری فیلدهای مالی
+        پس از اولین پرداخت).
+      summary: دریافت جزئیات مدیریتی یک حرکت
+      parameters:
+      - in: path
+        name: campaign_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Campaigns
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetail'
+          description: ''
+    patch:
+      operationId: v1_admin_campaigns_partial_update
+      description: دریافت و ویرایش حرکت توسط مدیر (با قفل تغییرناپذیری فیلدهای مالی
+        پس از اولین پرداخت).
+      summary: ویرایش حرکت (محافظت از قیمت سهم و خیریه پس از اولین مشارکت)
+      parameters:
+      - in: path
+        name: campaign_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCampaignPatchRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetail'
+          description: ''
+  /api/v1/admin/campaigns/{campaign_id}/external-contributions:
+    post:
+      operationId: v1_admin_campaigns_external_contributions_create
+      description: ثبت مشارکت خارج از درگاه آنلاین (آفلاین/فیش بانکی) در حساب انتظامی
+        مجزا.
+      summary: ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا
+      parameters:
+      - in: path
+        name: campaign_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Payments & Refunds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalContributionWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalContribution'
+          description: ''
+  /api/v1/admin/campaigns/{campaign_id}/impact-updates:
+    post:
+      operationId: v1_admin_campaigns_impact_updates_create
+      description: انتشار گزارش تصویری پیشرفت میدانی حرکت و اطلاع‌رسانی خودکار به
+        خیرین.
+      summary: انتشار گزارش پیشرفت میدانی حرکت برای سهام‌داران
+      parameters:
+      - in: path
+        name: campaign_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImpactUpdateWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignImpactUpdate'
+          description: ''
+  /api/v1/admin/campaigns/{campaign_id}/matching-grants:
+    post:
+      operationId: v1_admin_campaigns_matching_grants_create
+      description: تعریف حامی مضاعف‌کننده (Matching Grant) برای یک حرکت.
+      summary: ثبت تعهد حامی مضاعف‌کننده برای حرکت
+      parameters:
+      - in: path
+        name: campaign_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchingGrantWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchingGrantPublic'
+          description: ''
+  /api/v1/admin/disbursements:
+    get:
+      operationId: v1_admin_disbursements_list
+      description: فهرست درخواست‌های تسویه با خیریه‌ها و ثبت درخواست جدید (Maker).
+      summary: فهرست درخواست‌های تسویه با خیریه‌ها
+      tags:
+      - Admin - Ledger & Disbursements
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DisbursementRequest'
+          description: ''
+    post:
+      operationId: v1_admin_disbursements_create
+      description: فهرست درخواست‌های تسویه با خیریه‌ها و ثبت درخواست جدید (Maker).
+      summary: ثبت درخواست تسویه وجه با خیریه (گام Maker)
+      tags:
+      - Admin - Ledger & Disbursements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisbursementCreateInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementRequest'
+          description: ''
+  /api/v1/admin/disbursements/{disbursement_id}/review:
+    post:
+      operationId: v1_admin_disbursements_review
+      description: تأیید نهایی (به همراه ثبت سند دفترکل) یا رد درخواست تسویه توسط
+        مدیر دوم با MFA تازه.
+      summary: تأیید یا رد چهارچشمی درخواست تسویه با خیریه (Checker + Step-Up MFA)
+      parameters:
+      - in: path
+        name: disbursement_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Ledger & Disbursements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisbursementReviewInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementRequest'
+          description: ''
+  /api/v1/admin/jars:
+    get:
+      operationId: v1_admin_jars_list
+      description: فهرست و ایجاد قلک عام خیریه در پنل مدیریت.
+      summary: فهرست مدیریتی قلک‌های عام خیریه‌ها
+      tags:
+      - Admin - Benefactors & Jars
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharityJarPublic'
+          description: ''
+    post:
+      operationId: v1_admin_jars_create
+      description: فهرست و ایجاد قلک عام خیریه در پنل مدیریت.
+      summary: ایجاد قلک عام جدید برای خیریه
+      tags:
+      - Admin - Benefactors & Jars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharityJarWriteRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharityJarPublic'
+          description: ''
+  /api/v1/admin/jars/{jar_id}:
+    patch:
+      operationId: v1_admin_jars_partial_update
+      description: ویرایش جزئیات و فعال/غیرفعال‌سازی قلک عام خیریه.
+      summary: ویرایش تنظیمات قلک عام خیریه
+      parameters:
+      - in: path
+        name: jar_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Benefactors & Jars
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCharityJarPatchRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharityJarPublic'
+          description: ''
+  /api/v1/admin/ledger/accounts:
+    get:
+      operationId: v1_admin_ledger_accounts_list
+      description: فهرست سرفصل‌های دفترکل دوطرفه و ماندهٔ هر حساب.
+      summary: مشاهدهٔ تراز سرفصل‌های دفترکل حسابداری دوطرفه
+      tags:
+      - Admin - Ledger & Disbursements
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LedgerAccount'
+          description: ''
+  /api/v1/admin/ledger/control-snapshot:
+    post:
+      operationId: v1_admin_ledger_control_snapshot_create
+      description: ثبت و مشاهدهٔ اسنپ‌شات تراز آزمایشی دفترکل و کنترل انطباق شمارنده‌ها.
+      summary: محاسبه و ثبت اسنپ‌شات کنترل تراز دفترکل و انطباق شمارنده‌ها
+      tags:
+      - Admin - Ledger & Disbursements
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialControlSnapshot'
+          description: ''
+  /api/v1/admin/ledger/entries:
+    get:
+      operationId: v1_admin_ledger_entries_list
+      description: فهرست اسناد روزنامهٔ ثبت‌شده در دفترکل.
+      summary: فهرست اسناد روزنامهٔ حسابداری
+      tags:
+      - Admin - Ledger & Disbursements
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JournalEntry'
+          description: ''
+  /api/v1/admin/payments:
+    get:
+      operationId: v1_admin_payments_list
+      description: فهرست مدیریتی پرداخت‌ها (شماره موبایل خیر به صورت پیش‌فرض پوشانده
+        است).
+      summary: فهرست مدیریتی تراکنش‌های درگاه پرداخت
+      tags:
+      - Admin - Payments & Refunds
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminPayment'
+          description: ''
+  /api/v1/admin/payments/{payment_id}/refund:
+    post:
+      operationId: v1_admin_payments_refund
+      description: استرداد وجه پرداخت تاییدشده با سند معکوس دفترکل و احراز هویت چندعاملی
+        تازه.
+      summary: ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA)
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Payments & Refunds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRefundInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refund_id:
+                    type: string
+                  amount_rial:
+                    type: integer
+                  status:
+                    type: string
+          description: ''
+  /api/v1/admin/policies:
+    get:
+      operationId: v1_admin_policies_list
+      description: بازگرداندن فهرست کامل سیاست‌ها همراه با نسخهٔ فعلی هر قانون.
+      summary: مشاهدهٔ فهرست سیاست‌های زمان اجرا و وضعیت کلیدهای قابلیت‌ها
+      tags:
+      - Admin - Governance
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyRuleOutput'
+          description: ''
+  /api/v1/admin/policies/{policy_key}:
+    post:
+      operationId: v1_admin_policies_update
+      description: اعمال تغییر سیاست و ثبت در زنجیرهٔ حسابرسی.
+      summary: تغییر نسخه‌دار یک سیاست سامانه با الزام دلیل و Step-Up MFA
+      parameters:
+      - in: path
+        name: policy_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Governance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyUpdateInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyRuleOutput'
+          description: ''
+  /api/v1/admin/reconciliations:
+    get:
+      operationId: v1_admin_reconciliations_list
+      description: فهرست دسته‌های مغایرت‌گیری درگاه و اجرای مغایرت‌گیری جدید.
+      summary: فهرست دسته‌های مغایرت‌گیری درگاه پرداخت
+      tags:
+      - Admin - Ledger & Disbursements
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReconciliationBatch'
+          description: ''
+    post:
+      operationId: v1_admin_reconciliations_create
+      description: فهرست دسته‌های مغایرت‌گیری درگاه و اجرای مغایرت‌گیری جدید.
+      summary: اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی
+      tags:
+      - Admin - Ledger & Disbursements
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconciliationRunInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationBatch'
+          description: ''
+  /api/v1/admin/reports/excel:
+    get:
+      operationId: v1_admin_reports_excel_export
+      description: دانلود کتابچهٔ ۸ کاربرگهٔ اکسل مدیریتی (راست‌به‌چپ، چاپی A4، نموداردار
+        و مهرشده با SHA-256).
+      summary: دانلود گزارش اکسل ۸ کاربرگهٔ اجرایی، مالی و مغایرت‌گیری (مهرشده با
+        SHA-256)
+      parameters:
+      - in: query
+        name: benefactor_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: campaign_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: include_raw_phones
+        schema:
+          type: boolean
+      - in: query
+        name: reason
+        schema:
+          type: string
+      tags:
+      - Admin - Executive Excel Reports
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+          description: ''
+  /api/v1/admin/reports/exports-history:
+    get:
+      operationId: v1_admin_reports_export_history_list
+      description: مشاهدهٔ تاریخچه و هش‌های SHA-256 فایل‌های اکسل صادرشده برای ممیزی
+        اصالت.
+      summary: فهرست ممیزی و هش SHA-256 گزارش‌های اکسل صادرشده
+      tags:
+      - Admin - Executive Excel Reports
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportExportLog'
+          description: ''
+  /api/v1/admin/users:
+    get:
+      operationId: v1_admin_users_list
+      description: واکشی فهرست صفحه‌بندی‌شدهٔ کاربران.
+      summary: فهرست کاربران سامانه (با تلفن پوشانده در حالت عادی)
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      tags:
+      - Admin - Identity
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminUserOutput'
+          description: ''
+  /api/v1/admin/users/{user_id}/reveal-phone:
+    post:
+      operationId: v1_admin_users_reveal_phone
+      description: ثبت دلیل در زنجیرهٔ حسابرسی و برگرداندن شمارهٔ کامل.
+      summary: مشاهدهٔ شماره موبایل کامل خیر با ثبت هدف ممیزی و Step-Up MFA
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Identity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminPhoneRevealInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phone:
+                    type: string
+                required:
+                - phone
+          description: ''
+  /api/v1/admin/users/{user_id}/role:
+    post:
+      operationId: v1_admin_users_role_update
+      description: اعمال تغییر نقش و ثبت در حسابرسی.
+      summary: تغییر نقش کاربر با الزام Step-Up MFA و ثبت دلیل
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Admin - Identity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRoleChangeInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserOutput'
+          description: ''
+  /api/v1/auth/csrf:
+    get:
+      operationId: v1_csrf_bootstrap
+      description: تولید توکن CSRF و ارسال در کوکی و بدنه.
+      summary: دریافت و کاشت توکن CSRF برای نشست‌های کوکی‌محور
+      tags:
+      - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  csrf_token:
+                    type: string
+                required:
+                - csrf_token
+          description: ''
+  /api/v1/auth/logout:
+    post:
+      operationId: v1_auth_logout
+      description: بستن نشست فعلی.
+      summary: خروج از نشست جاری
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/auth/logout-others:
+    post:
+      operationId: v1_auth_logout_others
+      description: ابطال سایر نشست‌ها.
+      summary: ابطال تمام نشست‌های دیگر به‌جز دستگاه فعلی
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revoked_count:
+                    type: integer
+                required:
+                - revoked_count
+          description: ''
+  /api/v1/auth/mfa/status:
+    get:
+      operationId: v1_auth_mfa_status
+      description: برگرداندن وضعیت عامل دوم نشست جاری.
+      summary: مشاهدهٔ وضعیت تأیید دومرحله‌ای کارمند
+      tags:
+      - Auth - Staff MFA
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaStatusOutput'
+          description: ''
+  /api/v1/auth/mfa/totp/confirm:
+    post:
+      operationId: v1_auth_mfa_totp_confirm
+      description: فعال‌سازی TOTP و صدور کدهای بازیابی.
+      summary: تأیید نهایی دستگاه TOTP و دریافت کدهای بازیابی
+      tags:
+      - Auth - Staff MFA
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaCodeInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaConfirmOutput'
+          description: ''
+  /api/v1/auth/mfa/totp/setup:
+    post:
+      operationId: v1_auth_mfa_totp_setup
+      description: ساخت دستگاه TOTP اولیه.
+      summary: شروع راه‌اندازی TOTP کارمند و دریافت QR SVG
+      tags:
+      - Auth - Staff MFA
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaSetupOutput'
+          description: ''
+  /api/v1/auth/mfa/verify:
+    post:
+      operationId: v1_auth_mfa_verify
+      description: ثبت مهر زمان تأیید MFA روی نشست جاری.
+      summary: تأیید کد دومرحله‌ای روی نشست فعال یا ارتقای Step-Up
+      tags:
+      - Auth - Staff MFA
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MfaCodeInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaStatusOutput'
+          description: ''
+  /api/v1/auth/otp/request:
+    post:
+      operationId: v1_auth_otp_request
+      description: ثبت چالش OTP و قرار دادن پیامک در صندوق خروجی.
+      summary: درخواست کد یک‌بارمصرف پیامکی (ورود / ثبت‌نام)
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpRequestInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtpRequestAccepted'
+          description: ''
+  /api/v1/auth/otp/verify:
+    post:
+      operationId: v1_auth_otp_verify
+      description: اعتبارسنجی کد و ایجاد نشست دوگانه.
+      summary: تأیید کد پیامکی و دریافت نشست (Cookie + JWT)
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpVerifyInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensOutput'
+          description: ''
+  /api/v1/auth/staff/password-login:
+    post:
+      operationId: v1_auth_staff_password_login
+      description: بررسی گذرواژه و ایجاد نشست اولیهٔ کارمند.
+      summary: ورود کارکنان با شماره موبایل و گذرواژه
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffPasswordLoginInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensOutput'
+          description: ''
+  /api/v1/auth/token/refresh:
+    post:
+      operationId: v1_auth_token_refresh
+      description: اجرای چرخش refresh_jti روی نشست فعال.
+      summary: نوسازی چرخشی توکن JWT با تشخیص سرقت توکن
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokensOutput'
+          description: ''
+  /api/v1/benefactors:
+    get:
+      operationId: v1_benefactors_list
+      description: فهرست عمومی خیریه‌ها و نهادهای نیکوکاری فعال.
+      summary: فهرست خیریه‌ها و نهادهای نیکوکاری فعال
+      tags:
+      - Public - Benefactors & Jars
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BenefactorPublic'
+          description: ''
+  /api/v1/benefactors/{slug}:
+    get:
+      operationId: v1_benefactors_retrieve
+      description: جزئیات عمومی پروفایل خیریه از روی نامک.
+      summary: دریافت جزئیات خیریه و قلک‌های عام آن
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Benefactors & Jars
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BenefactorPublic'
+          description: ''
+  /api/v1/campaign-categories:
+    get:
+      operationId: v1_campaign_categories_list
+      description: فهرست دسته‌بندی‌های موضوعی حرکت‌های خیرخواهانه.
+      summary: فهرست دسته‌بندی‌های موضوعی حرکت‌ها
+      tags:
+      - Public - Campaigns
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignCategory'
+          description: ''
+  /api/v1/campaigns:
+    get:
+      operationId: v1_campaigns_list
+      description: فهرست عمومی حرکت‌های سهم‌محور با مرتب‌سازی پیش‌فرض توزیع منصفانه
+        (Fair-Share Ranking v2).
+      summary: فهرست حرکت‌های خیرخواهانه با رتبه‌بندی توزیع منصفانه
+      tags:
+      - Public - Campaigns
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSummary'
+          description: ''
+  /api/v1/campaigns/{identifier}:
+    get:
+      operationId: v1_campaigns_retrieve
+      description: جزئیات کامل یک حرکت خیرخواهانه از روی نامک یا کد پیوندک کوتاه.
+      summary: مشاهدهٔ جزئیات حرکت خیرخواهانه، سهم‌های آزاد و گزارش‌های میدانی
+      parameters:
+      - in: path
+        name: identifier
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Campaigns
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetail'
+          description: ''
+  /api/v1/campaigns/{identifier}/supporters:
+    get:
+      operationId: v1_campaigns_supporters_list
+      description: دیوار عمومی خیرین همراه یک حرکت (نمایش «خیر گمنام» برای مشارکت‌های
+        ناشناس).
+      summary: فهرست همراهان حرکت خیرخواهانه (با حفظ گمنامی خیرین ناشناس)
+      parameters:
+      - in: path
+        name: identifier
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Campaigns
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+          description: ''
+  /api/v1/campaigns/{identifier}/transparency:
+    get:
+      operationId: v1_campaigns_transparency_retrieve
+      description: گزارش شفافیت مالی و ریشهٔ درخت مرکل (Merkle Root) برای یک حرکت.
+      summary: گزارش شفافیت مالی، تفکیک منابع آنلاین/آفلاین و ریشه درخت مرکل حرکت
+      parameters:
+      - in: path
+        name: identifier
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Cryptographic Transparency
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/contributions/checkout:
+    post:
+      operationId: v1_contributions_checkout_create
+      description: آغاز مشارکت آنلاین (رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز آزاد قلک
+        عام) با پشتیبانی Idempotency-Key.
+      summary: رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز به قلک و دریافت لینک درگاه پرداخت
+      tags:
+      - Donor - Contributions & Checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutInitiateInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutInitiateResponse'
+          description: ''
+  /api/v1/contributions/express/confirm:
+    post:
+      operationId: v1_contributions_express_confirm
+      description: 'گام دوم مشارکت سریع ۳۰ ثانیه‌ای مهمان: تأیید OTP + صدور نشست +
+        رزرو سهم + هدایت مستقیم به درگاه.'
+      summary: مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۲ (تایید OTP، ورود خودکار و دریافت
+        لینک درگاه)
+      tags:
+      - Public - Express 30s Checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpressConfirmInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutInitiateResponse'
+          description: ''
+  /api/v1/contributions/express/start:
+    post:
+      operationId: v1_contributions_express_start
+      description: 'گام اول مشارکت سریع ۳۰ ثانیه‌ای مهمان: ثبت مشخصات مشارکت و ارسال
+        آنی کد تایید پیامکی.'
+      summary: مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۱ (ثبت نیت خرید و ارسال OTP)
+      tags:
+      - Public - Express 30s Checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExpressStartInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpressStartResponse'
+          description: ''
+  /api/v1/dedications/{public_token}:
+    get:
+      operationId: v1_dedications_retrieve
+      description: مشاهدهٔ عمومی گواهی نیت‌نامه و کارت هدیهٔ معنوی (بدون افشای مبلغ
+        ریالی).
+      summary: مشاهدهٔ گواهی نیت‌نامه و کارت هدیه معنوی با توکن عمومی
+      parameters:
+      - in: path
+        name: public_token
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Dedication Certificates
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/health/detailed:
+    get:
+      operationId: v1_health_detailed
+      description: اجرای بررسی جامع زیرساخت.
+      summary: بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی
+      tags:
+      - Admin - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+          description: ''
+  /api/v1/health/live:
+    get:
+      operationId: v1_health_live
+      description: پاسخ سریع ۲۰۰ برای پروب زنده بودن.
+      summary: بررسی زنده بودن فرآیند برنامه (Liveness)
+      tags:
+      - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+          description: ''
+  /api/v1/health/ready:
+    get:
+      operationId: v1_health_ready
+      description: بررسی اتصال زنده به MariaDB و انبار کش.
+      summary: بررسی آمادگی دیتابیس و کش (Readiness)
+      tags:
+      - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+          description: ''
+  /api/v1/jars:
+    get:
+      operationId: v1_jars_list
+      description: فهرست عمومی قلک‌های عام خیریه برای مشارکت با مبلغ آزاد.
+      summary: فهرست قلک‌های عام فعال خیریه‌ها
+      tags:
+      - Public - Benefactors & Jars
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharityJarPublic'
+          description: ''
+  /api/v1/jars/{identifier}:
+    get:
+      operationId: v1_jars_retrieve
+      description: مشاهدهٔ جزئیات یک قلک عام خیریه با نامک یا کد پیوندک کوتاه.
+      summary: جزئیات قلک عام خیریه از روی نامک یا کد پیوندک
+      parameters:
+      - in: path
+        name: identifier
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Benefactors & Jars
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharityJarPublic'
+          description: ''
+  /api/v1/me:
+    get:
+      operationId: v1_me_profile_retrieve
+      description: برگرداندن پروفایل کاربر جاری.
+      summary: مشاهدهٔ اطلاعات حساب و پروفایل کاربر جاری
+      tags:
+      - Donor - Profile & Sessions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeOutput'
+          description: ''
+    patch:
+      operationId: v1_me_profile_update
+      description: به‌روزرسانی فیلدهای پروفایل.
+      summary: تکمیل یا ویرایش پروفایل خیر (نام، استان، شهر، کد ملی رمزشده)
+      tags:
+      - Donor - Profile & Sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileUpdateInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeOutput'
+          description: ''
+  /api/v1/me/ambassador-links:
+    get:
+      operationId: v1_me_ambassador_links_list
+      description: مشاهدهٔ کارنامهٔ لینک‌های سفیر من و ساخت لینک دعوت اختصاصی جدید.
+      summary: فهرست لینک‌های سفیر اجتماعی من و آمار اثرگذاری هرکدام
+      tags:
+      - Public - Short-Links & Ambassadors
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AmbassadorLink'
+          description: ''
+    post:
+      operationId: v1_me_ambassador_links_create
+      description: مشاهدهٔ کارنامهٔ لینک‌های سفیر من و ساخت لینک دعوت اختصاصی جدید.
+      summary: ساخت لینک اختصاصی سفیر اجتماعی برای دعوت به حرکت یا قلک
+      tags:
+      - Public - Short-Links & Ambassadors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AmbassadorCreateInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmbassadorLink'
+          description: ''
+  /api/v1/me/contributions:
+    get:
+      operationId: v1_me_contributions_list
+      description: تاریخچهٔ کامل صفحه‌بندی‌شدهٔ تمام مشارکت‌های خیر (حرکت‌ها و قلک‌ها).
+      summary: تاریخچهٔ تمام مشارکت‌های من در حرکت‌ها و قلک‌ها
+      tags:
+      - Donor - Motivation Dashboard
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContributionUser'
+          description: ''
+  /api/v1/me/contributions/{contribution_id}/merkle-proof:
+    get:
+      operationId: v1_me_contributions_merkle_proof_retrieve
+      description: دریافت مسیر اثبات شمول رمزنگاری‌شده (Merkle Inclusion Proof) برای
+        یک مشارکت قطعی خیر.
+      summary: دریافت گواهی اثبات شمول مرکل (Merkle Inclusion Proof) برای مشارکت من
+      parameters:
+      - in: path
+        name: contribution_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Cryptographic Transparency
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/me/dashboard:
+    get:
+      operationId: v1_me_dashboard_retrieve
+      description: داشبورد جامع و انگیزه‌بخش خیر (سهم‌ها، قلک‌ها، اثر سفیر، نشان‌های
+        افتخار، مژده‌ها و پیشنهادها).
+      summary: داشبورد جامع و انگیزه‌بخش خیر (کارنامهٔ معنوی، مالی، سفیران و مژده‌های
+        میدانی)
+      tags:
+      - Donor - Motivation Dashboard
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/me/notifications:
+    get:
+      operationId: v1_me_notifications_list
+      description: برگرداندن فهرست صفحه‌بندی‌شدهٔ اعلان‌های کاربر.
+      summary: مشاهدهٔ فهرست اعلان‌ها و مژده‌های حرکت‌های همراهی‌شده
+      tags:
+      - Donor - Notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserNotification'
+          description: ''
+  /api/v1/me/notifications/{notification_id}/read:
+    post:
+      operationId: v1_me_notifications_read
+      description: ثبت زمان مطالعهٔ اعلان.
+      summary: ثبت مطالعهٔ یک اعلان
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Donor - Notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserNotification'
+          description: ''
+  /api/v1/me/notifications/read-all:
+    post:
+      operationId: v1_me_notifications_read_all
+      description: خوانده کردن همهٔ اعلان‌های کاربر.
+      summary: علامت‌گذاری تمام اعلان‌های من به‌عنوان خوانده‌شده
+      tags:
+      - Donor - Notifications
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkAllReadResponse'
+          description: ''
+  /api/v1/me/sessions:
+    get:
+      operationId: v1_me_sessions_list
+      description: برگرداندن نشست‌های فعال کاربر.
+      summary: مشاهدهٔ فهرست دستگاه‌ها و نشست‌های فعال من
+      tags:
+      - Donor - Profile & Sessions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessionItemOutput'
+          description: ''
+  /api/v1/me/sessions/{session_id}/revoke:
+    post:
+      operationId: v1_me_sessions_revoke
+      description: ابطال آنی نشست انتخاب‌شده.
+      summary: ابطال یک نشست مشخص از راه دور
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - Donor - Profile & Sessions
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/meta:
+    get:
+      operationId: v1_meta_retrieve
+      description: برگرداندن متادیتای بوت‌استرپ فرانت‌اند همراه با پشتیبانی از ETag.
+      summary: دریافت متادیتای نسخهٔ API و قابلیت‌های فعال سامانه
+      tags:
+      - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformMeta'
+          description: ''
+  /api/v1/payments/callback:
+    get:
+      operationId: v1_payments_callback_get
+      description: تأیید تکرارناپذیر (Idempotent) بازگشت کاربر از درگاه پرداخت (پشتیبانی
+        از GET شاپرکی و POST JSON).
+      summary: بازگشت GET از درگاه پرداخت اینترنتی (Authority & Status)
+      tags:
+      - Public - Payments & Receipts
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentVerifyResponse'
+          description: ''
+    post:
+      operationId: v1_payments_verify_post
+      description: تأیید تکرارناپذیر (Idempotent) بازگشت کاربر از درگاه پرداخت (پشتیبانی
+        از GET شاپرکی و POST JSON).
+      summary: تأیید تراکنش درگاه پرداخت از طریق فرانت‌اند (POST)
+      tags:
+      - Public - Payments & Receipts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCallbackVerifyInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentVerifyResponse'
+          description: ''
+  /api/v1/payments/sandbox/{authority}:
+    get:
+      operationId: v1_payments_sandbox_retrieve
+      description: مشاهدهٔ اطلاعات تراکنش درگاه آزمایشی Sandbox برای رندر شبیه‌ساز
+        درگاه در فرانت‌اند.
+      summary: اطلاعات تراکنش درگاه تعاملی Sandbox
+      parameters:
+      - in: path
+        name: authority
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Payments & Receipts
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authority:
+                    type: string
+                  amount_rial:
+                    type: integer
+                  amount_toman:
+                    type: integer
+                  status:
+                    type: string
+          description: ''
+  /api/v1/receipts/verify/{verification_code}:
+    get:
+      operationId: v1_receipts_verify_retrieve
+      description: استعلام اصالت عمومی رسید مشارکت از روی کد رهگیری امضاشده.
+      summary: استعلام اصالت رسید رسمی مشارکت با کد رهگیری
+      parameters:
+      - in: path
+        name: verification_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Payments & Receipts
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: ''
+  /api/v1/short-links/{short_code}:
+    get:
+      operationId: v1_short_links_resolve
+      description: حل‌کنندهٔ پیوندک کوتاه (حرکت، قلک عام یا لینک سفیر اجتماعی با ثبت
+        کلیک).
+      summary: حل نشانی پیوندک کوتاه (حرکت، قلک عام یا لینک سفیر اجتماعی)
+      parameters:
+      - in: path
+        name: short_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - Public - Short-Links & Ambassadors
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortLinkResolveResponse'
+          description: ''
+  /api/v1/transparency/verify-proof:
+    post:
+      operationId: v1_transparency_verify_merkle_proof
+      description: راستی‌آزمایی ریاضی مستقل یک برگ مشارکت در برابر ریشهٔ مرکل منتشرشده.
+      summary: راستی‌آزمایی ریاضی اثبات شمول مرکل (Merkle Inclusion Proof)
+      tags:
+      - Public - Cryptographic Transparency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerkleProofVerifyInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                required:
+                - valid
+          description: ''
+components:
+  schemas:
+    AdminPayment:
+      type: object
+      description: نمای مدیریتی پرداخت با پوشاندن شماره موبایل خیر به صورت پیش‌فرض.
+      properties:
+        id:
+          type: string
+          format: uuid
+        contribution_id:
+          type: string
+          format: uuid
+        gateway_name:
+          type: string
+        authority:
+          type: string
+        ref_id:
+          type: string
+        status:
+          type: string
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+          readOnly: true
+        donor_phone_masked:
+          type: string
+          readOnly: true
+        donor_user_id:
+          type: string
+          format: uuid
+        benefactor_name:
+          type: string
+        target_title:
+          type: string
+          readOnly: true
+        verified_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rial
+      - amount_toman
+      - authority
+      - benefactor_name
+      - contribution_id
+      - created_at
+      - donor_phone_masked
+      - donor_user_id
+      - gateway_name
+      - id
+      - ref_id
+      - status
+      - target_title
+      - verified_at
+    AdminPhoneRevealInputRequest:
+      type: object
+      description: ورودی درخواست مشاهدهٔ شمارهٔ کامل خیر با الزام ثبت هدف.
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 400
+      required:
+      - reason
+    AdminRoleChangeInputRequest:
+      type: object
+      description: ورودی تغییر نقش کاربری با الزام دلیل.
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 400
+      required:
+      - reason
+      - role
+    AdminUserOutput:
+      type: object
+      description: نمای کاربر برای میز عملیاتی ادمین (با شماره تلفن پوشانده در حالت
+        عادی).
+      properties:
+        id:
+          type: string
+          format: uuid
+        masked_phone:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        display_name:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - city
+      - created_at
+      - display_name
+      - first_name
+      - id
+      - is_active
+      - last_name
+      - masked_phone
+      - province
+      - role
+    AmbassadorCreateInputRequest:
+      type: object
+      description: ورودی ساخت لینک سفیر اجتماعی برای حرکت یا قلک.
+      properties:
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        charity_jar_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        custom_note:
+          type: string
+          default: ''
+          maxLength: 240
+    AmbassadorLink:
+      type: object
+      description: نمای خروجی لینک سفیر اجتماعی.
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        charity_jar_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        target_title:
+          type: string
+          readOnly: true
+        custom_note:
+          type: string
+        click_count:
+          type: integer
+        referred_donors_count:
+          type: integer
+        attributed_shares:
+          type: integer
+        attributed_amount_rial:
+          type: integer
+        attributed_amount_toman:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - attributed_amount_rial
+      - attributed_amount_toman
+      - attributed_shares
+      - campaign_id
+      - charity_jar_id
+      - click_count
+      - code
+      - created_at
+      - custom_note
+      - id
+      - referred_donors_count
+      - target_title
+    AuditChainVerification:
+      type: object
+      description: پاسخ راستی‌آزمایی زنجیرهٔ هش و لنگرها.
+      properties:
+        chain_valid:
+          type: boolean
+        first_broken_sequence:
+          type:
+          - integer
+          - 'null'
+        anchors_valid:
+          type: boolean
+        broken_anchors:
+          type: array
+          items:
+            type: integer
+        total_records:
+          type: integer
+      required:
+      - anchors_valid
+      - broken_anchors
+      - chain_valid
+      - first_broken_sequence
+      - total_records
+    AuditRecord:
+      type: object
+      description: نمای خروجی یک رکورد حسابرسی.
+      properties:
+        id:
+          type: string
+          format: uuid
+        sequence:
+          type: integer
+        action:
+          type: string
+        outcome:
+          type: string
+        actor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        actor_label:
+          type: string
+        target_type:
+          type: string
+        target_id:
+          type: string
+        reason:
+          type: string
+        metadata: {}
+        request_id:
+          type: string
+        previous_hash:
+          type: string
+        record_hash:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          description: معادل تاریخ و ساعت شمسی ثبت رکورد.
+          readOnly: true
+      required:
+      - action
+      - actor_id
+      - actor_label
+      - created_at
+      - created_at_jalali
+      - id
+      - metadata
+      - outcome
+      - previous_hash
+      - reason
+      - record_hash
+      - request_id
+      - sequence
+      - target_id
+      - target_type
+    AuthRiskReviewInputRequest:
+      type: object
+      description: ورودی بررسی سیگنال ریسک هویتی.
+      properties:
+        status:
+          $ref: '#/components/schemas/AuthRiskReviewInputStatusEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 400
+      required:
+      - status
+    AuthRiskReviewInputStatusEnum:
+      enum:
+      - reviewed
+      - dismissed
+      type: string
+      description: |-
+        * `reviewed` - reviewed
+        * `dismissed` - dismissed
+    AuthRiskSignalOutput:
+      type: object
+      description: نمای سیگنال ریسک احراز هویت.
+      properties:
+        id:
+          type: string
+          format: uuid
+        signal_type:
+          type: string
+        status:
+          type: string
+        ip_address:
+          type:
+          - string
+          - 'null'
+        phone_masked:
+          type: string
+        metadata: {}
+        review_note:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - id
+      - ip_address
+      - metadata
+      - phone_masked
+      - review_note
+      - signal_type
+      - status
+    AuthTokensOutput:
+      type: object
+      description: پاسخ ورود موفق شامل نشست، توکن‌های JWT و وضعیت MFA.
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        session_id:
+          type: string
+          format: uuid
+        mfa_required:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/UserMeOutput'
+      required:
+      - access_token
+      - mfa_required
+      - refresh_token
+      - session_id
+      - user
+    BenefactorAdmin:
+      type: object
+      description: نمای مدیریتی خیریه شامل شماره شبا، شناسه ملی و وضعیت فعال بودن.
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        registration_number:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        short_bio:
+          type: string
+        description:
+          type: string
+        logo_url:
+          type: string
+        cover_url:
+          type: string
+        website_url:
+          type: string
+        is_verified:
+          type: boolean
+        active_campaigns_count:
+          type: integer
+        completed_campaigns_count:
+          type: integer
+        total_raised_rial:
+          type: integer
+        total_raised_toman:
+          type: integer
+          readOnly: true
+        total_disbursed_rial:
+          type: integer
+        total_disbursed_toman:
+          type: integer
+          readOnly: true
+        jars:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        national_identifier:
+          type: string
+        contact_phone:
+          type: string
+        iban:
+          type: string
+        bank_holder_name:
+          type: string
+        is_active:
+          type: boolean
+        display_order:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - active_campaigns_count
+      - bank_holder_name
+      - city
+      - completed_campaigns_count
+      - contact_phone
+      - cover_url
+      - created_at
+      - created_at_jalali
+      - description
+      - display_order
+      - iban
+      - id
+      - is_active
+      - is_verified
+      - jars
+      - logo_url
+      - name
+      - national_identifier
+      - province
+      - registration_number
+      - short_bio
+      - slug
+      - total_disbursed_rial
+      - total_disbursed_toman
+      - total_raised_rial
+      - total_raised_toman
+      - website_url
+    BenefactorPublic:
+      type: object
+      description: نمای عمومی خیریه بدون افشای شماره شبا یا اطلاعات بانکی حساس.
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        registration_number:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        short_bio:
+          type: string
+        description:
+          type: string
+        logo_url:
+          type: string
+        cover_url:
+          type: string
+        website_url:
+          type: string
+        is_verified:
+          type: boolean
+        active_campaigns_count:
+          type: integer
+        completed_campaigns_count:
+          type: integer
+        total_raised_rial:
+          type: integer
+        total_raised_toman:
+          type: integer
+          readOnly: true
+        total_disbursed_rial:
+          type: integer
+        total_disbursed_toman:
+          type: integer
+          readOnly: true
+        jars:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+      required:
+      - active_campaigns_count
+      - city
+      - completed_campaigns_count
+      - cover_url
+      - description
+      - id
+      - is_verified
+      - jars
+      - logo_url
+      - name
+      - province
+      - registration_number
+      - short_bio
+      - slug
+      - total_disbursed_rial
+      - total_disbursed_toman
+      - total_raised_rial
+      - total_raised_toman
+      - website_url
+    BenefactorWriteRequest:
+      type: object
+      description: ورودی ایجاد یا ویرایش خیریه توسط مدیر.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 180
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+        registration_number:
+          type: string
+          default: ''
+          maxLength: 64
+        national_identifier:
+          type: string
+          default: ''
+          maxLength: 32
+        province:
+          type: string
+          default: ''
+          maxLength: 80
+        city:
+          type: string
+          default: ''
+          maxLength: 80
+        short_bio:
+          type: string
+          default: ''
+          maxLength: 320
+        description:
+          type: string
+          default: ''
+        logo_url:
+          type: string
+          default: ''
+          maxLength: 500
+        cover_url:
+          type: string
+          default: ''
+          maxLength: 500
+        website_url:
+          type: string
+          default: ''
+          maxLength: 300
+        contact_phone:
+          type: string
+          default: ''
+          maxLength: 32
+        iban:
+          type: string
+          default: ''
+          maxLength: 26
+        bank_holder_name:
+          type: string
+          default: ''
+          maxLength: 180
+        is_verified:
+          type: boolean
+          default: true
+        is_active:
+          type: boolean
+          default: true
+        display_order:
+          type: integer
+          minimum: 0
+          default: 100
+      required:
+      - name
+      - slug
+    CampaignCategory:
+      type: object
+      description: نمای دسته‌بندی موضوعی حرکت.
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        icon_name:
+          type: string
+        description:
+          type: string
+        display_order:
+          type: integer
+      required:
+      - description
+      - display_order
+      - icon_name
+      - id
+      - slug
+      - title
+    CampaignCategoryWriteRequest:
+      type: object
+      description: ورودی ایجاد دسته‌بندی موضوعی.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 80
+        icon_name:
+          type: string
+          default: ''
+          maxLength: 64
+        description:
+          type: string
+          default: ''
+          maxLength: 300
+        display_order:
+          type: integer
+          minimum: 0
+          default: 100
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - slug
+      - title
+    CampaignDetail:
+      type: object
+      description: نمای کامل صفحهٔ جزئیات حرکت شامل روایت چیستی‌وچرایی، گالری و تایم‌لاین
+        پیشرفت میدانی.
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        short_code:
+          type: string
+        subtitle:
+          type: string
+        cover_image_url:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        status:
+          type: string
+        urgency_level:
+          type: string
+        is_featured:
+          type: boolean
+        benefactor:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        category:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        total_shares:
+          type: integer
+        paid_shares:
+          type: integer
+        matched_shares:
+          type: integer
+        external_shares:
+          type: integer
+        reserved_shares:
+          type: integer
+        funded_shares:
+          type: integer
+        remaining_shares:
+          type: integer
+        progress_percent:
+          type: number
+          format: double
+        physical_progress_percent:
+          type: integer
+        supporter_count:
+          type: integer
+        share_price_rial:
+          type: integer
+        share_price_toman:
+          type: integer
+          readOnly: true
+        target_amount_rial:
+          type: integer
+        target_amount_toman:
+          type: integer
+          readOnly: true
+        total_funded_rial:
+          type: integer
+        total_funded_toman:
+          type: integer
+          readOnly: true
+        disbursed_amount_rial:
+          type: integer
+        disbursed_amount_toman:
+          type: integer
+          readOnly: true
+        active_matching_grant:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ends_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        why_and_what:
+          type: string
+        video_url:
+          type: string
+        min_shares_per_order:
+          type: integer
+        max_shares_per_order:
+          type: integer
+        collected_online_rial:
+          type: integer
+        collected_online_toman:
+          type: integer
+          readOnly: true
+        matched_amount_rial:
+          type: integer
+        matched_amount_toman:
+          type: integer
+          readOnly: true
+        external_amount_rial:
+          type: integer
+        external_amount_toman:
+          type: integer
+          readOnly: true
+        allow_anonymous:
+          type: boolean
+        allow_dedication:
+          type: boolean
+        media_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignMedia'
+        impact_updates:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          readOnly: true
+        starts_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        completed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        has_financial_activity:
+          type: boolean
+      required:
+      - active_matching_grant
+      - allow_anonymous
+      - allow_dedication
+      - benefactor
+      - category
+      - city
+      - collected_online_rial
+      - collected_online_toman
+      - completed_at
+      - cover_image_url
+      - created_at
+      - created_at_jalali
+      - disbursed_amount_rial
+      - disbursed_amount_toman
+      - ends_at
+      - ends_at_jalali
+      - external_amount_rial
+      - external_amount_toman
+      - external_shares
+      - funded_shares
+      - has_financial_activity
+      - id
+      - impact_updates
+      - is_featured
+      - matched_amount_rial
+      - matched_amount_toman
+      - matched_shares
+      - max_shares_per_order
+      - media_items
+      - min_shares_per_order
+      - paid_shares
+      - physical_progress_percent
+      - progress_percent
+      - province
+      - remaining_shares
+      - reserved_shares
+      - share_price_rial
+      - share_price_toman
+      - short_code
+      - slug
+      - starts_at
+      - status
+      - subtitle
+      - supporter_count
+      - target_amount_rial
+      - target_amount_toman
+      - title
+      - total_funded_rial
+      - total_funded_toman
+      - total_shares
+      - urgency_level
+      - video_url
+      - why_and_what
+    CampaignImpactUpdate:
+      type: object
+      description: نمای گزارش پیشرفت میدانی حرکت.
+      properties:
+        id:
+          type: string
+          format: uuid
+        milestone_type:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        progress_percent:
+          type: integer
+        spent_amount_rial:
+          type: integer
+        spent_amount_toman:
+          type: integer
+          readOnly: true
+        media_urls:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - body
+      - created_at
+      - created_at_jalali
+      - id
+      - media_urls
+      - milestone_type
+      - progress_percent
+      - spent_amount_rial
+      - spent_amount_toman
+      - title
+    CampaignMedia:
+      type: object
+      description: نمای آیتم رسانه در گالری حرکت.
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        url:
+          type: string
+        caption:
+          type: string
+        display_order:
+          type: integer
+      required:
+      - caption
+      - display_order
+      - id
+      - kind
+      - url
+    CampaignMediaInputRequest:
+      type: object
+      description: آیتم ورودی رسانه هنگام ایجاد حرکت.
+      properties:
+        kind:
+          allOf:
+          - $ref: '#/components/schemas/KindEnum'
+          default: image
+        url:
+          type: string
+          minLength: 1
+          maxLength: 500
+        caption:
+          type: string
+          default: ''
+          maxLength: 240
+        display_order:
+          type: integer
+          minimum: 0
+          default: 100
+      required:
+      - url
+    CampaignStatusEnum:
+      enum:
+      - draft
+      - active
+      - paused
+      - completed
+      - executing
+      - fulfilled
+      - cancelled
+      type: string
+      description: |-
+        * `draft` - پیش‌نویس
+        * `active` - در حال جذب مشارکت
+        * `paused` - متوقف موقت
+        * `completed` - تکمیل ظرفیت سهم‌ها
+        * `executing` - در حال اجرای میدانی
+        * `fulfilled` - اجرا و گزارش نهایی شد
+        * `cancelled` - لغوشده
+    CampaignSummary:
+      type: object
+      description: نمای کارت خلاصهٔ حرکت برای فهرست‌های عمومی (با نمایش دوگانه ریال/تومان
+        و سهم‌ها).
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        short_code:
+          type: string
+        subtitle:
+          type: string
+        cover_image_url:
+          type: string
+        province:
+          type: string
+        city:
+          type: string
+        status:
+          type: string
+        urgency_level:
+          type: string
+        is_featured:
+          type: boolean
+        benefactor:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        category:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        total_shares:
+          type: integer
+        paid_shares:
+          type: integer
+        matched_shares:
+          type: integer
+        external_shares:
+          type: integer
+        reserved_shares:
+          type: integer
+        funded_shares:
+          type: integer
+        remaining_shares:
+          type: integer
+        progress_percent:
+          type: number
+          format: double
+        physical_progress_percent:
+          type: integer
+        supporter_count:
+          type: integer
+        share_price_rial:
+          type: integer
+        share_price_toman:
+          type: integer
+          readOnly: true
+        target_amount_rial:
+          type: integer
+        target_amount_toman:
+          type: integer
+          readOnly: true
+        total_funded_rial:
+          type: integer
+        total_funded_toman:
+          type: integer
+          readOnly: true
+        disbursed_amount_rial:
+          type: integer
+        disbursed_amount_toman:
+          type: integer
+          readOnly: true
+        active_matching_grant:
+          type:
+          - object
+          - 'null'
+          additionalProperties: {}
+          readOnly: true
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ends_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - active_matching_grant
+      - benefactor
+      - category
+      - city
+      - cover_image_url
+      - created_at
+      - created_at_jalali
+      - disbursed_amount_rial
+      - disbursed_amount_toman
+      - ends_at
+      - ends_at_jalali
+      - external_shares
+      - funded_shares
+      - id
+      - is_featured
+      - matched_shares
+      - paid_shares
+      - physical_progress_percent
+      - progress_percent
+      - province
+      - remaining_shares
+      - reserved_shares
+      - share_price_rial
+      - share_price_toman
+      - short_code
+      - slug
+      - status
+      - subtitle
+      - supporter_count
+      - target_amount_rial
+      - target_amount_toman
+      - title
+      - total_funded_rial
+      - total_funded_toman
+      - total_shares
+      - urgency_level
+    CampaignWriteRequest:
+      type: object
+      description: ورودی ایجاد حرکت خیرخواهانهٔ سهم‌محور توسط مدیر.
+      properties:
+        benefactor_id:
+          type: string
+          format: uuid
+        category_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 220
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 140
+        short_code:
+          type: string
+          default: ''
+          maxLength: 16
+        subtitle:
+          type: string
+          default: ''
+          maxLength: 320
+        why_and_what:
+          type: string
+          default: ''
+        cover_image_url:
+          type: string
+          default: ''
+          maxLength: 500
+        video_url:
+          type: string
+          default: ''
+          maxLength: 500
+        province:
+          type: string
+          default: ''
+          maxLength: 80
+        city:
+          type: string
+          default: ''
+          maxLength: 80
+        total_shares:
+          type: integer
+          maximum: 10000000
+          minimum: 1
+        share_price_rial:
+          type: integer
+          maximum: 100000000000
+          minimum: 10000
+          format: int64
+        min_shares_per_order:
+          type: integer
+          minimum: 1
+          default: 1
+        max_shares_per_order:
+          type: integer
+          minimum: 0
+          default: 0
+        status:
+          allOf:
+          - $ref: '#/components/schemas/CampaignStatusEnum'
+          default: active
+        urgency_level:
+          allOf:
+          - $ref: '#/components/schemas/UrgencyLevelEnum'
+          default: normal
+        is_featured:
+          type: boolean
+          default: false
+        allow_anonymous:
+          type: boolean
+          default: true
+        allow_dedication:
+          type: boolean
+          default: true
+        starts_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        media_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignMediaInputRequest'
+      required:
+      - benefactor_id
+      - share_price_rial
+      - slug
+      - title
+      - total_shares
+    CharityJarPublic:
+      type: object
+      description: نمای عمومی قلک عام خیریه با نمایش ریال و تومان.
+      properties:
+        id:
+          type: string
+          format: uuid
+        benefactor_id:
+          type: string
+          format: uuid
+        benefactor_name:
+          type: string
+        benefactor_slug:
+          type: string
+        benefactor_logo_url:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        short_code:
+          type: string
+        description:
+          type: string
+        suggested_amounts_rial:
+          type: array
+          items:
+            type: integer
+        suggested_amounts_toman:
+          type: array
+          items:
+            type: integer
+          description: مبالغ پیشنهادی به تومان.
+          readOnly: true
+        min_amount_rial:
+          type: integer
+        min_amount_toman:
+          type: integer
+          readOnly: true
+        max_amount_rial:
+          type: integer
+        max_amount_toman:
+          type: integer
+          readOnly: true
+        monthly_goal_rial:
+          type: integer
+        monthly_goal_toman:
+          type: integer
+          readOnly: true
+        total_raised_rial:
+          type: integer
+        total_raised_toman:
+          type: integer
+          readOnly: true
+        donor_count:
+          type: integer
+        is_active:
+          type: boolean
+      required:
+      - benefactor_id
+      - benefactor_logo_url
+      - benefactor_name
+      - benefactor_slug
+      - description
+      - donor_count
+      - id
+      - is_active
+      - max_amount_rial
+      - max_amount_toman
+      - min_amount_rial
+      - min_amount_toman
+      - monthly_goal_rial
+      - monthly_goal_toman
+      - short_code
+      - slug
+      - suggested_amounts_rial
+      - suggested_amounts_toman
+      - title
+      - total_raised_rial
+      - total_raised_toman
+    CharityJarWriteRequest:
+      type: object
+      description: ورودی ایجاد قلک عام خیریه.
+      properties:
+        benefactor_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 180
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+        short_code:
+          type: string
+          default: ''
+          maxLength: 16
+        description:
+          type: string
+          default: ''
+        suggested_amounts_rial:
+          type: array
+          items:
+            type: integer
+            minimum: 10000
+        min_amount_rial:
+          type: integer
+          minimum: 10000
+          default: 100000
+        max_amount_rial:
+          type: integer
+          minimum: 10000
+          default: 5000000000
+        monthly_goal_rial:
+          type: integer
+          minimum: 0
+          default: 0
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - benefactor_id
+      - slug
+      - title
+    CheckoutInitiateInputRequest:
+      type: object
+      description: ورودی آغاز مشارکت و رزرو ۱۵ دقیقه‌ای سهم (یا واریز قلک عام) برای
+        کاربر احراز هویت‌شده.
+      properties:
+        target_kind:
+          allOf:
+          - $ref: '#/components/schemas/TargetKindEnum'
+          default: campaign_shares
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        charity_jar_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        shares_count:
+          type: integer
+          minimum: 0
+          default: 1
+        amount_rial:
+          type: integer
+          minimum: 0
+          default: 0
+        is_anonymous:
+          type: boolean
+          default: false
+        public_note:
+          type: string
+          default: ''
+          maxLength: 200
+        ambassador_code:
+          type: string
+          default: ''
+          maxLength: 20
+        gateway_name:
+          allOf:
+          - $ref: '#/components/schemas/GatewayNameEnum'
+          default: sandbox
+        dedication:
+          $ref: '#/components/schemas/DedicationInputRequest'
+    CheckoutInitiateResponse:
+      type: object
+      description: پاسخ ایجاد مشارکت و لینک هدایت به درگاه پرداخت.
+      properties:
+        contribution_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        authority:
+          type: string
+        gateway_name:
+          type: string
+        gateway_redirect_url:
+          type: string
+        shares_count:
+          type: integer
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        hold_expires_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rial
+      - amount_toman
+      - authority
+      - contribution_id
+      - gateway_name
+      - gateway_redirect_url
+      - hold_expires_at
+      - payment_id
+      - shares_count
+    ContributionUser:
+      type: object
+      description: نمای مشارکت در فهرست تاریخچهٔ کاربر.
+      properties:
+        id:
+          type: string
+          format: uuid
+        target_kind:
+          type: string
+        target_title:
+          type: string
+          readOnly: true
+        benefactor_name:
+          type: string
+        shares_count:
+          type: integer
+        matched_shares_awarded:
+          type: integer
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+          readOnly: true
+        is_anonymous:
+          type: boolean
+        status:
+          type: string
+        hold_expires_at:
+          type: string
+          format: date-time
+        paid_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        paid_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        receipt_verification_code:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        dedication_token:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - amount_rial
+      - amount_toman
+      - benefactor_name
+      - dedication_token
+      - hold_expires_at
+      - id
+      - is_anonymous
+      - matched_shares_awarded
+      - paid_at
+      - paid_at_jalali
+      - receipt_verification_code
+      - shares_count
+      - status
+      - target_kind
+      - target_title
+    DedicationInputRequest:
+      type: object
+      description: ورودی اختیاری نیت‌نامه هنگام ثبت مشارکت.
+      properties:
+        dedication_type:
+          allOf:
+          - $ref: '#/components/schemas/DedicationTypeEnum'
+          default: in_memory
+        honoree_name:
+          type: string
+          minLength: 1
+          maxLength: 140
+        dedicator_display_name:
+          type: string
+          default: ''
+          maxLength: 140
+        message:
+          type: string
+          default: ''
+          maxLength: 320
+        recipient_phone:
+          type: string
+          default: ''
+          maxLength: 16
+      required:
+      - honoree_name
+    DedicationTypeEnum:
+      enum:
+      - in_memory
+      - gift_honor
+      - healing_prayer
+      - general_niyyat
+      type: string
+      description: |-
+        * `in_memory` - ثواب به یاد درگذشتگان و اموات
+        * `gift_honor` - هدیهٔ معنوی به عزیزان (تولد، سالگرد، قدردانی)
+        * `healing_prayer` - به نیت سلامتی و شفای بیماران
+        * `general_niyyat` - نیت قلبی و شکرگزاری
+    DisbursementCreateInputRequest:
+      type: object
+      description: ورودی ثبت درخواست تسویه جدید (Maker).
+      properties:
+        benefactor_id:
+          type: string
+          format: uuid
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        amount_rial:
+          type: integer
+          minimum: 10000
+        request_note:
+          type: string
+          default: ''
+          maxLength: 400
+      required:
+      - amount_rial
+      - benefactor_id
+    DisbursementRequest:
+      type: object
+      description: نمای خروجی درخواست تسویه با خیریه.
+      properties:
+        id:
+          type: string
+          format: uuid
+        benefactor_id:
+          type: string
+          format: uuid
+        benefactor_name:
+          type: string
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+          readOnly: true
+        destination_iban:
+          type: string
+        status:
+          type: string
+        requested_by_id:
+          type: string
+          format: uuid
+        request_note:
+          type: string
+        reviewed_by_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        reviewed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        review_reason:
+          type: string
+        bank_reference_number:
+          type: string
+        journal_entry_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - amount_rial
+      - amount_toman
+      - bank_reference_number
+      - benefactor_id
+      - benefactor_name
+      - campaign_id
+      - created_at
+      - created_at_jalali
+      - destination_iban
+      - id
+      - journal_entry_id
+      - request_note
+      - requested_by_id
+      - review_reason
+      - reviewed_at
+      - reviewed_by_id
+      - status
+    DisbursementReviewInputRequest:
+      type: object
+      description: ورودی تأیید یا رد چهارچشمی درخواست تسویه (Checker + Step-Up MFA).
+      properties:
+        approve:
+          type: boolean
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 400
+        bank_reference_number:
+          type: string
+          default: ''
+          maxLength: 80
+      required:
+      - approve
+      - reason
+    ExpressConfirmInputRequest:
+      type: object
+      description: ورودی گام دوم مشارکت سریع ۳۰ ثانیه‌ای مهمان (کد ۵ رقمی OTP).
+      properties:
+        intent_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          minLength: 1
+          pattern: ^\d{5}$
+      required:
+      - code
+      - intent_id
+    ExpressStartInputRequest:
+      type: object
+      description: ورودی گام اول مشارکت سریع ۳۰ ثانیه‌ای مهمان (همراه با شماره موبایل).
+      properties:
+        target_kind:
+          allOf:
+          - $ref: '#/components/schemas/TargetKindEnum'
+          default: campaign_shares
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        charity_jar_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        shares_count:
+          type: integer
+          minimum: 0
+          default: 1
+        amount_rial:
+          type: integer
+          minimum: 0
+          default: 0
+        is_anonymous:
+          type: boolean
+          default: false
+        public_note:
+          type: string
+          default: ''
+          maxLength: 200
+        ambassador_code:
+          type: string
+          default: ''
+          maxLength: 20
+        gateway_name:
+          allOf:
+          - $ref: '#/components/schemas/GatewayNameEnum'
+          default: sandbox
+        dedication:
+          $ref: '#/components/schemas/DedicationInputRequest'
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 16
+        display_name:
+          type: string
+          default: ''
+          maxLength: 120
+      required:
+      - phone
+    ExpressStartResponse:
+      type: object
+      description: پاسخ گام اول مشارکت سریع مهمان.
+      properties:
+        intent_id:
+          type: string
+          format: uuid
+        expires_in:
+          type: integer
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+          readOnly: true
+        shares_count:
+          type: integer
+        dev_code:
+          type: string
+      required:
+      - amount_rial
+      - amount_toman
+      - expires_in
+      - intent_id
+      - shares_count
+    ExternalContribution:
+      type: object
+      description: نمای خروجی مشارکت خارج از درگاه.
+      properties:
+        id:
+          type: string
+          format: uuid
+        campaign_id:
+          type: string
+          format: uuid
+        shares_count:
+          type: integer
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+          readOnly: true
+        donor_display_name:
+          type: string
+        reference_code:
+          type: string
+        note:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rial
+      - amount_toman
+      - campaign_id
+      - created_at
+      - donor_display_name
+      - id
+      - note
+      - reference_code
+      - shares_count
+    ExternalContributionWriteRequest:
+      type: object
+      description: ورودی ثبت مشارکت خارج از درگاه آنلاین توسط مدیر.
+      properties:
+        shares_count:
+          type: integer
+          minimum: 1
+        donor_display_name:
+          type: string
+          minLength: 1
+          default: حامی مستقیم خیریه
+          maxLength: 140
+        reference_code:
+          type: string
+          minLength: 1
+          maxLength: 80
+        note:
+          type: string
+          default: ''
+          maxLength: 320
+      required:
+      - reference_code
+      - shares_count
+    FinancialControlSnapshot:
+      type: object
+      description: نمای اسنپ‌شات تراز آزمایشی و کنترل یکپارچگی مالی.
+      properties:
+        id:
+          type: string
+          format: uuid
+        total_debits_rial:
+          type: integer
+        total_credits_rial:
+          type: integer
+        gateway_receivable_rial:
+          type: integer
+        benefactor_payable_rial:
+          type: integer
+        external_custody_rial:
+          type: integer
+        is_balanced:
+          type: boolean
+        counter_drift_rial:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - benefactor_payable_rial
+      - counter_drift_rial
+      - created_at
+      - external_custody_rial
+      - gateway_receivable_rial
+      - id
+      - is_balanced
+      - total_credits_rial
+      - total_debits_rial
+    GatewayNameEnum:
+      enum:
+      - sandbox
+      - zarinpal
+      type: string
+      description: |-
+        * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
+        * `zarinpal` - درگاه پرداخت زرین‌پال
+    HealthStatus:
+      type: object
+      description: پاسخ بررسی سلامت سامانه.
+      properties:
+        status:
+          type: string
+        checks:
+          type: object
+          additionalProperties: {}
+      required:
+      - status
+    ImpactUpdateWriteRequest:
+      type: object
+      description: ورودی انتشار گزارش پیشرفت میدانی حرکت.
+      properties:
+        milestone_type:
+          allOf:
+          - $ref: '#/components/schemas/MilestoneTypeEnum'
+          default: field_delivery
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          minLength: 5
+        progress_percent:
+          type: integer
+          maximum: 100
+          minimum: 0
+        spent_amount_rial:
+          type: integer
+          minimum: 0
+          default: 0
+        media_urls:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+        is_published:
+          type: boolean
+          default: true
+      required:
+      - body
+      - progress_percent
+      - title
+    JournalEntry:
+      type: object
+      description: نمای سند روزنامه.
+      properties:
+        id:
+          type: string
+          format: uuid
+        reference_key:
+          type: string
+        kind:
+          type: string
+        description:
+          type: string
+        total_amount_rial:
+          type: integer
+        total_amount_toman:
+          type: integer
+          readOnly: true
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        benefactor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - benefactor_id
+      - campaign_id
+      - created_at
+      - created_at_jalali
+      - description
+      - id
+      - kind
+      - reference_key
+      - total_amount_rial
+      - total_amount_toman
+    KindEnum:
+      enum:
+      - image
+      - video
+      - document
+      type: string
+      description: |-
+        * `image` - تصویر
+        * `video` - ویدیو
+        * `document` - مستند تاییدیه
+    LedgerAccount:
+      type: object
+      description: نمای سرفصل حساب در دفترکل.
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        title:
+          type: string
+        account_type:
+          type: string
+        benefactor_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        debit_total_rial:
+          type: integer
+        credit_total_rial:
+          type: integer
+        balance_rial:
+          type: integer
+        balance_toman:
+          type: integer
+          readOnly: true
+      required:
+      - account_type
+      - balance_rial
+      - balance_toman
+      - benefactor_id
+      - code
+      - credit_total_rial
+      - debit_total_rial
+      - id
+      - title
+    MarkAllReadResponse:
+      type: object
+      description: نمای پاسخ علامت‌گذاری همگانی اعلان‌ها.
+      properties:
+        marked_count:
+          type: integer
+      required:
+      - marked_count
+    MatchingGrantPublic:
+      type: object
+      description: نمای عمومی حامی مضاعف‌کنندهٔ فعال روی حرکت.
+      properties:
+        id:
+          type: string
+          format: uuid
+        sponsor_name:
+          type: string
+        sponsor_logo_url:
+          type: string
+        match_ratio:
+          type: integer
+        total_pool_shares:
+          type: integer
+        consumed_shares:
+          type: integer
+        remaining_pool_shares:
+          type: integer
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - consumed_shares
+      - expires_at
+      - id
+      - match_ratio
+      - remaining_pool_shares
+      - sponsor_logo_url
+      - sponsor_name
+      - total_pool_shares
+    MatchingGrantWriteRequest:
+      type: object
+      description: ورودی تعریف حامی مضاعف‌کننده روی حرکت.
+      properties:
+        sponsor_name:
+          type: string
+          minLength: 1
+          maxLength: 180
+        sponsor_logo_url:
+          type: string
+          default: ''
+          maxLength: 500
+        match_ratio:
+          type: integer
+          maximum: 10
+          minimum: 1
+          default: 1
+        total_pool_shares:
+          type: integer
+          minimum: 1
+        is_active:
+          type: boolean
+          default: true
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+      required:
+      - sponsor_name
+      - total_pool_shares
+    MerkleProofVerifyInputRequest:
+      type: object
+      description: ورودی راستی‌آزمایی مستقل اثبات شمول درخت مرکل.
+      properties:
+        leaf_hash:
+          type: string
+          minLength: 64
+          maxLength: 64
+        merkle_root:
+          type: string
+          minLength: 64
+          maxLength: 64
+        proof:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - leaf_hash
+      - merkle_root
+      - proof
+    MfaCodeInputRequest:
+      type: object
+      description: ورودی کد ۶ رقمی TOTP یا کد بازیابی.
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - code
+    MfaConfirmOutput:
+      type: object
+      description: خروجی تأیید نهایی TOTP شامل ۱۰ کد بازیابی یک‌بارمصرف.
+      properties:
+        enrolled:
+          type: boolean
+        recovery_codes:
+          type: array
+          items:
+            type: string
+      required:
+      - enrolled
+      - recovery_codes
+    MfaSetupOutput:
+      type: object
+      description: خروجی مرحلهٔ راه‌اندازی TOTP شامل QR برداری.
+      properties:
+        secret:
+          type: string
+        otpauth_uri:
+          type: string
+        qr_svg:
+          type: string
+      required:
+      - otpauth_uri
+      - qr_svg
+      - secret
+    MfaStatusOutput:
+      type: object
+      description: وضعیت عامل دوم کارمند.
+      properties:
+        enrolled:
+          type: boolean
+        session_verified:
+          type: boolean
+        verified_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        remaining_recovery_codes:
+          type: integer
+      required:
+      - enrolled
+      - remaining_recovery_codes
+      - session_verified
+      - verified_at
+    MilestoneTypeEnum:
+      enum:
+      - funding_complete
+      - disbursed
+      - procurement
+      - field_delivery
+      - final_report
+      type: string
+      description: |-
+        * `funding_complete` - تکمیل جذب منابع
+        * `disbursed` - واریز وجه به خیریه مجری
+        * `procurement` - تهیه اقلام / شروع عملیات
+        * `field_delivery` - تحویل و اجرای میدانی
+        * `final_report` - گزارش پایانی و مستندات تکمیل
+    OtpRequestAccepted:
+      type: object
+      description: پاسخ یکسان ضد شمارش کاربر هنگام درخواست OTP.
+      properties:
+        status:
+          type: string
+        ttl_seconds:
+          type: integer
+        message:
+          type: string
+      required:
+      - message
+      - status
+      - ttl_seconds
+    OtpRequestInputRequest:
+      type: object
+      description: ورودی درخواست ارسال کد یک‌بارمصرف پیامکی.
+      properties:
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - phone
+    OtpVerifyInputRequest:
+      type: object
+      description: ورودی تأیید کد ۵ رقمی پیامکی.
+      properties:
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        code:
+          type: string
+          minLength: 1
+          maxLength: 10
+      required:
+      - code
+      - phone
+    PatchedBenefactorPatchRequest:
+      type: object
+      description: ورودی ویرایش جزئی خیریه.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 180
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+        registration_number:
+          type: string
+          default: ''
+          maxLength: 64
+        national_identifier:
+          type: string
+          default: ''
+          maxLength: 32
+        province:
+          type: string
+          default: ''
+          maxLength: 80
+        city:
+          type: string
+          default: ''
+          maxLength: 80
+        short_bio:
+          type: string
+          default: ''
+          maxLength: 320
+        description:
+          type: string
+          default: ''
+        logo_url:
+          type: string
+          default: ''
+          maxLength: 500
+        cover_url:
+          type: string
+          default: ''
+          maxLength: 500
+        website_url:
+          type: string
+          default: ''
+          maxLength: 300
+        contact_phone:
+          type: string
+          default: ''
+          maxLength: 32
+        iban:
+          type: string
+          default: ''
+          maxLength: 26
+        bank_holder_name:
+          type: string
+          default: ''
+          maxLength: 180
+        is_verified:
+          type: boolean
+          default: true
+        is_active:
+          type: boolean
+          default: true
+        display_order:
+          type: integer
+          minimum: 0
+          default: 100
+    PatchedCampaignPatchRequest:
+      type: object
+      description: ورودی ویرایش جزئی حرکت توسط مدیر.
+      properties:
+        benefactor_id:
+          type: string
+          format: uuid
+        category_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 220
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 140
+        subtitle:
+          type: string
+          maxLength: 320
+        why_and_what:
+          type: string
+        cover_image_url:
+          type: string
+          maxLength: 500
+        video_url:
+          type: string
+          maxLength: 500
+        province:
+          type: string
+          maxLength: 80
+        city:
+          type: string
+          maxLength: 80
+        total_shares:
+          type: integer
+          maximum: 10000000
+          minimum: 1
+        share_price_rial:
+          type: integer
+          minimum: 10000
+        min_shares_per_order:
+          type: integer
+          minimum: 1
+        max_shares_per_order:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/CampaignStatusEnum'
+        urgency_level:
+          $ref: '#/components/schemas/UrgencyLevelEnum'
+        is_featured:
+          type: boolean
+        allow_anonymous:
+          type: boolean
+        allow_dedication:
+          type: boolean
+        starts_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        reason:
+          type: string
+          maxLength: 400
+    PatchedCharityJarPatchRequest:
+      type: object
+      description: ورودی ویرایش جزئی قلک عام خیریه.
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 180
+        description:
+          type: string
+        suggested_amounts_rial:
+          type: array
+          items:
+            type: integer
+            minimum: 10000
+        min_amount_rial:
+          type: integer
+          minimum: 10000
+        max_amount_rial:
+          type: integer
+          minimum: 10000
+        monthly_goal_rial:
+          type: integer
+          minimum: 0
+        is_active:
+          type: boolean
+    PatchedProfileUpdateInputRequest:
+      type: object
+      description: ورودی ویرایش مشخصات پروفایل خیر.
+      properties:
+        first_name:
+          type: string
+          maxLength: 80
+        last_name:
+          type: string
+          maxLength: 80
+        national_code:
+          type: string
+          maxLength: 16
+        province:
+          type: string
+          maxLength: 80
+        city:
+          type: string
+          maxLength: 80
+    PaymentCallbackVerifyInputRequest:
+      type: object
+      description: ورودی تأیید بازگشت از درگاه پرداخت.
+      properties:
+        authority:
+          type: string
+          minLength: 1
+          maxLength: 80
+        status:
+          type: string
+          minLength: 1
+          default: OK
+          maxLength: 24
+      required:
+      - authority
+    PaymentRefundInputRequest:
+      type: object
+      description: ورودی استرداد پرداخت تاییدشده توسط مدیر مالی (Step-Up MFA).
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 400
+        bank_reference:
+          type: string
+          default: ''
+          maxLength: 80
+      required:
+      - reason
+    PaymentVerifyResponse:
+      type: object
+      description: پاسخ تأیید تراکنش درگاه پرداخت.
+      properties:
+        verified:
+          type: boolean
+        payment_status:
+          type: string
+        contribution_id:
+          type: string
+          format: uuid
+        ref_id:
+          type: string
+        shares_count:
+          type: integer
+        matched_shares_awarded:
+          type: integer
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        receipt_number:
+          type:
+          - string
+          - 'null'
+        verification_code:
+          type:
+          - string
+          - 'null'
+        dedication_token:
+          type:
+          - string
+          - 'null'
+      required:
+      - amount_rial
+      - amount_toman
+      - contribution_id
+      - dedication_token
+      - matched_shares_awarded
+      - payment_status
+      - receipt_number
+      - ref_id
+      - shares_count
+      - verification_code
+      - verified
+    PlatformMeta:
+      type: object
+      description: پاسخ نقطهٔ پایانی ``GET /api/v1/meta`` برای بوت‌استرپ فرانت‌اند.
+      properties:
+        service:
+          type: string
+        environment:
+          type: string
+        api_version:
+          type: string
+        supported_versions:
+          type: array
+          items:
+            type: string
+        currency_base:
+          type: string
+        currency_display_units:
+          type: array
+          items:
+            type: string
+        timezone:
+          type: string
+        today_jalali:
+          type: string
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+        share_hold_ttl_minutes:
+          type: integer
+      required:
+      - api_version
+      - currency_base
+      - currency_display_units
+      - environment
+      - features
+      - service
+      - share_hold_ttl_minutes
+      - supported_versions
+      - timezone
+      - today_jalali
+    PolicyRuleOutput:
+      type: object
+      description: نمای خروجی یک قانون سیاست سامانه برای پنل مدیریت.
+      properties:
+        key:
+          type: string
+        value_type:
+          type: string
+        value: {}
+        default: {}
+        description:
+          type: string
+        version:
+          type: integer
+      required:
+      - default
+      - description
+      - key
+      - value
+      - value_type
+      - version
+    PolicyUpdateInputRequest:
+      type: object
+      description: ورودی تغییر مقدار یک سیاست همراه با دلیل اجباری ممیزی.
+      properties:
+        value: {}
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 400
+      required:
+      - reason
+      - value
+    ReconciliationBatch:
+      type: object
+      description: نمای خروجی دستهٔ مغایرت‌گیری به همراه مغایرت‌ها.
+      properties:
+        id:
+          type: string
+          format: uuid
+        gateway_name:
+          type: string
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        gateway_reported_count:
+          type: integer
+        matched_count:
+          type: integer
+        discrepancy_count:
+          type: integer
+        gateway_total_rial:
+          type: integer
+        internal_total_rial:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReconciliationItem'
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - discrepancy_count
+      - gateway_name
+      - gateway_reported_count
+      - gateway_total_rial
+      - id
+      - internal_total_rial
+      - items
+      - matched_count
+      - period_end
+      - period_start
+    ReconciliationItem:
+      type: object
+      description: نمای ردیف نتیجهٔ مغایرت‌گیری.
+      properties:
+        authority:
+          type: string
+        ref_id:
+          type: string
+        gateway_amount_rial:
+          type: integer
+        internal_amount_rial:
+          type: integer
+        status:
+          type: string
+        note:
+          type: string
+      required:
+      - authority
+      - gateway_amount_rial
+      - internal_amount_rial
+      - note
+      - ref_id
+      - status
+    ReconciliationRowInputRequest:
+      type: object
+      description: یک ردیف از فایل تسویه درگاه پرداخت.
+      properties:
+        authority:
+          type: string
+          minLength: 1
+          maxLength: 80
+        ref_id:
+          type: string
+          default: ''
+          maxLength: 80
+        amount_rial:
+          type: integer
+          minimum: 0
+      required:
+      - amount_rial
+      - authority
+    ReconciliationRunInputRequest:
+      type: object
+      description: ورودی اجرای مغایرت‌گیری درگاه پرداخت.
+      properties:
+        gateway_name:
+          type: string
+          minLength: 1
+          default: zarinpal
+          maxLength: 32
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReconciliationRowInputRequest'
+      required:
+      - period_end
+      - period_start
+      - rows
+    ReportExportLog:
+      type: object
+      description: نمای تاریخچهٔ خروجی‌های اکسل صادرشده.
+      properties:
+        id:
+          type: string
+          format: uuid
+        exported_by_id:
+          type: string
+          format: uuid
+        filters: {}
+        include_raw_phones:
+          type: boolean
+        reason:
+          type: string
+        file_sha256:
+          type: string
+        byte_size:
+          type: integer
+        row_counts: {}
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - byte_size
+      - created_at
+      - exported_by_id
+      - file_sha256
+      - filters
+      - id
+      - include_raw_phones
+      - reason
+      - row_counts
+    RoleEnum:
+      enum:
+      - donor
+      - operator
+      - finance_manager
+      - super_admin
+      type: string
+      description: |-
+        * `donor` - نیکوکار (کاربر عادی)
+        * `operator` - کارشناس عملیات
+        * `finance_manager` - مدیر مالی و ممیزی
+        * `super_admin` - مدیر ارشد سامانه
+    SessionItemOutput:
+      type: object
+      description: نمای یک نشست فعال در فهرست دستگاه‌های کاربر.
+      properties:
+        id:
+          type: string
+          format: uuid
+        device:
+          type: string
+        network:
+          type: string
+        mfa_verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        last_seen_at:
+          type: string
+          format: date-time
+        is_current:
+          type: boolean
+      required:
+      - created_at
+      - device
+      - id
+      - is_current
+      - last_seen_at
+      - mfa_verified
+      - network
+    ShortLinkResolveResponse:
+      type: object
+      description: پاسخ حل‌کنندهٔ پیوندک کوتاه.
+      properties:
+        kind:
+          type: string
+        short_code:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        target_path:
+          type: string
+        ambassador_code:
+          type:
+          - string
+          - 'null'
+      required:
+      - kind
+      - short_code
+      - slug
+      - target_path
+      - title
+    StaffPasswordLoginInputRequest:
+      type: object
+      description: ورودی ورود کارکنان با گذرواژه.
+      properties:
+        phone:
+          type: string
+          minLength: 1
+          maxLength: 20
+        password:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - password
+      - phone
+    TargetKindEnum:
+      enum:
+      - campaign_shares
+      - charity_jar
+      type: string
+      description: |-
+        * `campaign_shares` - خرید سهم از حرکت خیرخواهانه
+        * `charity_jar` - واریز آزاد به قلک عام خیریه
+    TokenRefreshInputRequest:
+      type: object
+      description: ورودی نوسازی چرخشی توکن دسترسی.
+      properties:
+        refresh_token:
+          type: string
+          minLength: 1
+      required:
+      - refresh_token
+    UrgencyLevelEnum:
+      enum:
+      - normal
+      - urgent
+      - emergency
+      type: string
+      description: |-
+        * `normal` - عادی
+        * `urgent` - فوری
+        * `emergency` - اضطراری / حیاتی
+    UserMeOutput:
+      type: object
+      description: نمای پروفایل کاربر جاری.
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        display_name:
+          type: string
+        national_code_masked:
+          type: string
+          description: نمایش پوشاندهٔ کد ملی.
+          readOnly: true
+        province:
+          type: string
+        city:
+          type: string
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_profile_complete:
+          type: boolean
+        is_staff_member:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          description: تاریخ عضویت به شمسی.
+          readOnly: true
+      required:
+      - city
+      - created_at
+      - created_at_jalali
+      - display_name
+      - first_name
+      - id
+      - is_profile_complete
+      - is_staff_member
+      - last_name
+      - national_code_masked
+      - phone
+      - province
+      - role
+    UserNotification:
+      type: object
+      description: نمای خروجی یک اعلان کاربر.
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        action_url:
+          type: string
+        metadata: {}
+        is_read:
+          type: boolean
+          description: آیا اعلان خوانده شده است؟
+          readOnly: true
+        read_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        created_at_jalali:
+          type:
+          - string
+          - 'null'
+          description: تاریخ شمسی ثبت اعلان.
+          readOnly: true
+      required:
+      - action_url
+      - body
+      - created_at
+      - created_at_jalali
+      - id
+      - is_read
+      - kind
+      - metadata
+      - read_at
+      - title
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: توکن دسترسی SessionAwareJWT با قابلیت ابطال آنی نشست.
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+      description: نشست کوکی HttpOnly هم‌مبدأ همراه با هدر X-CSRFToken در درخواست‌های
+        نوشتنی.

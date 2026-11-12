@@ -1,0 +1,68 @@
+name: crowdfunding-back
+
+services:
+  mariadb:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: local_root_dev_password
+      MARIADB_DATABASE: crowdfunding
+      MARIADB_USER: crowdfunding
+      MARIADB_PASSWORD: crowdfunding
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_uca1400_as_cs
+      - --sql-mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DJANGO_DEBUG: "true"
+      DATABASE_URL: mysql://crowdfunding:crowdfunding@mariadb:3306/crowdfunding
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,web
+      PAYMENT_DEFAULT_GATEWAY: sandbox
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python src/manage.py migrate --noinput &&
+             python src/manage.py createcachetable --database=cache &&
+             python src/manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --chdir /app/src --bind 0.0.0.0:8000 --workers 2 --threads 2"
+
+  cron-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.development
+      DATABASE_URL: mysql://crowdfunding:crowdfunding@mariadb:3306/crowdfunding
+    command: >
+      sh -c "sleep 8 && while true; do
+               python src/manage.py process_outbox;
+               python src/manage.py reap_expired;
+               python src/manage.py anchor_audit_chain;
+               sleep 60;
+             done"
+
+volumes:
+  mariadb_data:
