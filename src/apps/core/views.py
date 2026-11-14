@@ -23,6 +23,7 @@ from apps.core.metrics import render_prometheus_metrics
 from apps.core.models import PolicyRule
 from apps.core.pagination import StandardCursorPagination
 from apps.core.policy import POLICY_REGISTRY, get_all_policies, set_policy_value
+from apps.core.schema import paginated_response
 from apps.core.serializers import (
     FinancialHealthSerializer,
     HealthStatusSerializer,
@@ -125,9 +126,14 @@ class HealthLiveView(APIView):
         tags=["System"],
     )
     def get(self, request: Request) -> Response:
-        """پاسخ سریع ۲۰۰ برای پروب زنده بودن."""
+        """پاسخ سریع ۲۰۰ برای پروب زنده بودن.
+
+        مقدار ``"healthy"`` است نه ``"alive"``: اگر پروسه زنده باشد و پاسخ
+        بدهد، از دید پایش‌گر «سالم» است. استفاده از واژهٔ سومی جز واژگان
+        قرارداد، فقط کلاینت را مجبور به نگهداری دو دیکشنری می‌کرد.
+        """
         del request
-        return Response({"status": "alive"})
+        return Response({"status": "healthy"})
 
 
 class HealthReadyView(APIView):
@@ -150,7 +156,7 @@ class HealthReadyView(APIView):
         ready = db_ok and cache_ok
         return Response(
             {
-                "status": "ready" if ready else "not_ready",
+                "status": "healthy" if ready else "unhealthy",
                 "checks": {
                     "database": {"ok": db_ok, "detail": db_msg},
                     "cache": {"ok": cache_ok, "detail": cache_msg},
@@ -383,7 +389,11 @@ class AdminSettlementListCreateView(APIView):
                 description="نشانگر صفحهٔ بعد از پاسخ قبلی.",
             ),
         ],
-        responses={200: SettlementStatementSerializer(many=True)},
+        # ⚠️ envelope است، نه آرایه — ``get_paginated_response`` شیء
+        # ``{results, meta}`` برمی‌گرداند. اعلام ``many=True`` تایپ
+        # ``Array<SettlementStatement>`` تولید می‌کرد و ``.map`` فرانت
+        # در زمان اجرا می‌شکست. با ممیزی «پاسخ واقعی vs قرارداد» پیدا شد.
+        responses={200: paginated_response(SettlementStatementSerializer, name="SettlementList")},
         tags=["Admin - Money Truth"],
     )
     def get(self, request: Request) -> Response:

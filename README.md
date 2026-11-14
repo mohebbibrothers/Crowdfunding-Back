@@ -6,7 +6,7 @@
 ![MariaDB 11](https://img.shields.io/badge/MariaDB-11.x-003545?logo=mariadb&logoColor=white)
 ![OpenAPI 3.1.0](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapiinitiative&logoColor=white)
 ![Mypy Strict](https://img.shields.io/badge/mypy-strict-blue)
-![Branch Coverage 85.51%](https://img.shields.io/badge/branch%20coverage-85.51%25-brightgreen)
+![Branch Coverage 85.51%](https://img.shields.io/badge/branch%20coverage-85.82%25-brightgreen)
 ![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.5.0-6C5CE7?logo=typescript&logoColor=white)
 ![Release](https://img.shields.io/badge/release-v1.5.0-2ECC71?logo=github)
 

@@ -4256,42 +4256,45 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SettlementStatement'
+                $ref: '#/components/schemas/SettlementList'
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
                   description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
-                  - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
-                    gateway_name: sandbox
-                    source_kind: csv
-                    status: received
-                    original_filename: string
-                    period_start: string
-                    period_end: string
-                    row_count: 12
-                    declared_total_rial: 1500000
-                    computed_total_rial: 1500000
-                    integrity_ok: true
-                    integrity_note: توضیح کوتاه
-                    statement_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-                    created_at: '2026-11-12T09:41:00+03:30'
-                  - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f01
-                    gateway_name: sandbox
-                    source_kind: csv
-                    status: received
-                    original_filename: string
-                    period_start: string
-                    period_end: string
-                    row_count: 12
-                    declared_total_rial: 1500000
-                    computed_total_rial: 1500000
-                    integrity_ok: true
-                    integrity_note: توضیح کوتاه
-                    statement_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-                    created_at: '2026-11-12T09:41:00+03:30'
+                    results:
+                    - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
+                      gateway_name: sandbox
+                      source_kind: csv
+                      status: received
+                      original_filename: string
+                      period_start: string
+                      period_end: string
+                      row_count: 12
+                      declared_total_rial: 1500000
+                      computed_total_rial: 1500000
+                      integrity_ok: true
+                      integrity_note: توضیح کوتاه
+                      statement_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                      created_at: '2026-11-12T09:41:00+03:30'
+                    - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f01
+                      gateway_name: sandbox
+                      source_kind: csv
+                      status: received
+                      original_filename: string
+                      period_start: string
+                      period_end: string
+                      row_count: 12
+                      declared_total_rial: 1500000
+                      computed_total_rial: 1500000
+                      integrity_ok: true
+                      integrity_note: توضیح کوتاه
+                      statement_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                      created_at: '2026-11-12T09:41:00+03:30'
+                    meta:
+                      next: null
+                      previous: null
+                      page_size: 20
           description: ''
         '400':
           $ref: '#/components/responses/Problem400'
@@ -6333,86 +6336,87 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CampaignSummary'
+                $ref: '#/components/schemas/CampaignList'
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
                   description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
-                  - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
-                    title: تأمین جهیزیهٔ ۱۲ نوعروس
-                    slug: tamin-jahizieh
-                    short_code: cf-8k2m
-                    subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
-                    cover_image_url: https://example.com/x
-                    province: تهران
-                    city: تهران
-                    status: draft
-                    urgency_level: normal
-                    is_featured: true
-                    benefactor: {}
-                    category: null
-                    total_shares: 12
-                    paid_shares: 1500000
-                    matched_shares: 2
-                    external_shares: 2
-                    reserved_shares: 2
-                    funded_shares: 2
-                    remaining_shares: 2
-                    progress_percent: 84
-                    physical_progress_percent: 84
-                    supporter_count: 12
-                    share_price_rial: 1500000
-                    share_price_toman: 150000
-                    target_amount_rial: 1500000
-                    target_amount_toman: 150000
-                    total_funded_rial: 1500000
-                    total_funded_toman: 150000
-                    disbursed_amount_rial: 1500000
-                    disbursed_amount_toman: 150000
-                    active_matching_grant: null
-                    ends_at: null
-                    ends_at_jalali: null
-                    created_at: '2026-11-12T09:41:00+03:30'
-                    created_at_jalali: null
-                  - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f01
-                    title: تأمین جهیزیهٔ ۱۲ نوعروس
-                    slug: tamin-jahizieh
-                    short_code: cf-8k2m
-                    subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
-                    cover_image_url: https://example.com/x
-                    province: تهران
-                    city: تهران
-                    status: draft
-                    urgency_level: normal
-                    is_featured: true
-                    benefactor: {}
-                    category: null
-                    total_shares: 12
-                    paid_shares: 1500000
-                    matched_shares: 2
-                    external_shares: 2
-                    reserved_shares: 2
-                    funded_shares: 2
-                    remaining_shares: 2
-                    progress_percent: 84
-                    physical_progress_percent: 84
-                    supporter_count: 12
-                    share_price_rial: 1500000
-                    share_price_toman: 150000
-                    target_amount_rial: 1500000
-                    target_amount_toman: 150000
-                    total_funded_rial: 1500000
-                    total_funded_toman: 150000
-                    disbursed_amount_rial: 1500000
-                    disbursed_amount_toman: 150000
-                    active_matching_grant: null
-                    ends_at: null
-                    ends_at_jalali: null
-                    created_at: '2026-11-12T09:41:00+03:30'
-                    created_at_jalali: null
+                    ordering: string
+                    count: 12
+                    results:
+                    - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
+                      title: تأمین جهیزیهٔ ۱۲ نوعروس
+                      slug: tamin-jahizieh
+                      short_code: cf-8k2m
+                      subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
+                      cover_image_url: https://example.com/x
+                      province: تهران
+                      city: تهران
+                      status: draft
+                      urgency_level: normal
+                      is_featured: true
+                      benefactor: {}
+                      category: null
+                      total_shares: 12
+                      paid_shares: 1500000
+                      matched_shares: 2
+                      external_shares: 2
+                      reserved_shares: 2
+                      funded_shares: 2
+                      remaining_shares: 2
+                      progress_percent: 84
+                      physical_progress_percent: 84
+                      supporter_count: 12
+                      share_price_rial: 1500000
+                      share_price_toman: 150000
+                      target_amount_rial: 1500000
+                      target_amount_toman: 150000
+                      total_funded_rial: 1500000
+                      total_funded_toman: 150000
+                      disbursed_amount_rial: 1500000
+                      disbursed_amount_toman: 150000
+                      active_matching_grant: null
+                      ends_at: null
+                      ends_at_jalali: null
+                      created_at: '2026-11-12T09:41:00+03:30'
+                      created_at_jalali: null
+                    - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f01
+                      title: تأمین جهیزیهٔ ۱۲ نوعروس
+                      slug: tamin-jahizieh
+                      short_code: cf-8k2m
+                      subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
+                      cover_image_url: https://example.com/x
+                      province: تهران
+                      city: تهران
+                      status: draft
+                      urgency_level: normal
+                      is_featured: true
+                      benefactor: {}
+                      category: null
+                      total_shares: 12
+                      paid_shares: 1500000
+                      matched_shares: 2
+                      external_shares: 2
+                      reserved_shares: 2
+                      funded_shares: 2
+                      remaining_shares: 2
+                      progress_percent: 84
+                      physical_progress_percent: 84
+                      supporter_count: 12
+                      share_price_rial: 1500000
+                      share_price_toman: 150000
+                      target_amount_rial: 1500000
+                      target_amount_toman: 150000
+                      total_funded_rial: 1500000
+                      total_funded_toman: 150000
+                      disbursed_amount_rial: 1500000
+                      disbursed_amount_toman: 150000
+                      active_matching_grant: null
+                      ends_at: null
+                      ends_at_jalali: null
+                      created_at: '2026-11-12T09:41:00+03:30'
+                      created_at_jalali: null
           description: ''
         '400':
           $ref: '#/components/responses/Problem400'
@@ -7179,7 +7183,14 @@ paths:
   /api/v1/health/live:
     get:
       operationId: v1_health_live
-      description: پاسخ سریع ۲۰۰ برای پروب زنده بودن.
+      description: 'پاسخ سریع ۲۰۰ برای پروب زنده بودن.
+
+
+        مقدار ``"healthy"`` است نه ``"alive"``: اگر پروسه زنده باشد و پاسخ
+
+        بدهد، از دید پایش‌گر «سالم» است. استفاده از واژهٔ سومی جز واژگان
+
+        قرارداد، فقط کلاینت را مجبور به نگهداری دو دیکشنری می‌کرد.'
       summary: بررسی زنده بودن فرآیند برنامه (Liveness)
       tags:
       - System
@@ -10954,6 +10965,23 @@ components:
       - spent_amount_rial
       - spent_amount_toman
       - title
+    CampaignList:
+      type: object
+      properties:
+        ordering:
+          type: string
+          description: ترتیب اعمال‌شده؛ همان مقدار ورودی یا پیش‌فرض «fair».
+        count:
+          type: integer
+          description: تعداد آیتم‌های همین پاسخ.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignSummary'
+      required:
+      - count
+      - ordering
+      - results
     CampaignMedia:
       type: object
       description: نمای آیتم رسانه در گالری حرکت.
@@ -14286,6 +14314,40 @@ components:
         * `api` - API
 
         * `manual` - دستی'
+    SettlementList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SettlementStatement'
+        meta:
+          $ref: '#/components/schemas/SettlementListMeta'
+      required:
+      - meta
+      - results
+    SettlementListMeta:
+      type: object
+      properties:
+        next:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: نشانی کامل صفحهٔ بعد یا null؛ مستقیماً در درخواست بعدی استفاده شود.
+        previous:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: نشانی کامل صفحهٔ قبل یا null.
+        page_size:
+          type: integer
+          description: اندازهٔ صفحهٔ اعمالشده.
+      required:
+      - next
+      - page_size
+      - previous
     SettlementRow:
       type: object
       description: نمای یک ردیف صورت‌حساب و نتیجهٔ تطبیق آن.

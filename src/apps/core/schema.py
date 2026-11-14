@@ -478,6 +478,39 @@ def paginated_response(
     )
 
 
+def collection_response(
+    item_serializer: type[serializers.Serializer[Any]],
+    *,
+    name: str,
+) -> serializers.Serializer[Any]:
+    """اسکیمای دقیق پوشش ``{ordering, count, results}`` برای فهرست‌های غیرمکان‌نمایی.
+
+    چرا این تابع لازم شد
+    --------------------
+    ``PublicCampaignListView`` واقعاً یک شیء با ``ordering``، ``count`` و
+    ``results`` برمی‌گرداند، ولی در ``@extend_schema`` به‌صورت
+    ``CampaignSummarySerializer(many=True)`` اعلام شده بود — یعنی
+    **آرایه**. نتیجه: قرارداد می‌گفت ``CampaignSummary[]`` و تایپ تولیدی
+    فرانت هم ``Array<CampaignSummary>`` بود. هر کدی که ``.map`` می‌زد، در
+    زمان اجرا ``campaigns.map is not a function`` می‌گرفت.
+
+    این باگ در هیچ تست قبلی دیده نمی‌شد چون همهٔ آن‌ها یا رفتار دامنه را
+    می‌سنجیدند یا اسکیما را با نمونهٔ ساخته‌شده از **همان اسکیما** مقایسه
+    می‌کردند — و هر دو طرف یک دروغ مشترک داشتند. فقط سنجش «پاسخ واقعی سرور
+    در برابر اسکیمای منتشرشده» می‌توانست آن را بگیرد.
+    """
+    return inline_serializer(
+        name=name,
+        fields={
+            "ordering": serializers.CharField(
+                help_text="ترتیب اعمال‌شده؛ همان مقدار ورودی یا پیش‌فرض «fair»."
+            ),
+            "count": serializers.IntegerField(help_text="تعداد آیتم‌های همین پاسخ."),
+            "results": serializers.ListField(child=item_serializer()),
+        },
+    )
+
+
 def _schema_ref_name(schema: Any) -> str:
     """استخراج نام کامپوننت از اسکیمای $refدار (در غیر این صورت رشتهٔ خالی)."""
     if isinstance(schema, dict) and "$ref" in schema:

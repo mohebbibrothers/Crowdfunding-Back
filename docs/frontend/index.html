@@ -92,8 +92,8 @@
   <div class="stat"><b id="stat-ops">83</b><small>عملیات مستندشده</small></div>
   <div class="stat"><b id="stat-schemas">112</b><small>اسکیمای تایپشده</small></div>
   <div class="stat"><b id="stat-codes">38</b><small>کد خطای RFC 9457</small></div>
-  <div class="stat"><b>223/223</b><small>تست عبورکرده (گزارش v1.5.0)</small></div>
-  <div class="stat"><b>85.51%</b><small>پوشش شاخهای (گزارش v1.5.0)</small></div>
+  <div class="stat"><b>245/245</b><small>تست عبورکرده (گزارش v1.5.0)</small></div>
+  <div class="stat"><b>85.82%</b><small>پوشش شاخهای (گزارش v1.5.0)</small></div>
 </div>
 
 <h2>۱ · داراییهای تحویلی</h2>
@@ -219,7 +219,7 @@
   <span class="pill">Double-Entry Rial Ledger</span>
   <span class="pill">OWASP ASVS</span>
   <span class="pill">Ruff + Mypy strict + Bandit + pip-audit</span>
-  <span class="pill">Pytest on MariaDB 11 · 85.51% branch</span>
+  <span class="pill">Pytest on MariaDB 11 · 85.82% branch</span>
 </div>
 
 <div class="footer">
@@ -246,7 +246,7 @@
   const q = document.getElementById('q'), tagSel = document.getElementById('tag'),
         methodSel = document.getElementById('method'), rows = document.getElementById('rows'),
         count = document.getElementById('count');
-  /* META_START */ const META = {"paths":89,"operations":104,"schemas":152,"problem_codes":38}; /* META_END */
+  /* META_START */ const META = {"paths":89,"operations":104,"schemas":155,"problem_codes":38}; /* META_END */
   const setStat = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
   setStat('stat-paths', META.paths); setStat('stat-ops', META.operations);
   setStat('stat-schemas', META.schemas); setStat('stat-codes', META.problem_codes);

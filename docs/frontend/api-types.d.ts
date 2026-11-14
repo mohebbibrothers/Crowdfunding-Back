@@ -130,6 +130,9 @@ export interface CampaignDetail { id: string; title: string; slug: string; short
 /** نمای گزارش پیشرفت میدانی حرکت. */
 export interface CampaignImpactUpdate { id: string; milestone_type: string; title: string; body: string; progress_percent: number; spent_amount_rial: number; spent_amount_toman: number; media_urls: Array<string>; created_at: string; created_at_jalali: (string | null); }
 
+/** CampaignList */
+export interface CampaignList { ordering: string; count: number; results: Array<CampaignSummary>; }
+
 /** نمای آیتم رسانه در گالری حرکت. */
 export interface CampaignMedia { id: string; kind: string; url: string; caption: string; display_order: number; }
 
@@ -547,6 +550,12 @@ export interface SettlementIngestRequest { gateway_name: GatewayNameEnum; source
 * `manual` - دستی */
 export type SettlementIngestSourceKindEnum = "csv" | "xlsx" | "api" | "manual";
 
+/** SettlementList */
+export interface SettlementList { results: Array<SettlementStatement>; meta: SettlementListMeta; }
+
+/** SettlementListMeta */
+export interface SettlementListMeta { next: (string | null); previous: (string | null); page_size: number; }
+
 /** نمای یک ردیف صورت‌حساب و نتیجهٔ تطبیق آن. */
 export interface SettlementRow { id: string; row_number: number; authority: string; ref_id: string; amount_rial: number; occurred_at: (string | null); match_status: MatchStatusEnum; match_note: string; payment_id: (string | null); remediation: string; remediation_note: string; }
 
@@ -741,7 +750,7 @@ export interface ApiOperationMap {
   "v1_admin_reconciliations_list": { request: never; response: Array<ReconciliationBatch>; auth: "required" };
   "v1_admin_reconciliations_create": { request: ReconciliationRunInputRequest; response: ReconciliationBatch; auth: "required" };
   "v1_admin_money_truth_retrieve": { request: never; response: MoneyTruthPanel; auth: "required" };
-  "v1_admin_settlements_list": { request: never; response: Array<SettlementStatement>; auth: "required" };
+  "v1_admin_settlements_list": { request: never; response: SettlementList; auth: "required" };
   "v1_admin_settlements_create": { request: SettlementIngestRequest; response: SettlementStatement; auth: "required" };
   "v1_admin_settlements_retrieve": { request: never; response: SettlementStatement; auth: "required" };
   "v1_admin_settlements_reconcile": { request: ReconcileInputRequest; response: ReconciliationStats; auth: "required" };
@@ -790,7 +799,7 @@ export interface ApiOperationMap {
   "v1_jars_list": { request: never; response: Array<CharityJarPublic>; auth: "none" };
   "v1_jars_retrieve": { request: never; response: CharityJarPublic; auth: "none" };
   "v1_campaign_categories_list": { request: never; response: Array<CampaignCategory>; auth: "none" };
-  "v1_campaigns_list": { request: never; response: Array<CampaignSummary>; auth: "none" };
+  "v1_campaigns_list": { request: never; response: CampaignList; auth: "none" };
   "v1_campaigns_retrieve": { request: never; response: CampaignDetail; auth: "none" };
   "v1_campaigns_supporters_list": { request: never; response: Array<CampaignSupporterOutput>; auth: "none" };
   "v1_campaigns_transparency_retrieve": { request: never; response: CampaignTransparencyOutput; auth: "none" };

@@ -232,7 +232,7 @@ make test
 
 **نتیجهٔ آخرین اجرا:** `All checks passed!` · `Success: no issues found in 137 source files` ·
 `TSCHECK_OK` · `SCHEMA_SYNC_OK` · `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` ·
-`211 passed` · `85.51%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
+`211 passed` · `85.82%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
 `System check identified no issues` · `No changes detected (migrations)`.
 
 ---

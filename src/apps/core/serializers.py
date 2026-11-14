@@ -43,6 +43,21 @@ class PlatformMetaSerializer(serializers.Serializer[dict[str, Any]]):
     share_hold_ttl_minutes = serializers.IntegerField()
 
 
+# وضعیت‌های سلامت — یک مجموعهٔ بسته برای همهٔ پروب‌ها.
+#
+# پیش از این سه endpoint سه واژگان متفاوت داشتند: ``/health/live`` مقدار
+# «alive»، ``/health/ready`` مقدار «ready»/«not_ready» و ``/health/detailed``
+# مقدار «healthy»/«degraded»/«unhealthy». قرارداد برای هر سه یک enum اعلام
+# می‌کرد — یعنی برای دو تای اول **دروغ** بود. یک پایش‌گر که بر اساس قرارداد
+# کد نوشته باشد (``if status === "healthy"``) هرگز سبز نمی‌شد، و یک کلاینت
+# TypeScript با union بسته، مقدار «alive» را غیرمعتبر می‌دید.
+#
+# یکسان‌سازی واژگان، یک تغییر شکستنیِ عمدی است — ولی تنها جایی که ارزشش را
+# دارد: این endpointها توسط زیرساخت مصرف می‌شوند، نه توسط UI، و هیچ دادهٔ
+# ذخیره‌شده‌ای به آن‌ها وابسته نیست.
+HEALTH_STATUS_CHOICES = ("healthy", "degraded", "unhealthy")
+
+
 class HealthStatusSerializer(serializers.Serializer[dict[str, Any]]):
     """پاسخ بررسی سلامت سامانه.
 
@@ -51,7 +66,7 @@ class HealthStatusSerializer(serializers.Serializer[dict[str, Any]]):
     کند؛ رشتهٔ آزاد یعنی «شاید فردا چیز دیگری باشد».
     """
 
-    status = serializers.ChoiceField(choices=["healthy", "degraded", "unhealthy"])
+    status = serializers.ChoiceField(choices=HEALTH_STATUS_CHOICES)
     checks = serializers.DictField(required=False)
 
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import ast
 import hashlib
 import importlib.util
 import json
@@ -10,6 +9,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from typing import Any, cast
 
@@ -664,17 +664,27 @@ def test_portal_links_meta_and_javascript_are_valid() -> None:
 
 
 def test_portal_quality_stats_match_test_suite() -> None:
-    """عدد تستهای پورتال با تعداد واقعی توابع test در مخزن همخوان باشد."""
-    count = 0
-    for test_file in (REPO_ROOT / "src" / "tests").glob("test_*.py"):
-        tree = ast.parse(test_file.read_text(encoding="utf-8"))
-        count += sum(
-            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and node.name.startswith("test_")
-            for node in tree.body
-        )
+    """عدد تست‌های پورتال با تعداد واقعی **موارد آزمون** در pytest هم‌خوان باشد.
+
+    ⚠️ شمارش توابع کافی نیست: ``@pytest.mark.parametrize`` یک تابع را به چند
+    مورد تبدیل می‌کند. پیش‌تر پورتال «۲۴۵» را نشان می‌داد (خروجی واقعی pytest)
+    ولی این تست توابع را می‌شمرد و عدد کمتری می‌گرفت — یعنی معیار سنجش با
+    چیزی که CI اجرا می‌کند یکی نبود. اکنون هر دو یک مرجع دارند: شمارش pytest.
+    """
+    collected = subprocess.run(
+        [sys.executable, "-m", "pytest", "src/tests", "--collect-only", "-q", "--no-header"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    tail = collected.stdout.strip().splitlines()[-1] if collected.stdout.strip() else ""
+    match = re.search(r"(\d+) tests? collected", tail)
+    assert match is not None, f"شمارش pytest خوانده نشد: {tail!r}\n{collected.stderr[:400]}"
+    count = int(match.group(1))
+
     text = (FRONTEND_DIR / "index.html").read_text(encoding="utf-8")
-    assert f"{count}/{count}" in text, f"Portal still advertises stale test count ({count})"
+    assert f"{count}/{count}" in text, f"پورتال عدد کهنه دارد؛ انتظار «{count}/{count}»"
     coverage = re.search(r"<b>(\d{2}\.\d{2})%</b>", text)
     assert coverage is not None and float(coverage.group(1)) >= 85
 

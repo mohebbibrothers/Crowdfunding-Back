@@ -174,13 +174,15 @@ def test_rfc9457_problem_details_etag_epoch_and_policy_api(
     """پاسخ خطای RFC 9457، هدرهای امنیتی، کش ETag/304، سلامت سرویس و مدیریت Policy-as-Data."""
     del seeded_policies
     # ۱. سلامت، آمادگی و متریک‌ها
+    # واژگان سلامت یکسان است: هر سه پروب از همان enum سه‌حالته استفاده
+    # می‌کنند تا پایش‌گر مجبور به نگهداری دیکشنری جداگانه برای هر endpoint نباشد.
     live = api_client.get("/api/v1/health/live")
     assert live.status_code == 200
-    assert live.json()["status"] == "alive"
+    assert live.json()["status"] == "healthy"
 
     ready = api_client.get("/api/v1/health/ready")
     assert ready.status_code == 200
-    assert ready.json()["status"] == "ready"
+    assert ready.json()["status"] == "healthy"
 
     metrics = api_client.get("/metrics")
     assert metrics.status_code == 200

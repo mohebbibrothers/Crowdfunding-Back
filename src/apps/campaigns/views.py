@@ -43,6 +43,7 @@ from apps.core.cache import get_or_set_versioned
 from apps.core.conditional import conditional_json_response
 from apps.core.errors import NotFoundError
 from apps.core.policy import is_feature_enabled
+from apps.core.schema import collection_response
 from apps.identity.permissions import IsStaffRole, authenticated_user
 
 
@@ -88,7 +89,11 @@ class PublicCampaignListView(APIView):
             OpenApiParameter(name="q", type=str, required=False),
             OpenApiParameter(name="order", type=str, required=False),
         ],
-        responses={200: CampaignSummarySerializer(many=True)},
+        # ⚠️ نه ``many=True``: این عملیات شیء ``{ordering, count, results}``
+        # برمی‌گرداند، نه آرایه. اعلام آرایه، تایپ ``Array<CampaignSummary>``
+        # تولید می‌کرد و هر ``.map`` در فرانت در زمان اجرا می‌شکست. باگ با
+        # «سنجش پاسخ واقعی در برابر قرارداد» پیدا شد، نه با diff.
+        responses={200: collection_response(CampaignSummarySerializer, name="CampaignList")},
         tags=["Public - Campaigns"],
     )
     def get(self, request: Request) -> Response:

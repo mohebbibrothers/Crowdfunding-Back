@@ -87,11 +87,11 @@ const meta = await client.request("v1_meta_retrieve");
 if (!meta.features.merkle_transparency) hideMerkleWidget();
 console.log("backend", meta.app_version, "today", meta.today_jalali);
 
-// ۲) فهرست حرکات — پاسخ یک «آرایهٔ ساده» است، نه صفحه‌بندی‌شده
-const campaigns = await client.request("v1_campaigns_list", {
+// ۲) فهرست حرکات — پوشش { ordering, count, results }
+const campaignList = await client.request("v1_campaigns_list", {
   query: { order: "fair", status: "active" },
 });
-const [first] = campaigns;
+const [first] = campaignList.results;
 if (!first) throw new Error("هیچ حرکتی برای نمایش نیست");
 
 // ۳) پرداخت: انتخاب سهم ⇒ رزرو ۱۵ دقیقه‌ای ⇒ هدایت به درگاه
@@ -107,11 +107,17 @@ const checkout = await client.request("v1_contributions_checkout_create", {
 window.location.href = checkout.gateway_redirect_url;
 ```
 
-**نکتهٔ تایپ:** پاسخ `v1_campaigns_list` از نوع `CampaignSummary[]` است. فقط این پنج
-عملیات صفحه‌بندی می‌شوند و پاسخ `{ results, meta }` می‌دهند:
-`v1_me_contributions_list`، `v1_me_notifications_list`، `v1_admin_users_list`،
-`v1_admin_audit_logs_list`، `v1_admin_auth_risks_list`. اگر روی بقیه `results` بگذارید،
-`tsc` خطا می‌دهد — و این عمدی است.
+**نکتهٔ تایپ:** سه شکل پاسخ فهرستی داریم و `tsc` هر اشتباهی را می‌گیرد:
+
+| شکل | نمونه | چطور بشناسید |
+|---|---|---|
+| آرایهٔ ساده | `v1_campaign_categories_list` | پاسخ بدون پوشش |
+| `{ ordering, count, results }` | `v1_campaigns_list` | `.results` |
+| `{ results, meta }` | `v1_me_contributions_list` و بقیهٔ صفحه‌بندی‌شده‌ها | `.results` + `.meta.next` |
+
+اگر شکل را اشتباه بگیرید — مثلاً `campaigns.map` روی پوشه — `tsc` قبل از اجرا
+خطا می‌دهد. این عمدی است: قرارداد در v1.5.0 دقیقاً مطابق رفتار واقعی سرور
+اصلاح شد و همین تست، واگرایی را گرفت.
 
 **قاعدهٔ طلایی:** هیچ `fetch` خام ننویسید، هیچ مسیری را hardcode نکنید، هیچ خطایی را با
 `detail` مقایسه نکنید. همه‌چیز از `client.request(operationId, ...)` و `error.code` بیاید.
