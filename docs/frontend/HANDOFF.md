@@ -53,6 +53,7 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 | [`postman_collection.json`](./postman_collection.json) | ۸۳ درخواست آماده در ۲۳ پوشه؛ import مستقیم در Postman/Bruno/Insomnia | 🟢 خودکار |
 | [`contract-fingerprint.json`](./contract-fingerprint.json) | SHA-256 قرارداد؛ CI با آن از همگامی داراییها مطمئن میشود | 🟢 خودکار |
 | [`READINESS-AUDIT.md`](./READINESS-AUDIT.md) | ممیزی مستقل آمادگی: ۳ نقص مسدودکنندهٔ کشف‌شده با پروب واقعی + اثبات رفع | دست‌نویس |
+| [`ACCEPTANCE.md`](./ACCEPTANCE.md) | **تأییدیهٔ نهایی تحویل** (۱ صفحهٔ امضاشده برای ذی‌نفعان) | دست‌نویس |
 | [`CHECKLIST.md`](./CHECKLIST.md) | چکلیست پذیرش (Definition of Done) قبل از استقرار فرانت | دستنویس |
 | [`index.html`](./index.html) | پورتال بصری آفلاین خلاصهٔ تحویل (بدون نیاز به سرور/CDN) | دستنویس |
 | [`README.md`](./README.md) | نقشهٔ ورودی بسته و فلسفهٔ «قرارداد یکبار، همهجا» | دستنویس |
