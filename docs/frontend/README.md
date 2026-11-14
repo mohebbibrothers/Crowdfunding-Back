@@ -1,6 +1,6 @@
 # 🎯 بستهٔ تحویل فرانتاند (Frontend Handoff Kit)
 
-> **نسخهٔ نهایی:** `v1.1.0` · **منبع حقیقت:** [`../api/v1/openapi.yaml`](../api/v1/openapi.yaml) · **وضعیت:** قفلشده با CI
+> **نسخهٔ نهایی:** `v1.2.0` · **منبع حقیقت:** [`../api/v1/openapi.yaml`](../api/v1/openapi.yaml) · **وضعیت:** قفلشده با CI
 
 از همینجا شروع کنید 👇
 
@@ -111,7 +111,7 @@ window.location.href = checkout.gateway_redirect_url;
 
 **چطور بفهمم قابلیتی فعال است؟** `GET /api/v1/meta` ← `features`. فقط همان مبناست.
 
-**نسخهٔ بکاند مستقرشده چیست؟** `GET /api/v1/meta` ← `app_version` (مثلاً `1.1.0`).
+**نسخهٔ بکاند مستقرشده چیست؟** `GET /api/v1/meta` ← `app_version` (مثلاً `1.2.0`).
 
 **کد OTP در توسعه چطور بهدست بیاید؟** `EXPOSE_DEV_OTP_CODE=true` است؛ کد در پاسخ `otp/request` برمیگردد.
 
