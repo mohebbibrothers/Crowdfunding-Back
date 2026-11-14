@@ -8,6 +8,7 @@ import logging
 from typing import Any
 
 from django.db import IntegrityError, transaction
+from django.db.models import Count
 from django.utils import timezone
 
 from apps.core.choices import OutboxStatus
@@ -109,3 +110,57 @@ def drain_outbox(*, batch_size: int = 100) -> dict[str, int]:
             msg.save(update_fields=["status", "available_at", "last_error", "updated_at"])
 
     return stats
+
+
+@transaction.atomic
+def requeue_outbox_messages(*, message_ids: list[Any]) -> dict[str, Any]:
+    """بازگردانی پیام‌های متوقف‌شدهٔ ``DEAD`` به صف پردازش (عملیات نجات انسانی).
+
+    چرا لازم است؟
+        ``drain_outbox`` پس از ``MAX_OUTBOX_ATTEMPTS`` پیام را ``DEAD`` می‌کند و
+        تا پیش از این هیچ مسیر رسمی‌ای برای نجاتش وجود نداشت؛ تنها راه، دست‌زدن
+        مستقیم به دیتابیس بود. پیام DEAD ممکن است یک «تأیید پرداخت» یا «رسید خیر»
+        باشد — یعنی چیزی که نباید بی‌صدا بماند.
+
+    ایمنی:
+        • شمارندهٔ تلاش صفر می‌شود ولی تاریخچهٔ خطا در ``last_error`` می‌ماند.
+        • ثبت حسابرسی توسط لایهٔ فراخوان (پنل ادمین) انجام می‌شود تا این ماژول
+          در گراف وابستگی هسته، به ``apps.audit`` وابسته نشود (انضباط DAG).
+    """
+    now = timezone.now()
+    clean_ids = [mid for mid in message_ids if mid]
+    if not clean_ids:
+        return {"requeued": 0, "skipped": 0}
+
+    targets = list(
+        OutboxMessage.objects.select_for_update().filter(
+            pk__in=clean_ids,
+            status=OutboxStatus.DEAD,
+        )
+    )
+    if not targets:
+        return {"requeued": 0, "skipped": len(clean_ids)}
+
+    for msg in targets:
+        msg.status = OutboxStatus.PENDING
+        msg.attempts = 0
+        msg.available_at = now
+        msg.last_error = (f"[requeued] {msg.last_error}")[:1000]
+        msg.save(update_fields=["status", "attempts", "available_at", "last_error", "updated_at"])
+
+    return {
+        "requeued": len(targets),
+        "skipped": len(clean_ids) - len(targets),
+        "requeued_ids": [str(m.pk) for m in targets],
+    }
+
+
+def outbox_health_snapshot() -> dict[str, int]:
+    """شمارش پیام‌ها به تفکیک وضعیت برای پنل سلامت و متریک Prometheus."""
+    counts = {
+        str(row["status"]): int(row["n"])
+        for row in OutboxMessage.objects.values("status").annotate(n=Count("id"))
+    }
+    for status in OutboxStatus.values:
+        counts.setdefault(status, 0)
+    return counts

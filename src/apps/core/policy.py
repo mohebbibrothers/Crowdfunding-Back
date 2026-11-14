@@ -135,6 +135,31 @@ DEFAULT_POLICIES: tuple[PolicySpec, ...] = (
         0.15,
         "ضریب اهمیت نزدیکی به مهلت پایان در چیدمان عادلانه",
     ),
+    # ── حلقهٔ نجات وجه (Capture Recovery) ────────────────────────────────────
+    PolicySpec(
+        "recovery.grace_minutes",
+        PolicyValueType.INT,
+        30,
+        "مهلت استعلام مجدد وضعیت پرداخت‌های رهاشده پیش از داوری نهایی (دقیقه)",
+    ),
+    PolicySpec(
+        "recovery.max_attempts",
+        PolicyValueType.INT,
+        5,
+        "حداکثر تلاش خودکار استعلام یک پرداخت رهاشده پیش از ارجاع به بررسی انسانی",
+    ),
+    PolicySpec(
+        "recovery.auto_refund_enabled",
+        PolicyValueType.BOOL,
+        True,
+        "ارسال خودکار تعهدهای بازپرداخت به درگاه (در صورت پشتیبانی درگاه)",
+    ),
+    PolicySpec(
+        "recovery.auto_refund_max_rial",
+        PolicyValueType.INT,
+        50_000_000,
+        "سقف مبلغ بازپرداخت خودکار (ریال)؛ بالاتر از آن نیازمند تأیید انسانی است",
+    ),
     PolicySpec(
         "governance.maker_checker_disbursement",
         PolicyValueType.BOOL,

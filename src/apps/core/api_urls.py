@@ -5,8 +5,11 @@ from __future__ import annotations
 from django.urls import path
 
 from apps.core.views import (
+    AdminFinancialHealthView,
+    AdminLateCaptureReconcileView,
     AdminPolicyListView,
     AdminPolicyUpdateView,
+    AdminRefundDispatchView,
     CsrfBootstrapView,
     HealthDetailedView,
     HealthLiveView,
@@ -25,5 +28,20 @@ urlpatterns = [
         "admin/policies/<str:policy_key>",
         AdminPolicyUpdateView.as_view(),
         name="v1-admin-policies-update",
+    ),
+    path(
+        "admin/financial-health",
+        AdminFinancialHealthView.as_view(),
+        name="v1-admin-financial-health",
+    ),
+    path(
+        "admin/late-captures/reconcile",
+        AdminLateCaptureReconcileView.as_view(),
+        name="v1-admin-late-captures-reconcile",
+    ),
+    path(
+        "admin/refunds/dispatch",
+        AdminRefundDispatchView.as_view(),
+        name="v1-admin-refunds-dispatch",
     ),
 ]

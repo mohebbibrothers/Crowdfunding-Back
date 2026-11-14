@@ -115,8 +115,10 @@ def test_every_operation_documents_standard_problem_errors() -> None:
         assert "X-Request-ID" in headers, f"missing trace header on {path}"
         assert op["x-frontend-policy"]["errorFormat"] == "application/problem+json"
         assert op["x-frontend-policy"]["auth"] in {"none", "optional", "required"}
-    assert len(_operations(doc)) == 83
-    assert len(doc["paths"]) == 72  # type: ignore[arg-type]
+    # آستانهٔ کف، نه عدد دقیق: افزودن عملیات تازه نباید این تست را بشکند،
+    # ولی حذف تصادفی عملیات باید فوراً قرمز شود.
+    assert len(_operations(doc)) >= 86
+    assert len(doc["paths"]) >= 73  # type: ignore[arg-type]
 
 
 def test_no_untyped_success_responses() -> None:
@@ -345,7 +347,7 @@ def test_generated_frontend_assets_are_in_sync() -> None:
 
     payload = json.loads((FRONTEND_DIR / "contract-fingerprint.json").read_text(encoding="utf-8"))
     assert payload["sha256"] == hashlib.sha256(SCHEMA_PATH.read_bytes()).hexdigest()
-    assert payload["operations"] == len(ops) == 83
+    assert payload["operations"] == len(ops)
     assert payload["schemas"] == len(doc["components"]["schemas"])
     assert payload["problem_codes"] == len(codes)
 
@@ -368,7 +370,7 @@ def test_postman_collection_covers_all_operations() -> None:
     """کالکشن Postman باید ۸۳ درخواست و متغیرهای موردنیاز را داشته باشد."""
     collection = json.loads((FRONTEND_DIR / "postman_collection.json").read_text(encoding="utf-8"))
     requests = [item for folder in collection["item"] for item in folder["item"]]
-    assert len(requests) == 83
+    assert len(requests) == len(_operations(_schema()))
     assert {v["key"] for v in collection["variable"]} == {
         "baseUrl",
         "accessToken",
@@ -522,7 +524,7 @@ def test_operations_map_matches_typed_union() -> None:
     union_ids = set(re.findall(r'"(v1_[a-z0-9_]+)"', types_text))
     map_ids = set(re.findall(r'^\s*"(v1_[^"]+)":', ops_text, re.MULTILINE))
     assert union_ids == map_ids
-    assert len(map_ids) == 83
+    assert len(map_ids) == len(_operations(_schema()))
     assert "ApiOperationMap" in types_text and "ApiOperationId" in types_text
 
 

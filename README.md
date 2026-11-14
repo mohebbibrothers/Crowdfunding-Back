@@ -6,9 +6,9 @@
 ![MariaDB 11](https://img.shields.io/badge/MariaDB-11.x-003545?logo=mariadb&logoColor=white)
 ![OpenAPI 3.1.0](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapiinitiative&logoColor=white)
 ![Mypy Strict](https://img.shields.io/badge/mypy-strict-blue)
-![Branch Coverage 85.90%](https://img.shields.io/badge/branch%20coverage-85.90%25-brightgreen)
-![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.1.0-6C5CE7?logo=typescript&logoColor=white)
-![Release](https://img.shields.io/badge/release-v1.1.0-2ECC71?logo=github)
+![Branch Coverage 85.60%](https://img.shields.io/badge/branch%20coverage-85.60%25-brightgreen)
+![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.2.0-6C5CE7?logo=typescript&logoColor=white)
+![Release](https://img.shields.io/badge/release-v1.2.0-2ECC71?logo=github)
 
 سرویس بک‌اند ماژولار، امن و حسابرسی‌پذیر برای پلتفرم جمع‌آوری مشارکت‌های مردمی و خیرخواهانه بر پایهٔ **سهم (Share-Based Crowdfunding)**، مهندسی‌شده با **Django 6.1، Django REST Framework، پایتون ۳.۱۲ و MariaDB 11.x**.
 
@@ -29,12 +29,12 @@
 
 | دارایی | خروجی | دارایی | خروجی |
 | --- | --- | --- | --- |
-| قرارداد | **۷۲ مسیر · ۸۳ عملیات · ۱۱۲ اسکیما** | خطاها | **۳۸ کد RFC 9457** + اقدام UX |
+| قرارداد | **۷۵ مسیر · ۸۶ عملیات · ۱۲۰ اسکیما** | خطاها | **۳۸ کد RFC 9457** + اقدام UX |
 | تایپها | `api-types.d.ts` + `operations.ts` | کالکشن | `postman_collection.json` (۲۳ پوشه) |
 | کلاینت | `api-client.ts` (CSRF/JWT/refresh/ETag/retry) | ماتریس | `ENDPOINTS.md` + کاوشگر تعاملی |
 | پذیرش | `CHECKLIST.md` (Definition of Done) | قفل CI | `contract-fingerprint.json` (SHA-256) |
 
-**چهار اصل تحویل:** ① هیچ پاسخ موفقی بدون اسکیمای تایپشده نیست ② تمام ۸۳ عملیات خطاهای
+**چهار اصل تحویل:** ① هیچ پاسخ موفقی بدون اسکیمای تایپشده نیست ② تمام ۸۶ عملیات خطاهای
 استاندارد و هدر ردیابی دارند ③ پنج لیست مکاننمایی دقیقاً همان پوشش `{results, meta}` را اعلام میکنند
 ④ نام کوکی، CSRF، Idempotency، ETag و سرورها همگی از تنظیمات زنده خوانده میشوند — نه حدس.
 
@@ -98,6 +98,9 @@ sequenceDiagram
 | **معماری غیرمدور با گیت AST** | جداسازی سخت‌گیرانهٔ ۹ دامنه؛ ممنوعیت وابستگی معکوس و ممنوعیت دستکاری مستقیم مدل‌ها در لایهٔ View که در هر اجرای تست به‌طور خودکار بررسی می‌شود. |
 | **دفتر کل دوطرفه ریالی (`rial_base_dual_view`)** | ذخیرهٔ تمامی مبالغ با عدد صحیح ریال (`BIGINT` بدون هیچ‌گونه `float`) همگام با شاپرک، همراه با نمایش هم‌زمان ریال و تومان در API، تسویهٔ چهارچشمی (Maker-Checker) و مغایرت‌گیری بانکی. |
 | **صفر بیش‌فروشی سهام زیر بار هم‌روند** | قفل ردیفی `SELECT ... FOR UPDATE` روی ظرفیت سهام حرکت هنگام آغاز پرداخت و آزادسازی خودکار رزروهای منقضی‌شدهٔ ۱۵ دقیقه‌ای توسط زمان‌بند `reap_expired`. |
+| **بستن حلقهٔ وجه پس از انقضای رزرو (Capture Recovery)** | اگر حامی پرداخت را پس از انقضای ۱۵ دقیقه‌ای رزرو به پایان برساند، وجه قبلاً «گم» می‌شد. اکنون موتور داوری با `SELECT ... FOR UPDATE` و Idempotency سه‌مسیره تصمیم می‌گیرد: `NOT_CAPTURED`، `RECOVERED` (تخصیص سهم + رسید + سند دفتر کل + برگ مرکل) یا `REFUND_PENDING` (تعهد بازپرداخت با بدهی صریح `SYS:LIAB:REFUND_PAYABLE`). تراز دفتر کل پس از هر مسیر با آزمون تضمین می‌شود. |
+| **پنل سلامت مالی و دید عملیاتی** | `GET /api/v1/admin/financial-health` عکس لحظه‌ای حلقهٔ پول می‌دهد: پرداخت‌های رهاشده، کهنه‌تر از یک ساعت، تعهدهای بازپرداخت، **بدهی ریالی به حامیان**، تعهدهای یتیم و پیام‌های مردهٔ صف خروجی — همراه هشدارهای درجه‌بندی‌شده. ده متریک Prometheus (۵ شمارنده + ۵ گیج) با پایش از دیتابیس. |
+| **سقف بازپرداخت خودکار (کنترل خروج پول)** | سیاست `recovery.auto_refund_max_rial` (پیش‌فرض ۵۰ میلیون ریال) در زمان ارسال واقعاً اعمال می‌شود: بالاتر از سقف، تعهد به `MANUAL` می‌رود و تا تأیید انسانی ارسال نمی‌شود. `recovery.auto_refund_enabled` و `recovery.max_attempts` هم پویا و بدون دیپلوی قابل تغییرند. |
 | **مشارکت سریع ۳۰ ثانیه‌ای مهمان** | امکان انتخاب سهام و تایید موبایل در یک مرحله بدون نیاز به ثبت‌نام قبلی یا خروج از صفحهٔ حرکت (`ExpressContributionIntent`). |
 | **دیوار شفافیت رمزنگاری (RFC 6962 Merkle)** | ثبت هش ناشناس هر مشارکت در درخت مرکل حرکت و ارائهٔ مسیر اثبات ریاضی (`merkle-proof`) به هر خیر برای راستی‌آزمایی مستقل جمع کل. |
 | **نیت‌نامه، سفیران اجتماعی و حامی مضاعف** | صدور کارت هدیهٔ معنوی قابل اشتراک (`DedicationCard`)، لینک اختصاصی سفیران با رهگیری سهام جذب‌شده (`AmbassadorLink`) و ضریب هم‌افزایی حامیان مضاعف (`MatchingGrant`). |

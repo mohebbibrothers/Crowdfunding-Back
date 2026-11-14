@@ -2647,6 +2647,199 @@
     {
       "item": [
         {
+          "name": "گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها",
+          "request": {
+            "description": "`v1_admin_financial_health_retrieve` — گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "financial-health"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/financial-health",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_late_captures_reconcile` — اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "late-captures",
+                "reconcile"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/late-captures/reconcile",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت",
+          "request": {
+            "description": "`v1_admin_refunds_dispatch` — ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "refunds",
+                "dispatch"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/refunds/dispatch",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
           "name": "بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی",
           "request": {
             "description": "`v1_health_detailed` — بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی\nخطاها: application/problem+json | سیاست: required",

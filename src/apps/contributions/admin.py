@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from django.utils.html import format_html
 
 from apps.contributions.models import (
     AmbassadorLink,
@@ -11,9 +14,11 @@ from apps.contributions.models import (
     DedicationCard,
     DonationReceipt,
     ExternalContribution,
+    LateCaptureRecovery,
     Payment,
     PaymentRefund,
 )
+from apps.contributions.services import settle_refund_obligation
 
 
 @admin.register(Contribution)
@@ -38,7 +43,77 @@ class PaymentAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
 
 @admin.register(PaymentRefund)
 class PaymentRefundAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
-    list_display = ("payment", "amount_rial", "refunded_by", "created_at")
+    """پنل بازپرداخت‌ها با اکشن «تسویه» برای بستن رسمی تعهد بدهی."""
+
+    list_display = (
+        "payment",
+        "amount_rial",
+        "outcome",
+        "attempt_count",
+        "gateway_reference",
+        "created_at",
+    )
+    list_filter = ("outcome", "attempt_count")
+    search_fields = ("payment__authority", "gateway_reference", "bank_reference")
+    readonly_fields = ("gateway_raw_code", "attempt_count", "last_attempt_at", "automation_note")
+    actions = ("settle_selected_refunds",)
+
+    @admin.action(description="✅ تسویه بازپرداخت‌های انتخاب‌شده و بستن تعهد بدهی")
+    def settle_selected_refunds(
+        self, request: HttpRequest, queryset: QuerySet[PaymentRefund]
+    ) -> None:
+        """نهایی‌سازی بازپرداخت‌هایی که بانک/درگاه پرداخت را تأیید کرده است."""
+        settled = 0
+        actor = request.user if request.user.is_authenticated else None
+        for refund in queryset.select_related("payment"):
+            settle_refund_obligation(
+                refund_id=refund.pk,
+                actor=actor,  # type: ignore[arg-type]
+                bank_reference=refund.gateway_reference or refund.bank_reference,
+                note="تسویه از پنل مدیریت",
+            )
+            settled += 1
+        self.message_user(
+            request, f"{settled} بازپرداخت تسویه و تعهد بدهی آن بسته شد.", messages.SUCCESS
+        )
+
+
+@admin.register(LateCaptureRecovery)
+class LateCaptureRecoveryAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """پنل «سلامت مالی حلقهٔ وجه» — هر پرداخت رهاشده و سرنوشت آن."""
+
+    list_display = (
+        "payment",
+        "outcome",
+        "decision_reason",
+        "capacity_at_decision",
+        "recovered_shares",
+        "attempt_count",
+        "resolved_at",
+        "created_at",
+    )
+    list_filter = ("outcome", "decision_reason")
+    search_fields = ("payment__authority", "gateway_ref_id", "decision_reason")
+    readonly_fields = ("gateway_verdict_raw", "last_error", "status_badge")
+    date_hierarchy = "created_at"
+
+    @admin.display(description="وضعیت")
+    def status_badge(self, obj: LateCaptureRecovery) -> str:
+        """نشان رنگی وضعیت داوری برای خوانایی سریع در پنل عملیات."""
+        palette = {
+            "recovered": ("#0f766e", "#ccfbf1"),
+            "refund_pending": ("#b45309", "#fef3c7"),
+            "not_captured": ("#334155", "#f1f5f9"),
+            "manual_review": ("#b91c1c", "#fee2e2"),
+        }
+        fg, bg = palette.get(str(obj.outcome), ("#334155", "#f1f5f9"))
+        return format_html(
+            '<span style="background:{};color:{};padding:2px 8px;border-radius:999px;'
+            'font-weight:600">{}</span>',
+            bg,
+            fg,
+            obj.get_outcome_display(),
+        )
 
 
 @admin.register(ExternalContribution)

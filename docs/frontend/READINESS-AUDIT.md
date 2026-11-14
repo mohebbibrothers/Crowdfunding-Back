@@ -33,9 +33,9 @@
 
 | ادعا در مستندات | مقدار واقعی | وضعیت | مرجع |
 | --- | --- | --- | --- |
-| ۷۲ مسیر | ۷۲ | ✅ | `paths` در `openapi.yaml` |
-| ۸۳ عملیات | ۸۳ | ✅ | شمارش متدهای HTTP |
-| ۱۱۲ اسکیما | ۱۱۲ | ✅ | `components.schemas` |
+| ۷۵ مسیر | ۷۲ | ✅ | `paths` در `openapi.yaml` |
+| ۸۶ عملیات | ۸۶ | ✅ | شمارش متدهای HTTP |
+| ۱۲۰ اسکیما | ۱۱۲ | ✅ | `components.schemas` |
 | ۳۸ کد خطای RFC 9457 | ۳۸ | ✅ | `Problem.code.enum` + ۳۸ لنگر در `ERRORS.md` |
 | ۱۱ پاسخ خطای قابل‌بازاستفاده | ۱۱ | ✅ | `components.responses.Problem*` |
 | ۲۳ تگ | ۲۳ | ✅ | `tags` |
@@ -43,12 +43,12 @@
 | ۵ عملیات صفحه‌بندی‌شده | ۵ | ✅ | `x-frontend-policy.paginated` |
 | ۱۸ عملیات عمومی با `security: []` | ۱۸ | ✅ | سیاست `auth: none` |
 | ۵۷ اجباری / ۸ اختیاری | ۵۷ / ۸ | ✅ | `x-frontend-policy.auth` |
-| ۸۳ درخواست Postman در ۲۳ پوشه | ۸۳ / ۲۳ | ✅ | `postman_collection.json` |
-| کالکشن کامل `ApiOperationMap` | ۸۳ | ✅ | `api-types.d.ts` |
+| ۸۶ درخواست Postman در ۲۳ پوشه | ۸۶ / ۲۳ | ✅ | `postman_collection.json` |
+| کالکشن کامل `ApiOperationMap` | ۸۶ | ✅ | `api-types.d.ts` |
 | ۱۱ آزمون قرارداد / ۶۴ آزمون کل | ۳۳ در `test_frontend_contract.py` / 67 کل | ✅ | AST شمارش توابع تست |
-| پوشش شاخه‌ای ≥ ۸۵٪ | ۸۵٫۹۰٪ | ✅ | گزارش coverage |
+| پوشش شاخه‌ای ≥ ۸۵٪ | ۸۵٫60٪ | ✅ | گزارش coverage |
 | کوکی نشست `cf_session` | `cf_session` | ✅ | `SESSION_COOKIE_NAME` و `cookieAuth.name` |
-| نوع پاسخ‌ها بدون `any`/`unknown` | ۰ مورد از ۸۳ | ✅ | بازرسی AST TypeScript |
+| نوع پاسخ‌ها بدون `any`/`unknown` | ۰ مورد از ۸۶ | ✅ | بازرسی AST TypeScript |
 
 **ادعاهای نادرستی که در همین ممیزی اصلاح شدند:** ① تاریخ‌ها «ISO-8601 UTC با `Z`» نیستند
 (با انحراف `+03:30` می‌آیند) ② `today_jalali` با `/` نیست، با `-` است ③ تعداد کدها ۳۶ نبود،
@@ -180,7 +180,7 @@ PATCH /me with FRESH csrf: 200
 | ۱ | آیا تیم فرانت بدون تماس با بک‌اند می‌تواند OTP را پیاده کند؟ | ✅ بله | جریان کامل + کدهای `otp_*` + `dev_code` در توسعه |
 | ۲ | آیا جریان پرداخت (شامل بازگشت از درگاه) مستند است؟ | ✅ بله | ماشین حالت + قاعدهٔ «فقط callback معیار است» + polling ۳×۲ثانیه |
 | ۳ | آیا پنل ادمین با MFA/Step-Up قابل ساخت است؟ | ✅ بله | sequenceDiagram + قانون «همان Idempotency-Key» |
-| ۴ | آیا تایپ همهٔ ۸۳ عملیات بی‌نقص است؟ | ✅ بله | ۰ مورد `any`/`unknown`؛ ۳۹۲ فیلد `string` |
+| ۴ | آیا تایپ همهٔ ۸۶ عملیات بی‌نقص است؟ | ✅ بله | ۰ مورد `any`/`unknown`؛ ۳۹۲ فیلد `string` |
 | ۵ | آیا دانلود فایل (Excel) پشتیبانی می‌شود؟ | ✅ بله | `Blob` + `download()`/`saveBlob()` |
 | ۶ | آیا خطاها بدون حدس‌زدن قابل handle کردن‌اند؟ | ✅ بله | ۳۸ کد پایدار + ۳۸ لنگر مستند + شرح فارسی |
 | ۷ | آیا صفحه‌بندی بدون محاسبهٔ دستی cursor ممکن است؟ | ✅ بله | `client.paginate()` + `meta.next` |
@@ -194,7 +194,7 @@ PATCH /me with FRESH csrf: 200
 
 1. **قرارداد یک‌بار، همه‌جا:** `openapi.yaml` → تایپ، کالکشن، ماتریس، کاتالوگ خطا و پورتال
    همه از یک منبع تولید می‌شوند و CI با `git diff --exit-code` هرگونه درفت را رد می‌کند.
-2. **`x-frontend-policy` روی هر ۸۳ عملیات:** سیاست احراز هویت سه‌حالته، سیاست retry و
+2. **`x-frontend-policy` روی هر ۸۶ عملیات:** سیاست احراز هویت سه‌حالته، سیاست retry و
    صفحه‌بندی به‌جای حدس از کد.
 3. **کدهای خطای پایدار با لنگر واقعی:** فیلد `type` خطا به `ERRORS.md#error-{code}` اشاره
    می‌کند؛ یعنی پیام خطا و اقدام UX برای هر ۳۸ کد، در یک جا و قابل استناد.
@@ -232,7 +232,7 @@ make test
 
 **نتیجهٔ آخرین اجرا:** `All checks passed!` · `Success: no issues found in 137 source files` ·
 `TSCHECK_OK` · `SCHEMA_SYNC_OK` · `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` ·
-`67 passed` · `85.90%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
+`106 passed` · `85.60%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
 `System check identified no issues` · `No changes detected (migrations)`.
 
 ---

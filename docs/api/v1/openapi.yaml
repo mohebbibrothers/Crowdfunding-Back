@@ -1463,6 +1463,66 @@ paths:
         errorFormat: application/problem+json
         traceHeader: X-Request-ID
         paginated: false
+  /api/v1/admin/financial-health:
+    get:
+      operationId: v1_admin_financial_health_retrieve
+      description: تولید گزارش سلامت مالی از داده‌های جاری.
+      summary: 'گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها'
+      tags:
+      - Admin - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialHealth'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
   /api/v1/admin/jars:
     get:
       operationId: v1_admin_jars_list
@@ -1666,6 +1726,77 @@ paths:
           $ref: '#/components/responses/Problem500'
         '503':
           $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/late-captures/reconcile:
+    post:
+      operationId: v1_admin_late_captures_reconcile
+      description: داوری دسته‌ای پرداخت‌های رهاشده و بازگشت آمار.
+      summary: اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه
+      tags:
+      - Admin - System
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LateCaptureReconcileInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateCaptureReconcileResult'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
       x-frontend-policy:
         auth: required
         retry: idempotency-key
@@ -2239,6 +2370,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReconciliationBatch'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/refunds/dispatch:
+    post:
+      operationId: v1_admin_refunds_dispatch
+      description: اجرای ارسال و بازگشت آمار نتیجه.
+      summary: ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت
+      tags:
+      - Admin - System
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundDispatchResult'
           description: ''
         '400':
           $ref: '#/components/responses/Problem400'
@@ -7958,6 +8155,20 @@ components:
       - recorded_at_jalali
       - reference_code
       - shares_count
+    FinancialAlert:
+      type: object
+      description: یک هشدار عملیاتی حلقهٔ پول (شدت، کد ماشین‌خوان و پیام فارسی).
+      properties:
+        severity:
+          $ref: '#/components/schemas/SeverityEnum'
+        code:
+          type: string
+        message:
+          type: string
+      required:
+      - code
+      - message
+      - severity
     FinancialControlSnapshot:
       type: object
       description: نمای اسنپ‌شات تراز آزمایشی و کنترل یکپارچگی مالی.
@@ -7992,6 +8203,39 @@ components:
       - is_balanced
       - total_credits_rial
       - total_debits_rial
+    FinancialHealth:
+      type: object
+      description: گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات.
+      properties:
+        status:
+          type: string
+        generated_at:
+          type: string
+          format: date-time
+        money_loop:
+          $ref: '#/components/schemas/MoneyLoopStats'
+        recovery_ledger:
+          type: object
+          additionalProperties:
+            type: integer
+        refund_ledger:
+          type: object
+          additionalProperties:
+            type: integer
+        ops:
+          $ref: '#/components/schemas/OpsStats'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/FinancialAlert'
+      required:
+      - alerts
+      - generated_at
+      - money_loop
+      - ops
+      - recovery_ledger
+      - refund_ledger
+      - status
     GatewayNameEnum:
       enum:
       - sandbox
@@ -8104,6 +8348,48 @@ components:
         * `image` - تصویر
         * `video` - ویدیو
         * `document` - مستند تاییدیه
+    LateCaptureReconcileInputRequest:
+      type: object
+      description: ورودی اجرای دستی داوری پرداخت‌های رهاشده از پنل مدیریت.
+      properties:
+        batch_size:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 100
+        dry_run:
+          type: boolean
+          default: false
+    LateCaptureReconcileResult:
+      type: object
+      description: خروجی آماری اجرای داوری پرداخت‌های رهاشده.
+      properties:
+        scanned:
+          type: integer
+        not_captured:
+          type: integer
+        recovered:
+          type: integer
+        refund_pending:
+          type: integer
+        manual_review:
+          type: integer
+        error_count:
+          type: integer
+        dry_run:
+          type: boolean
+        candidate_ids:
+          type: array
+          items:
+            type: string
+      required:
+      - dry_run
+      - error_count
+      - manual_review
+      - not_captured
+      - recovered
+      - refund_pending
+      - scanned
     LedgerAccount:
       type: object
       description: نمای سرفصل حساب در دفترکل.
@@ -8371,6 +8657,45 @@ components:
         * `procurement` - تهیه اقلام / شروع عملیات
         * `field_delivery` - تحویل و اجرای میدانی
         * `final_report` - گزارش پایانی و مستندات تکمیل
+    MoneyLoopStats:
+      type: object
+      description: 'آمار اصلی حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و بدهی
+        ریالی.'
+      properties:
+        abandoned_payments:
+          type: integer
+        abandoned_amount_rial:
+          type: integer
+        stale_abandoned_over_1h:
+          type: integer
+        unresolved_late_captures:
+          type: integer
+        awaiting_refund_contributions:
+          type: integer
+        awaiting_refund_amount_rial:
+          type: integer
+        pending_refund_obligations:
+          type: integer
+        refund_liability_rial:
+          type: integer
+        manual_refunds_due:
+          type: integer
+        manual_refund_amount_rial:
+          type: integer
+        orphan_refund_obligations:
+          type: integer
+      required:
+      - abandoned_amount_rial
+      - abandoned_payments
+      - awaiting_refund_amount_rial
+      - awaiting_refund_contributions
+      - manual_refund_amount_rial
+      - manual_refunds_due
+      - orphan_refund_obligations
+      - pending_refund_obligations
+      - refund_liability_rial
+      - stale_abandoned_over_1h
+      - unresolved_late_captures
     MotivationBadgeOutput:
       type: object
       description: یک نشان افتخار (قفل/باز) در کارنامهٔ معنوی خیر.
@@ -8394,6 +8719,14 @@ components:
       - earned
       - target
       - title
+    OpsStats:
+      type: object
+      description: شمارنده‌های عملیاتی مرتبط (صندوق خروجی متوقف‌شده).
+      properties:
+        dead_outbox_messages:
+          type: integer
+      required:
+      - dead_outbox_messages
     OtpRequestAccepted:
       type: object
       description: پاسخ یکسان ضد شمارش کاربر هنگام درخواست OTP.
@@ -9163,6 +9496,31 @@ components:
       - period_end
       - period_start
       - rows
+    RefundDispatchResult:
+      type: object
+      description: خروجی آماری ارسال تعهدهای بازپرداخت به درگاه.
+      properties:
+        attempted:
+          type: integer
+        sent:
+          type: integer
+        manual:
+          type: integer
+        failed:
+          type: integer
+        skipped:
+          type: integer
+        over_cap:
+          type: integer
+          description: تعداد تعهدهایی که به‌دلیل عبور از سقف بازپرداخت خودکار به تأیید
+            انسانی رفت.
+      required:
+      - attempted
+      - failed
+      - manual
+      - over_cap
+      - sent
+      - skipped
     RefundResultOutput:
       type: object
       description: نتیجهٔ استرداد وجه همراه با سند معکوس دفترکل.
@@ -9269,6 +9627,16 @@ components:
       - last_seen_at
       - mfa_verified
       - network
+    SeverityEnum:
+      enum:
+      - critical
+      - warning
+      - info
+      type: string
+      description: |-
+        * `critical` - critical
+        * `warning` - warning
+        * `info` - info
     SharesBreakdownOutput:
       type: object
       description: تفکیک سهام حرکت به آنلاین، مضاعفشده، آفلاین، رزروشده و باقیمانده.

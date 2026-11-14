@@ -24,8 +24,10 @@ from apps.contributions.choices import (
     ContributionStatus,
     ContributionTargetKind,
     GatewayName,
+    LateCaptureOutcome,
     PaymentRiskKind,
     PaymentStatus,
+    RefundOutcome,
 )
 from apps.contributions.gateways import resolve_payment_gateway
 from apps.contributions.merkle import (
@@ -43,6 +45,7 @@ from apps.contributions.models import (
     DonationReceipt,
     ExpressContributionIntent,
     ExternalContribution,
+    LateCaptureRecovery,
     Payment,
     PaymentEvent,
     PaymentRefund,
@@ -58,6 +61,7 @@ from apps.core.errors import (
     RateLimitedError,
     ValidationError as DomainValidationError,
 )
+from apps.core.metrics import LATE_CAPTURE_RECOVERIES_TOTAL, REFUND_DISPATCH_TOTAL
 from apps.core.middleware import client_ip
 from apps.core.models import OutboxMessage
 from apps.core.outbox import enqueue_outbox, register_outbox_handler
@@ -87,6 +91,10 @@ from apps.notifications.services import create_user_notification
 
 _CODE_ALPHABET = string.ascii_lowercase + string.digits
 
+# حساب بدهی «وجه دریافتی که باید به حامی بازگردد». تعهدی که نمی‌توان آن را نادیده گرفت؛
+# تا زمانی که بازپرداخت به پایان نرسد، این حساب صفر نمی‌شود و در ترازنامه دیده می‌شود.
+ACC_REFUND_LIABILITY = "SYS:LIAB:REFUND_PAYABLE"
+
 
 def _sign_artifact(domain_tag: str, canonical_payload: str) -> str:
     """امضای HMAC-SHA256 برای رسیدها، نیت‌نامه‌ها و ریشه‌های درخت مرکل."""
@@ -96,8 +104,17 @@ def _sign_artifact(domain_tag: str, canonical_payload: str) -> str:
 
 
 @transaction.atomic
+@transaction.atomic
 def release_expired_share_holds(*, campaign_id: Any = None) -> int:
-    """آزادسازی اتمیک رزروهای ۱۵ دقیقه‌ای منقضی‌شده و بازگرداندن سهم‌ها به ظرفیت آزاد حرکت."""
+    """آزادسازی اتمیک رزروهای ۱۵ دقیقه‌ای منقضی‌شده و بازگرداندن سهم‌ها به ظرفیت آزاد حرکت.
+
+    ⚠️ تفکیک حیاتی نسبت به نسخهٔ پیشین:
+        پیش‌تر پرداخت‌های ``INITIATED`` کورکورانه ``FAILED`` می‌شدند. اما
+        «رزرو منقضی شد» هرگز به معنای «پولی گرفته نشد» نیست؛ کاربر ممکن است
+        در صفحهٔ درگاه پرداخت کرده باشد و هرگز برنگشته باشد. اکنون چنین
+        پرداخت‌هایی ``ABANDONED`` می‌شوند: وضعیت «وضعیت پول نامعلوم است»،
+        و توسط ``reconcile_abandoned_payments`` با درگاه داوری می‌شوند.
+    """
     now = timezone.now()
     qs = Contribution.objects.select_for_update().filter(
         status=ContributionStatus.RESERVED,
@@ -131,10 +148,25 @@ def release_expired_share_holds(*, campaign_id: Any = None) -> int:
         status=ContributionStatus.EXPIRED,
         updated_at=now,
     )
-    Payment.objects.filter(
+    # پرداخت‌های معلق ⇒ «رها‌شده» (نه «ناموفق»): وضعیت پول هنوز نامعلوم است.
+    abandoned = Payment.objects.filter(
         contribution_id__in=contrib_ids,
         status=PaymentStatus.INITIATED,
-    ).update(status=PaymentStatus.FAILED, updated_at=now)
+    )
+    abandoned_ids = list(abandoned.values_list("id", flat=True))
+    abandoned.update(status=PaymentStatus.ABANDONED, updated_at=now)
+    if abandoned_ids:
+        PaymentEvent.objects.bulk_create(
+            [
+                PaymentEvent(
+                    payment_id=pid,
+                    event_type="abandoned",
+                    raw_status="HOLD_EXPIRED",
+                    details={"reason": "hold_expired", "queued_for_reconciliation": True},
+                )
+                for pid in abandoned_ids
+            ]
+        )
 
     transaction.on_commit(lambda: bump_epoch("campaigns"))
     return len(contrib_ids)
@@ -1389,6 +1421,786 @@ def _handle_campaign_impact_published(msg: OutboxMessage) -> None:
             action_url=f"/campaigns/{campaign_slug}",
             metadata={"campaign_id": campaign_id, "progress_percent": progress},
         )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# حلقهٔ نجات وجه (Capture Recovery) — داوری خودکار پرداخت‌های رهاشده
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# مسئله‌ای که این بخش حل می‌کند:
+#     کاربر به درگاه می‌رود، پول را می‌دهد، و هرگز برنمی‌گردد. رزرو ۱۵ دقیقه‌ای
+#     منقضی می‌شود و سهم به دیگری فروخته می‌شود. تا پیش از این، پرداخت کورکورانه
+#     «ناموفق» علامت می‌خورد و آن پول هیچ‌جا — نه در دفترکل، نه در گزارش، نه در
+#     هیچ صفی — دیده نمی‌شد.
+#
+# راه‌حل (سه مسیر، همه در یک تراکنش اتمیک):
+#     ۱) درگاه می‌گوید «تأیید نشد»  ⇒ NOT_CAPTURED      (پولی نبوده؛ تمام)
+#     ۲) درگاه می‌گوید «تأیید شد» و ظرفیت هست
+#                                   ⇒ RECOVERED       (سهم تخصیص + رسید + دفترکل)
+#     ۳) درگاه می‌گوید «تأیید شد» و ظرفیت نیست
+#                                   ⇒ REFUND_PENDING  (تعهد بازپرداخت + صف ارسال)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_RECOVERY_GRACE_MINUTES = 30
+_RECOVERY_MAX_ATTEMPTS = 5
+
+
+def _recovery_decision_policy() -> dict[str, Any]:
+    """خواندن پارامترهای عملیاتی مسیر نجات از سیاست‌های پویا (قابل تغییر بدون دیپلوی)."""
+    return {
+        "grace_minutes": int(get_policy("recovery.grace_minutes")),
+        "max_attempts": int(get_policy("recovery.max_attempts")),
+        "auto_refund_enabled": bool(get_policy("recovery.auto_refund_enabled")),
+        "auto_refund_max_rial": int(get_policy("recovery.auto_refund_max_rial")),
+    }
+
+
+def _record_recovery_step(
+    *,
+    recovery: LateCaptureRecovery,
+    payment: Payment,
+    event_type: str,
+    raw_status: str,
+    details: dict[str, Any],
+) -> None:
+    """ثبت ردپای تغییرناپذیر هر گام داوری در ``PaymentEvent`` برای بررسی پس‌رویدادی."""
+    PaymentEvent.objects.create(
+        payment=payment,
+        event_type=event_type,
+        raw_status=raw_status[:40],
+        details=details,
+    )
+    recovery.attempt_count = int(recovery.attempt_count) + 1
+    recovery.save(update_fields=["attempt_count", "last_error", "updated_at"])
+
+
+@transaction.atomic
+def _recover_captured_payment(
+    *,
+    payment: Payment,
+    contribution: Contribution,
+    recovery: LateCaptureRecovery,
+    verify_res: Any,
+) -> LateCaptureOutcome:
+    """تخصیص دوبارهٔ سهم برای پرداختی که پولش در درگاه مانده بود (بدون بازپرداخت)."""
+    campaign = (
+        Campaign.objects.select_for_update().filter(pk=contribution.campaign_id).first()
+        if contribution.campaign_id is not None
+        else None
+    )
+    if campaign is not None and campaign.status != CampaignStatus.ACTIVE:
+        # حرکت در این فاصله بسته/تکمیل شده؛ تخصیص خودکار امن نیست.
+        return LateCaptureOutcome.REFUND_PENDING
+
+    needed = int(contribution.shares_count)
+    available = int(campaign.remaining_shares) if campaign is not None else 0
+    recovery.capacity_at_decision = available
+
+    if campaign is not None and needed > available:
+        return LateCaptureOutcome.REFUND_PENDING
+
+    now = timezone.now()
+    benefactor = Benefactor.objects.select_for_update().get(pk=contribution.benefactor_id)
+    target_title = campaign.title if campaign is not None else benefactor.name
+    matched_shares = 0
+    matched_rial = 0
+    applied_grant: MatchingGrant | None = None
+
+    if campaign is not None:
+        if is_feature_enabled("feature.matching_grants"):
+            grant = (
+                MatchingGrant.objects.select_for_update()
+                .filter(
+                    campaign=campaign,
+                    is_active=True,
+                    consumed_shares__lt=F("total_pool_shares"),
+                )
+                .filter(Q(expires_at__isnull=True) | Q(expires_at__gt=now))
+                .order_by("created_at")
+                .first()
+            )
+            if grant is not None:
+                avail_after = max(
+                    0,
+                    int(campaign.total_shares)
+                    - (int(campaign.paid_shares) + int(contribution.shares_count))
+                    - int(campaign.reserved_shares),
+                )
+                desired = int(contribution.shares_count) * int(grant.match_ratio)
+                matched_shares = min(desired, grant.remaining_pool_shares, avail_after)
+                if matched_shares > 0:
+                    matched_rial = matched_shares * int(campaign.share_price_rial)
+                    grant.consumed_shares = int(grant.consumed_shares) + matched_shares
+                    grant.save(update_fields=["consumed_shares", "updated_at"])
+                    applied_grant = grant
+
+        campaign.paid_shares = int(campaign.paid_shares) + needed
+        campaign.matched_shares = int(campaign.matched_shares) + matched_shares
+        campaign.collected_online_rial = int(campaign.collected_online_rial) + int(
+            contribution.amount_rial
+        )
+        campaign.matched_amount_rial = int(campaign.matched_amount_rial) + matched_rial
+        campaign.supporter_count = int(campaign.supporter_count) + 1
+        if (
+            campaign.paid_shares + campaign.matched_shares + campaign.external_shares
+            >= campaign.total_shares
+            and campaign.status == CampaignStatus.ACTIVE
+        ):
+            campaign.status = CampaignStatus.COMPLETED
+            campaign.completed_at = now
+        campaign.save(
+            update_fields=[
+                "paid_shares",
+                "matched_shares",
+                "collected_online_rial",
+                "matched_amount_rial",
+                "supporter_count",
+                "status",
+                "completed_at",
+                "updated_at",
+            ]
+        )
+        sync_benefactor_campaign_counters(benefactor_id=benefactor.id)
+    else:
+        if contribution.charity_jar_id is None:
+            return LateCaptureOutcome.MANUAL_REVIEW
+        jar = CharityJar.objects.select_for_update().get(pk=contribution.charity_jar_id)
+        jar.total_raised_rial = int(jar.total_raised_rial) + int(contribution.amount_rial)
+        jar.donor_count = int(jar.donor_count) + 1
+        jar.save(update_fields=["total_raised_rial", "donor_count", "updated_at"])
+
+    benefactor.total_raised_rial = (
+        int(benefactor.total_raised_rial) + int(contribution.amount_rial) + matched_rial
+    )
+    benefactor.save(update_fields=["total_raised_rial", "updated_at"])
+
+    # دفترکل: همان ساختار سند وصول، با کلید مرجع متمایز تا با مسیر عادی تعارض نکند.
+    ben_code, ben_title, ben_type = benefactor_online_payable_spec(benefactor)
+    post_journal_entry(
+        reference_key=f"payment.late_captured:{payment.id}",
+        kind=JournalEntryKind.CONTRIBUTION_PAID,
+        description=f"وصول دیرهنگام مشارکت ({target_title}) — پیگیری {verify_res.ref_id}",
+        campaign_id=contribution.campaign_id,
+        benefactor_id=benefactor.id,
+        actor=None,
+        metadata={
+            "payment_id": str(payment.id),
+            "ref_id": verify_res.ref_id,
+            "recovered": True,
+            "authority": payment.authority,
+        },
+        lines=[
+            PostingLineSpec(
+                account_code=ACC_GATEWAY_RECEIVABLE,
+                account_title="دریافتنی درگاه پرداخت آنلاین",
+                account_type=LedgerAccountType.ASSET,
+                debit_rial=int(contribution.amount_rial),
+                memo=f"Authority {payment.authority}",
+            ),
+            PostingLineSpec(
+                account_code=ben_code,
+                account_title=ben_title,
+                account_type=ben_type,
+                credit_rial=int(contribution.amount_rial),
+                benefactor_id=benefactor.id,
+                memo=f"بازیافت مشارکت {contribution.id}",
+            ),
+        ],
+    )
+    if matched_rial > 0 and applied_grant is not None:
+        post_journal_entry(
+            reference_key=f"payment.late_captured.match:{payment.id}",
+            kind=JournalEntryKind.MATCHING_GRANT_APPLIED,
+            description=f"اعمال {matched_shares} سهم مضاعف در بازیافت پرداخت {payment.id}",
+            campaign_id=contribution.campaign_id,
+            benefactor_id=benefactor.id,
+            actor=None,
+            lines=[
+                PostingLineSpec(
+                    account_code=ACC_MATCHING_POOL,
+                    account_title="حساب تعهد حامیان مضاعف‌کننده",
+                    account_type=LedgerAccountType.ASSET,
+                    debit_rial=matched_rial,
+                    memo=applied_grant.sponsor_name,
+                ),
+                PostingLineSpec(
+                    account_code=ben_code,
+                    account_title=ben_title,
+                    account_type=ben_type,
+                    credit_rial=matched_rial,
+                    benefactor_id=benefactor.id,
+                ),
+            ],
+        )
+
+    contribution.status = ContributionStatus.CAPTURED_LATE
+    contribution.paid_at = now
+    contribution.matched_shares_awarded = matched_shares
+    contribution.matched_amount_rial = matched_rial
+    contribution.applied_matching_grant = applied_grant
+    contribution.save(
+        update_fields=[
+            "status",
+            "paid_at",
+            "matched_shares_awarded",
+            "matched_amount_rial",
+            "applied_matching_grant",
+            "updated_at",
+        ]
+    )
+
+    payment.status = PaymentStatus.VERIFIED
+    payment.ref_id = verify_res.ref_id
+    payment.card_pan_masked = verify_res.card_pan_masked
+    payment.verified_at = now
+    payment.save(update_fields=["status", "ref_id", "card_pan_masked", "verified_at", "updated_at"])
+
+    receipt = _issue_signed_receipt(contribution=contribution)
+
+    if contribution.ambassador_link_id is not None:
+        AmbassadorLink.objects.filter(pk=contribution.ambassador_link_id).update(
+            referred_donors_count=F("referred_donors_count") + 1,
+            attributed_shares=F("attributed_shares") + int(contribution.shares_count),
+            attributed_amount_rial=F("attributed_amount_rial") + int(contribution.amount_rial),
+        )
+
+    create_user_notification(
+        user_id=contribution.user_id,
+        kind=UserNotificationKind.RECEIPT_READY,
+        title="پرداخت شما با تأخیر تأیید شد و مشارکت‌تان ثبت گردید",
+        body=(
+            f"پرداخت شما در «{target_title}» با کد رهگیری {receipt.verification_code} "
+            "ثبت شد. بابت تأخیر پیش‌آمده پوزش می‌خواهیم."
+        ),
+        action_url=f"/receipts/{receipt.verification_code}",
+        metadata={"receipt_number": receipt.receipt_number, "recovered_late": True},
+    )
+    enqueue_outbox(
+        event_type="sms.receipt_issued",
+        aggregate_type="DonationReceipt",
+        aggregate_id=str(receipt.id),
+        payload={
+            "phone": contribution.user.phone,
+            "campaign_title": target_title,
+            "receipt_number": receipt.receipt_number,
+        },
+    )
+
+    if contribution.campaign_id is not None and is_feature_enabled("feature.merkle_transparency"):
+        build_or_refresh_campaign_merkle_snapshot(campaign_id=contribution.campaign_id)
+
+    recovery.outcome = LateCaptureOutcome.RECOVERED
+    recovery.decision_reason = "captured_with_available_capacity"
+    recovery.gateway_ref_id = verify_res.ref_id
+    recovery.recovered_shares = needed
+    recovery.resolved_at = now
+    record_audit_event(
+        action=AuditAction.LATE_CAPTURE_RECOVERED,
+        actor=None,
+        target_type="Payment",
+        target_id=str(payment.id),
+        reason="بازیافت خودکار پرداخت پس از انقضای رزرو",
+        metadata={
+            "contribution_id": str(contribution.id),
+            "shares": needed,
+            "amount_rial": int(contribution.amount_rial),
+            "capacity": available,
+        },
+    )
+    transaction.on_commit(lambda: bump_epoch("campaigns"))
+    transaction.on_commit(lambda: bump_epoch("benefactors"))
+    transaction.on_commit(lambda: bump_epoch("jars"))
+    return LateCaptureOutcome.RECOVERED
+
+
+@transaction.atomic
+def _open_refund_obligation(
+    *,
+    payment: Payment,
+    contribution: Contribution,
+    recovery: LateCaptureRecovery,
+    verify_res: Any,
+    reason: str,
+) -> LateCaptureOutcome:
+    """ثبت تعهد بازپرداخت برای پولی که گرفته شده ولی سهمی برایش نمانده است.
+
+    نکتهٔ دفترکلی: اینجا **درآمد حذف نمی‌شود** (چون هرگز ثبت نشده بود)؛ بلکه یک
+    بدهی صریح «وجه دریافتی که باید بازگردد» در مقابل «دریافتنی از درگاه» ثبت
+    می‌شود. یعنی ترازنامه از همان لحظه می‌گوید ما به این حامی بدهکاریم.
+    """
+    now = timezone.now()
+    previous_status = recovery.capacity_at_decision
+
+    payment.status = PaymentStatus.VERIFIED
+    payment.ref_id = verify_res.ref_id
+    payment.card_pan_masked = verify_res.card_pan_masked
+    payment.verified_at = now
+    payment.save(update_fields=["status", "ref_id", "card_pan_masked", "verified_at", "updated_at"])
+
+    contribution.status = ContributionStatus.AWAITING_REFUND
+    contribution.save(update_fields=["status", "updated_at"])
+
+    refund = PaymentRefund.objects.create(
+        payment=payment,
+        amount_rial=int(contribution.amount_rial),
+        reason=reason[:400],
+        refunded_by=None,
+        outcome=RefundOutcome.PENDING,
+        automation_note="مسیر خودکار بازیافت وجه: سهم در دسترس نبود.",
+    )
+
+    post_journal_entry(
+        reference_key=f"payment.refund_obligation:{payment.id}",
+        kind=JournalEntryKind.CONTRIBUTION_REFUNDED,
+        description=f"شناسایی بدهی بازپرداخت وجه حامی بابت {payment.authority}",
+        campaign_id=contribution.campaign_id,
+        benefactor_id=contribution.benefactor_id,
+        actor=None,
+        metadata={"payment_id": str(payment.id), "obligation": True},
+        lines=[
+            PostingLineSpec(
+                account_code=ACC_REFUND_LIABILITY,
+                account_title="وجه دریافتی که باید به حامی بازگردد",
+                account_type=LedgerAccountType.LIABILITY,
+                credit_rial=int(contribution.amount_rial),
+                memo=f"بازپرداخت معلق {payment.authority}",
+            ),
+            PostingLineSpec(
+                account_code=ACC_GATEWAY_RECEIVABLE,
+                account_title="دریافتنی درگاه پرداخت آنلاین",
+                account_type=LedgerAccountType.ASSET,
+                debit_rial=int(contribution.amount_rial),
+                memo=f"Authority {payment.authority}",
+            ),
+        ],
+    )
+
+    recovery.outcome = LateCaptureOutcome.REFUND_PENDING
+    recovery.decision_reason = "captured_without_capacity"
+    recovery.gateway_ref_id = verify_res.ref_id
+    recovery.refund = refund
+    recovery.resolved_at = now
+    record_audit_event(
+        action=AuditAction.REFUND_OBLIGATION_OPENED,
+        actor=None,
+        target_type="PaymentRefund",
+        target_id=str(refund.id),
+        reason=reason,
+        metadata={
+            "payment_id": str(payment.id),
+            "contribution_id": str(contribution.id),
+            "amount_rial": int(contribution.amount_rial),
+            "capacity": previous_status,
+        },
+    )
+    create_user_notification(
+        user_id=contribution.user_id,
+        kind=UserNotificationKind.REFUND_INITIATED,
+        title="مبلغ پرداختی شما در حال بازگشت است",
+        body=(
+            f"مبلغ {int(contribution.amount_rial):,} ریال که از حساب شما کسر شده بود، "
+            "به‌صورت خودکار بازگردانده می‌شود. جایگزین شما از قبل پر شده بود؛ "
+            "پوزش ما را پذیرا باشید."
+        ),
+        action_url="/me/contributions",
+        metadata={"payment_id": str(payment.id), "amount_rial": int(contribution.amount_rial)},
+    )
+    transaction.on_commit(lambda: bump_epoch("campaigns"))
+    return LateCaptureOutcome.REFUND_PENDING
+
+
+@transaction.atomic
+def reconcile_one_abandoned_payment(*, payment_id: Any) -> LateCaptureOutcome:
+    """داوری کامل یک پرداخت رهاشده؛ idempotent و مطابق ماشین حالت.
+
+    ترتیب کارها:
+        ۱) قفل پرداخت و مشارکت (select_for_update) برای جلوگیری از داوری هم‌زمان
+        ۲) اگر پیش‌تر داوری شده، همان نتیجه را برگردان (idempotency)
+        ۳) از درگاه استعلام بگیر (منبع حقیقت بیرونی، نه حدس ما)
+        ۴) بر اساس پاسخ، یکی از سه مسیر را در همان تراکنش اجرا کن
+    """
+    payment = (
+        Payment.objects.select_for_update()
+        .select_related("contribution")
+        .filter(pk=payment_id)
+        .first()
+    )
+    if payment is None:
+        raise NotFoundError("پرداخت مورد نظر یافت نشد.")
+
+    recovery = LateCaptureRecovery.objects.select_for_update().filter(payment=payment).first()
+    if recovery is not None and recovery.is_resolved:
+        return LateCaptureOutcome(str(recovery.outcome))
+
+    contribution = Contribution.objects.select_for_update().get(pk=payment.contribution_id)
+    now = timezone.now()
+
+    if recovery is None:
+        recovery = LateCaptureRecovery.objects.create(
+            payment=payment,
+            contribution=contribution,
+            outcome=LateCaptureOutcome.MANUAL_REVIEW,
+            capacity_at_decision=(
+                int(contribution.campaign.remaining_shares)
+                if contribution.campaign_id and contribution.campaign is not None
+                else 0
+            ),
+        )
+
+    policy = _recovery_decision_policy()
+    if int(recovery.attempt_count) >= policy["max_attempts"]:
+        recovery.outcome = LateCaptureOutcome.MANUAL_REVIEW
+        recovery.decision_reason = "max_attempts_exceeded"
+        recovery.resolved_at = now
+        recovery.save(update_fields=["outcome", "decision_reason", "resolved_at", "updated_at"])
+        return LateCaptureOutcome.MANUAL_REVIEW
+
+    # استعلام قطعی از درگاه — تنها منبع حقیقت دربارهٔ اینکه پول گرفته شده یا نه.
+    try:
+        gw_port = resolve_payment_gateway(payment.gateway_name)
+        verify_res = gw_port.verify(
+            authority=payment.authority, amount_rial=int(payment.amount_rial)
+        )
+    except Exception as exc:
+        recovery.last_error = f"{type(exc).__name__}: {exc}"[:1000]
+        _record_recovery_step(
+            recovery=recovery,
+            payment=payment,
+            event_type="reconcile_error",
+            raw_status="NETWORK",
+            details={"error": str(exc)[:300]},
+        )
+        return LateCaptureOutcome.MANUAL_REVIEW
+
+    recovery.gateway_verdict_raw = verify_res.raw_code[:40]
+
+    if not verify_res.verified:
+        # درگاه صریحاً می‌گوید تأیید نشده ⇒ پولی نبوده است.
+        payment.status = PaymentStatus.FAILED
+        payment.save(update_fields=["status", "updated_at"])
+        contribution.status = ContributionStatus.EXPIRED
+        contribution.save(update_fields=["status", "updated_at"])
+        recovery.outcome = LateCaptureOutcome.NOT_CAPTURED
+        recovery.decision_reason = f"gateway_declined:{verify_res.raw_code}"
+        recovery.resolved_at = now
+        recovery.save(
+            update_fields=[
+                "outcome",
+                "decision_reason",
+                "gateway_verdict_raw",
+                "resolved_at",
+                "updated_at",
+            ]
+        )
+        _record_recovery_step(
+            recovery=recovery,
+            payment=payment,
+            event_type="reconcile_not_captured",
+            raw_status=verify_res.raw_code,
+            details={"verdict": "not_captured"},
+        )
+        return LateCaptureOutcome.NOT_CAPTURED
+
+    outcome = _recover_captured_payment(
+        payment=payment, contribution=contribution, recovery=recovery, verify_res=verify_res
+    )
+    if outcome == LateCaptureOutcome.REFUND_PENDING:
+        outcome = _open_refund_obligation(
+            payment=payment,
+            contribution=contribution,
+            recovery=recovery,
+            verify_res=verify_res,
+            reason="وجه پس از انقضای رزرو دریافت شد و ظرفیت سهم تکمیل بود.",
+        )
+
+    recovery.save()
+    LATE_CAPTURE_RECOVERIES_TOTAL.labels(outcome=str(outcome)).inc()
+    _record_recovery_step(
+        recovery=recovery,
+        payment=payment,
+        event_type="reconcile_resolved",
+        raw_status=verify_res.raw_code,
+        details={"outcome": str(outcome)},
+    )
+    return outcome
+
+
+def reconcile_abandoned_payments(
+    *,
+    batch_size: int = 200,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """داوری دسته‌ای تمام پرداخت‌های رهاشده — قابل اجرا با Cron هر ۵ دقیقه.
+
+    پارامتر ``grace_period`` (از سیاست ``recovery.grace_minutes``) به درگاه فرصت
+    می‌دهد تا وضعیت را نهایی کند و از استعلام‌های زودهنگام و بی‌فایده جلوگیری می‌کند.
+
+    خروجی، آماری است که مستقیماً در پنل سلامت مالی و متریک Prometheus مصرف می‌شود.
+    """
+    policy = _recovery_decision_policy()
+    threshold = timezone.now() - timedelta(minutes=policy["grace_minutes"])
+
+    stats: dict[str, Any] = {
+        "scanned": 0,
+        "not_captured": 0,
+        "recovered": 0,
+        "refund_pending": 0,
+        "manual_review": 0,
+        "error_count": 0,
+        "dry_run": dry_run,
+    }
+
+    candidates = list(
+        Payment.objects.filter(
+            status__in=[PaymentStatus.ABANDONED, PaymentStatus.INITIATED],
+            created_at__lte=threshold,
+            contribution__status__in=[
+                ContributionStatus.EXPIRED,
+                ContributionStatus.FAILED,
+            ],
+        )
+        .order_by("created_at")
+        .values_list("id", flat=True)[:batch_size]
+    )
+    stats["scanned"] = len(candidates)
+
+    if dry_run:
+        stats["candidate_ids"] = [str(c) for c in candidates[:20]]
+        return stats
+
+    for payment_id in candidates:
+        try:
+            outcome = reconcile_one_abandoned_payment(payment_id=payment_id)
+        except Exception:
+            stats["error_count"] += 1
+            continue
+        key = str(outcome)
+        if key == LateCaptureOutcome.NOT_CAPTURED:
+            stats["not_captured"] += 1
+        elif key == LateCaptureOutcome.RECOVERED:
+            stats["recovered"] += 1
+        elif key == LateCaptureOutcome.REFUND_PENDING:
+            stats["refund_pending"] += 1
+        else:
+            stats["manual_review"] += 1
+
+    if stats["recovered"] or stats["refund_pending"]:
+        bump_epoch("campaigns")
+    return stats
+
+
+@transaction.atomic
+def dispatch_pending_refunds(*, batch_size: int = 100) -> dict[str, int]:
+    """ارسال تعهدهای بازپرداخت به درگاه (Cron) با تفکیک صریح «درگاه پشتیبانی نمی‌کند».
+
+    سه نتیجهٔ ممکن برای هر تعهد:
+        • درگاه پذیرفت        ⇒ ``SENT`` و انتظار تأیید
+        • درگاه پشتیبانی ندارد ⇒ ``MANUAL`` با توضیح روشن (اکانت باید دستی بپردازد)
+        • خطای موقت شبکه      ⇒ ``PENDING`` با شمارندهٔ تلاش (تلاش بعدی در اجرای بعد)
+    """
+    stats = {
+        "attempted": 0,
+        "sent": 0,
+        "manual": 0,
+        "failed": 0,
+        "skipped": 0,
+        "over_cap": 0,
+    }
+    policy = _recovery_decision_policy()
+    if not policy["auto_refund_enabled"]:
+        stats["skipped"] = -1
+        return stats
+
+    pending = list(
+        PaymentRefund.objects.select_for_update(skip_locked=True)
+        .filter(outcome=RefundOutcome.PENDING)
+        .select_related("payment")
+        .order_by("created_at")[:batch_size]
+    )
+
+    max_auto_rial = int(policy["auto_refund_max_rial"])
+
+    for refund in pending:
+        stats["attempted"] += 1
+
+        # سقف بازپرداخت خودکار: مبالغ بزرگ باید توسط انسان تأیید شوند.
+        # این محافظ جلوی «خروج پول بدون چشم انسان» را می‌گیرد.
+        if max_auto_rial > 0 and int(refund.amount_rial) > max_auto_rial:
+            refund.outcome = RefundOutcome.MANUAL
+            refund.automation_note = (
+                f"مبلغ {int(refund.amount_rial):,} ریال از سقف بازپرداخت خودکار "
+                f"({max_auto_rial:,} ریال) بیشتر است؛ نیازمند تأیید دستی."
+            )[:400]
+            refund.save(update_fields=["outcome", "automation_note", "updated_at"])
+            REFUND_DISPATCH_TOTAL.labels(result="over_cap").inc()
+            stats["manual"] += 1
+            stats["over_cap"] += 1
+            continue
+
+        refund.attempt_count = int(refund.attempt_count) + 1
+        refund.last_attempt_at = timezone.now()
+        try:
+            gw_port = resolve_payment_gateway(refund.payment.gateway_name)
+            result = gw_port.refund(
+                authority=refund.payment.authority,
+                amount_rial=int(refund.amount_rial),
+                reason=refund.reason,
+            )
+        except Exception as exc:
+            refund.automation_note = f"خطای ارتباط با درگاه: {type(exc).__name__}"[:400]
+            REFUND_DISPATCH_TOTAL.labels(result="error").inc()
+            refund.save(
+                update_fields=["attempt_count", "last_attempt_at", "automation_note", "updated_at"]
+            )
+            stats["failed"] += 1
+            continue
+
+        if result.unsupported:
+            refund.outcome = RefundOutcome.MANUAL
+            refund.automation_note = result.message[:400]
+            refund.save(
+                update_fields=[
+                    "outcome",
+                    "attempt_count",
+                    "last_attempt_at",
+                    "automation_note",
+                    "updated_at",
+                ]
+            )
+            refund.payment.contribution  # noqa: B018 -- دسترسی برای جلوگیری از غافلگیری N+1
+            REFUND_DISPATCH_TOTAL.labels(result="unsupported").inc()
+            stats["manual"] += 1
+        elif result.accepted:
+            refund.outcome = RefundOutcome.SENT
+            refund.gateway_reference = result.gateway_reference[:80]
+            refund.gateway_raw_code = result.raw_code[:40]
+            refund.automation_note = ""
+            refund.save(
+                update_fields=[
+                    "outcome",
+                    "gateway_reference",
+                    "gateway_raw_code",
+                    "attempt_count",
+                    "last_attempt_at",
+                    "automation_note",
+                    "updated_at",
+                ]
+            )
+            REFUND_DISPATCH_TOTAL.labels(result="accepted").inc()
+            stats["sent"] += 1
+        else:
+            refund.gateway_raw_code = result.raw_code[:40]
+            refund.automation_note = (result.message or "درگاه بازپرداخت را نپذیرفت.")[:400]
+            refund.save(
+                update_fields=[
+                    "gateway_raw_code",
+                    "attempt_count",
+                    "last_attempt_at",
+                    "automation_note",
+                    "updated_at",
+                ]
+            )
+            REFUND_DISPATCH_TOTAL.labels(result="rejected").inc()
+            stats["failed"] += 1
+
+    return stats
+
+
+@transaction.atomic
+def settle_refund_obligation(
+    *,
+    refund_id: Any,
+    actor: User | None,
+    bank_reference: str = "",
+    note: str = "",
+    request: Any = None,
+) -> PaymentRefund:
+    """نهایی‌سازی یک بازپرداخت (تأیید درگاه یا ثبت دستی پرداخت بانکی).
+
+    این همان نقطه‌ای است که حلقه کامل می‌شود: تعهد بدهی صفر می‌شود، سهم‌ها/شمارنده‌ها
+    (اگر تخصیص یافته بودند) برگردانده می‌شوند و رسید/اعلان مناسب صادر می‌شود.
+    """
+    refund = (
+        PaymentRefund.objects.select_for_update()
+        .select_related("payment")
+        .filter(pk=refund_id)
+        .first()
+    )
+    if refund is None:
+        raise NotFoundError("درخواست بازپرداخت یافت نشد.")
+    if refund.outcome == RefundOutcome.COMPLETED:
+        return refund
+
+    payment = Payment.objects.select_for_update().get(pk=refund.payment_id)
+    contribution = Contribution.objects.select_for_update().get(pk=payment.contribution_id)
+    benefactor = Benefactor.objects.select_for_update().get(pk=contribution.benefactor_id)
+    now = timezone.now()
+
+    refund.outcome = RefundOutcome.COMPLETED
+    refund.bank_reference = (bank_reference or refund.gateway_reference or refund.bank_reference)[
+        :80
+    ]
+    refund.automation_note = note[:400] or refund.automation_note
+    refund.save(update_fields=["outcome", "bank_reference", "automation_note", "updated_at"])
+
+    post_journal_entry(
+        reference_key=f"payment.refund_settled:{payment.id}",
+        kind=JournalEntryKind.CONTRIBUTION_REFUNDED,
+        description=f"تسویه بازپرداخت وجه حامی بابت {payment.authority}",
+        campaign_id=contribution.campaign_id,
+        benefactor_id=benefactor.id,
+        actor=actor,
+        metadata={"payment_id": str(payment.id), "refund_id": str(refund.id)},
+        lines=[
+            PostingLineSpec(
+                account_code=ACC_REFUND_LIABILITY,
+                account_title="وجه دریافتی که باید به حامی بازگردد",
+                account_type=LedgerAccountType.LIABILITY,
+                debit_rial=int(refund.amount_rial),
+                memo=f"تسویه تعهد {refund.id}",
+            ),
+            PostingLineSpec(
+                account_code=ACC_GATEWAY_RECEIVABLE,
+                account_title="دریافتنی درگاه پرداخت آنلاین",
+                account_type=LedgerAccountType.ASSET,
+                credit_rial=int(refund.amount_rial),
+                memo=f"Authority {payment.authority}",
+            ),
+        ],
+    )
+
+    payment.status = PaymentStatus.REFUNDED
+    payment.save(update_fields=["status", "updated_at"])
+    contribution.status = ContributionStatus.REFUNDED
+    contribution.refunded_at = now
+    contribution.save(update_fields=["status", "refunded_at", "updated_at"])
+
+    record_audit_event(
+        action=AuditAction.REFUND_SETTLED,
+        actor=actor,
+        target_type="PaymentRefund",
+        target_id=str(refund.id),
+        reason=note or "تسویه بازپرداخت",
+        metadata={
+            "payment_id": str(payment.id),
+            "amount_rial": int(refund.amount_rial),
+            "bank_reference": refund.bank_reference,
+        },
+        request=request,
+    )
+    create_user_notification(
+        user_id=contribution.user_id,
+        kind=UserNotificationKind.REFUND_COMPLETED,
+        title="بازپرداخت مبلغ شما انجام شد",
+        body=(
+            f"مبلغ {int(refund.amount_rial):,} ریال به حساب شما بازگشت. "
+            f"مرجع پیگیری: {refund.bank_reference or refund.gateway_reference or refund.id}"
+        ),
+        action_url="/me/contributions",
+        metadata={"refund_id": str(refund.id)},
+    )
+    transaction.on_commit(lambda: bump_epoch("campaigns"))
+    return refund
 
 
 def register_contribution_outbox_handlers() -> None:

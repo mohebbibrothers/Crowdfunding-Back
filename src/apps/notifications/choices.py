@@ -32,3 +32,5 @@ class UserNotificationKind(models.TextChoices):
     IMPACT_UPDATE = "impact_update", _("گزارش تصویری اجرای حرکت")
     AMBASSADOR_IMPACT = "ambassador_impact", _("مشارکت جدید از طریق لینک سفیر شما")
     DEDICATION_ISSUED = "dedication_issued", _("صدور گواهی نیت‌نامه")
+    REFUND_INITIATED = "refund_initiated", _("آغاز فرآیند بازپرداخت وجه")
+    REFUND_COMPLETED = "refund_completed", _("تکمیل بازپرداخت وجه")

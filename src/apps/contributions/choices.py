@@ -14,13 +14,26 @@ class ContributionTargetKind(models.TextChoices):
 
 
 class ContributionStatus(models.TextChoices):
-    """وضعیت چرخهٔ حیات یک مشارکت."""
+    """وضعیت چرخهٔ حیات یک مشارکت.
+
+    گذارهای مجاز در ``apps.contributions.state_machine`` تعریف و با گیت آزمون
+    اجبار شده‌اند؛ هر وضعیت تازه باید همان‌جا ورودی خروجی بگیرد.
+    """
 
     RESERVED = "reserved", _("رزرو موقت ۱۵ دقیقه‌ای در انتظار پرداخت")
     PAID = "paid", _("پرداخت موفق و قطعی‌شده")
     EXPIRED = "expired", _("منقضی‌شده (آزادسازی سهم رزروشده)")
     FAILED = "failed", _("لغو یا خطا در درگاه پرداخت")
     REFUNDED = "refunded", _("مستردشده")
+    # ── چرخهٔ بازیافت وجه پس از انقضای رزرو (Capture Recovery) ──────────────
+    CAPTURED_LATE = (
+        "captured_late",
+        _("وجه پس از انقضای رزرو در درگاه گرفته شد و سهم دوباره تخصیص یافت"),
+    )
+    AWAITING_REFUND = (
+        "awaiting_refund",
+        _("وجه گرفته شد اما سهم دیگر در دسترس نیست؛ در انتظار بازپرداخت"),
+    )
 
 
 class GatewayName(models.TextChoices):
@@ -31,11 +44,17 @@ class GatewayName(models.TextChoices):
 
 
 class PaymentStatus(models.TextChoices):
-    """وضعیت تراکنش درگاه پرداخت."""
+    """وضعیت تراکنش درگاه پرداخت.
+
+    تفکیک حیاتی: ``FAILED`` یعنی «درگاه تأییداً رد کرد»؛ ``ABANDONED`` یعنی
+    «ما از بازگشت کاربر ناامید شدیم ولی از وضعیت پول خبر نداریم». این دو
+    نباید هرگز یکی شوند، چون اولی پول نیست و دومی ممکن است پول باشد.
+    """
 
     INITIATED = "initiated", _("هدایت‌شده به درگاه")
     VERIFIED = "verified", _("تأیید نهایی شاپرک/درگاه")
-    FAILED = "failed", _("ناموفق یا انصراف کاربر")
+    FAILED = "failed", _("ناموفق یا انصراف تأییدشدهٔ کاربر در درگاه")
+    ABANDONED = "abandoned", _("رها‌شده: رزرو منقضی شد و وضعیت پول نامعلوم است")
     REFUNDED = "refunded", _("مستردشده")
 
 
@@ -56,3 +75,23 @@ class PaymentRiskKind(models.TextChoices):
         "callback_tamper_attempt",
         _("تلاش بازپخش یا دستکاری پارامتر بازگشت درگاه"),
     )
+
+
+class LateCaptureOutcome(models.TextChoices):
+    """نتیجهٔ داوری خودکار روی پرداختی که با وضعیت نامعلوم رها شده بود."""
+
+    NOT_CAPTURED = "not_captured", _("درگاه تأیید نکرد؛ وجهی دریافت نشده است")
+    RECOVERED = "recovered", _("وجه دریافت شده بود و سهم همان لحظه تخصیص یافت")
+    REFUND_PENDING = "refund_pending", _("وجه دریافت شده ولی سهم در دسترس نبود؛ بازپرداخت لازم است")
+    MANUAL_REVIEW = "manual_review", _("نتیجه مبهم؛ برای داوری انسانی علامت‌گذاری شد")
+
+
+class RefundOutcome(models.TextChoices):
+    """وضعیت اجرای بازپرداخت در درگاه (مسیر خودکار یا دستی)."""
+
+    PENDING = "pending", _("در انتظار ارسال به درگاه")
+    SENT = "sent", _("به درگاه ارسال شد")
+    COMPLETED = "completed", _("بازپرداخت تکمیل و تأیید شد")
+    FAILED = "failed", _("ارسال یا تأیید بازپرداخت ناموفق بود")
+    MANUAL = "manual", _("نیازمند بازپرداخت دستی خارج از سامانه (مرجع بانکی ثبت شد)")
+    NOT_REQUIRED = "not_required", _("بازپرداخت لازم نبود (وجهی دریافت نشده بود)")

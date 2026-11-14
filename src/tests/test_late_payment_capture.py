@@ -1,11 +1,13 @@
-"""اثبات شکاف «پرداخت موفق پس از انقضای رزرو» (Late Capture).
+"""تست‌های پایداری حلقهٔ وجه در سناریوی «پرداخت دیرهنگام» (Late Capture).
 
-سناریوی واقعی: کاربر به درگاه می‌رود، وجه را پرداخت می‌کند، اما در صفحهٔ درگاه
-(یا در بازگشت) گم می‌شود؛ ۱۵ دقیقه می‌گذرد و ``reap_expired`` رزرو را آزاد می‌کند.
-سپس کاربر برمی‌گردد. پول نزد درگاه است.
+تاریخچه: این فایل نخست برای *اثبات* یک شکاف نوشته شد — پرداخت موفق پس از انقضای
+رزرو، پول را نزد درگاه رها می‌کرد و هیچ رکوردی نمی‌ساخت. پس از پیاده‌سازی حلقهٔ
+نجب وجه (``reconcile_abandoned_payments``)، این فایل به تست **ضد‌بازگشت** تبدیل
+شد: اگر کسی دوباره مسیر را بشکند، همین‌جا قرمز می‌شود.
 
-این آزمون رفتار *فعلی* را مستند می‌کند؛ اگر روزی مسیر جبران خودکار پیاده شود،
-این فایل باید به‌روزرسانی شود.
+تفکیک مسئولیت:
+    • این فایل  ⇒ «سناریوی کاربر گم‌شده در مرز رزرو/بازگشت»
+    • test_capture_recovery.py ⇒ «موتور داوری، دفترکل و idempotency»
 """
 
 from __future__ import annotations
@@ -85,7 +87,7 @@ def test_late_payment_after_hold_expiry_raises_conflict_and_loses_money(
     contribution.refresh_from_db()
     payment.refresh_from_db()
     assert contribution.status == "expired"
-    assert payment.status == "failed"
+    assert payment.status == "abandoned"  # نه "failed": وضعیت پول نامعلوم است
 
     # ۳) سهم‌ها به شخص دیگری فروخته می‌شود (ظرفیت تکمیل)
     campaign.refresh_from_db()
@@ -96,12 +98,13 @@ def test_late_payment_after_hold_expiry_raises_conflict_and_loses_money(
     with pytest.raises(ConflictError):
         verify_payment_callback(authority=payment.authority, gateway_status="OK")
 
-    # نتیجهٔ فعلی: پول نزد درگاه است، مشارکت expired مانده و هیچ رکورد بازپرداختی ساخته نشده.
+    # مسیر بازگشت مرورگر نمی‌تواند مستقیم تسویه کند (ظرفیت پر است) — درست است.
+    # اما پول دیگر «گم» نمی‌شود: پرداخت در وضعیت ABANDONED منتظر داوری است و
+    # موتور حلقهٔ نجات (test_capture_recovery.py) آن را به تعهد بازپرداخت می‌برد.
     contribution.refresh_from_db()
     payment.refresh_from_db()
     assert contribution.status == "expired"
-    assert payment.status == "failed"
-    assert not hasattr(contribution, "refund") or contribution.refund is None
+    assert payment.status == "abandoned"  # نه "failed": وضعیت پول نامعلوم است
 
 
 @pytest.mark.django_db
@@ -142,11 +145,10 @@ def test_late_payment_when_capacity_still_available_is_accepted(
 def test_no_orphan_payment_without_any_callback(
     seeded_policies: None,
 ) -> None:
-    """اگر کاربر هرگز برنگردد، پول نزد درگاه می‌ماند و هیچ مکانیزم شناسایی وجود ندارد.
+    """اگر کاربر هرگز برنگردد، پرداخت باید در صف داوری خودکار دیده شود.
 
-    این آزمون شکاف دوم را مستند می‌کند: نبود job مغایرت‌گیری خودکار با گزارش درگاه،
-    هر ``Payment`` با وضعیت INITIATED که درگاه آن را «موفق» می‌داند، فقط با گزارش دستی
-    کاربر کشف می‌شود.
+    پیش‌تر این حالت «پول نامرئی» بود. اکنون ``reconcile_abandoned_payments``
+    آن را کشف می‌کند و بر اساس پاسخ واقعی درگاه تعیین تکلیف می‌کند.
     """
     del seeded_policies
     admin = _admin()
@@ -166,8 +168,16 @@ def test_no_orphan_payment_without_any_callback(
     release_expired_share_holds(campaign_id=campaign.id)
 
     payment.refresh_from_db()
-    # پرداخت به‌صورت کورکورانه «failed» علامت‌گذاری شد، در حالی که ممکن است درگاه آن را
-    # تأیید کرده باشد. هیچ فرمان ``reconcile_pending_payments`` وجود ندارد که این را کشف کند.
-    assert payment.status == "failed"
+    # دیگر «ناموفق» کورکورانه نیست: پرداخت در وضعیت «رها‌شده» ثبت می‌شود تا
+    # فرمان reconcile_abandoned_payments آن را از درگاه استعلام کند.
+    assert payment.status == "abandoned"
     assert payment.ref_id == ""
-    assert Payment.objects.filter(status="failed", ref_id="").count() == 1
+    assert Payment.objects.filter(status="abandoned", ref_id="").count() == 1
+    # و در صف داوری دیده می‌شود (نه اینکه هیچ‌جا نباشد).
+    from apps.contributions.services import reconcile_abandoned_payments
+
+    # برای عبور از پنجرهٔ مهلت (recovery.grace_minutes) زمان ایجاد را به عقب می‌بریم.
+    past = timezone.now() - timedelta(minutes=40)
+    Payment.objects.filter(pk=payment.pk).update(created_at=past, updated_at=past)
+    stats = reconcile_abandoned_payments(dry_run=True)
+    assert stats["scanned"] >= 1

@@ -223,8 +223,14 @@ export interface ExternalContributionWriteRequest { shares_count: number; donor_
 /** یک کمک ثبتشده خارج از درگاه در گزارش شفافیت عمومی. */
 export interface ExternalTransparencyItem { donor_display_name: string; shares_count: number; amount_rial: number; amount_toman: number; reference_code: string; recorded_at_jalali: string; }
 
+/** یک هشدار عملیاتی حلقهٔ پول (شدت، کد ماشین‌خوان و پیام فارسی). */
+export interface FinancialAlert { severity: SeverityEnum; code: string; message: string; }
+
 /** نمای اسنپ‌شات تراز آزمایشی و کنترل یکپارچگی مالی. */
 export interface FinancialControlSnapshot { id: string; total_debits_rial: number; total_credits_rial: number; gateway_receivable_rial: number; benefactor_payable_rial: number; external_custody_rial: number; is_balanced: boolean; counter_drift_rial: number; created_at: string; }
+
+/** گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات. */
+export interface FinancialHealth { status: string; generated_at: string; money_loop: MoneyLoopStats; recovery_ledger: Record<string, number>; refund_ledger: Record<string, number>; ops: OpsStats; alerts: Array<FinancialAlert>; }
 
 /** * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
 * `zarinpal` - درگاه پرداخت زرین‌پال */
@@ -243,6 +249,12 @@ export interface JournalEntry { id: string; reference_key: string; kind: string;
 * `video` - ویدیو
 * `document` - مستند تاییدیه */
 export type KindEnum = "image" | "video" | "document";
+
+/** ورودی اجرای دستی داوری پرداخت‌های رهاشده از پنل مدیریت. */
+export interface LateCaptureReconcileInputRequest { batch_size?: number; dry_run?: boolean; }
+
+/** خروجی آماری اجرای داوری پرداخت‌های رهاشده. */
+export interface LateCaptureReconcileResult { scanned: number; not_captured: number; recovered: number; refund_pending: number; manual_review: number; error_count: number; dry_run: boolean; candidate_ids?: Array<string>; }
 
 /** نمای سرفصل حساب در دفترکل. */
 export interface LedgerAccount { id: string; code: string; title: string; account_type: string; benefactor_id: (string | null); debit_total_rial: number; credit_total_rial: number; balance_rial: number; balance_toman: number; }
@@ -287,8 +299,14 @@ export interface MfaStatusOutput { enrolled: boolean; session_verified: boolean;
 * `final_report` - گزارش پایانی و مستندات تکمیل */
 export type MilestoneTypeEnum = "funding_complete" | "disbursed" | "procurement" | "field_delivery" | "final_report";
 
+/** آمار اصلی حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و بدهی ریالی. */
+export interface MoneyLoopStats { abandoned_payments: number; abandoned_amount_rial: number; stale_abandoned_over_1h: number; unresolved_late_captures: number; awaiting_refund_contributions: number; awaiting_refund_amount_rial: number; pending_refund_obligations: number; refund_liability_rial: number; manual_refunds_due: number; manual_refund_amount_rial: number; orphan_refund_obligations: number; }
+
 /** یک نشان افتخار (قفل/باز) در کارنامهٔ معنوی خیر. */
 export interface MotivationBadgeOutput { code: string; title: string; description: string; earned: boolean; current: number; target: number; }
+
+/** شمارنده‌های عملیاتی مرتبط (صندوق خروجی متوقف‌شده). */
+export interface OpsStats { dead_outbox_messages: number; }
 
 /** پاسخ یکسان ضد شمارش کاربر هنگام درخواست OTP. */
 export interface OtpRequestAccepted { status: string; ttl_seconds: number; message: string; }
@@ -374,6 +392,9 @@ export interface ReconciliationRowInputRequest { authority: string; ref_id?: str
 /** ورودی اجرای مغایرت‌گیری درگاه پرداخت. */
 export interface ReconciliationRunInputRequest { gateway_name?: string; period_start: string; period_end: string; rows: Array<ReconciliationRowInputRequest>; }
 
+/** خروجی آماری ارسال تعهدهای بازپرداخت به درگاه. */
+export interface RefundDispatchResult { attempted: number; sent: number; manual: number; failed: number; skipped: number; over_cap: number; }
+
 /** نتیجهٔ استرداد وجه همراه با سند معکوس دفترکل. */
 export interface RefundResultOutput { refund_id: string; amount_rial: number; status: string; }
 
@@ -391,6 +412,11 @@ export interface SandboxPaymentOutput { authority: string; amount_rial: number; 
 
 /** نمای یک نشست فعال در فهرست دستگاه‌های کاربر. */
 export interface SessionItemOutput { id: string; device: string; network: string; mfa_verified: boolean; created_at: string; last_seen_at: string; is_current: boolean; }
+
+/** * `critical` - critical
+* `warning` - warning
+* `info` - info */
+export type SeverityEnum = "critical" | "warning" | "info";
 
 /** تفکیک سهام حرکت به آنلاین، مضاعفشده، آفلاین، رزروشده و باقیمانده. */
 export interface SharesBreakdownOutput { total_shares: number; paid_online_shares: number; matched_sponsor_shares: number; external_offline_shares: number; reserved_shares: number; remaining_shares: number; }
@@ -457,6 +483,9 @@ export type ApiOperationId =
   | "v1_admin_campaigns_external_contributions_create"
   | "v1_admin_payments_list"
   | "v1_admin_payments_refund"
+  | "v1_admin_financial_health_retrieve"
+  | "v1_admin_late_captures_reconcile"
+  | "v1_admin_refunds_dispatch"
   | "v1_health_detailed"
   | "v1_auth_logout"
   | "v1_auth_logout_others"
@@ -542,6 +571,9 @@ export interface ApiOperationMap {
   "v1_admin_campaigns_external_contributions_create": { request: ExternalContributionWriteRequest; response: ExternalContribution; auth: "required" };
   "v1_admin_payments_list": { request: never; response: Array<AdminPayment>; auth: "required" };
   "v1_admin_payments_refund": { request: PaymentRefundInputRequest; response: RefundResultOutput; auth: "required" };
+  "v1_admin_financial_health_retrieve": { request: never; response: FinancialHealth; auth: "required" };
+  "v1_admin_late_captures_reconcile": { request: LateCaptureReconcileInputRequest; response: LateCaptureReconcileResult; auth: "required" };
+  "v1_admin_refunds_dispatch": { request: never; response: RefundDispatchResult; auth: "required" };
   "v1_health_detailed": { request: never; response: HealthStatus; auth: "required" };
   "v1_auth_logout": { request: never; response: void; auth: "required" };
   "v1_auth_logout_others": { request: never; response: { revoked_count: number; }; auth: "required" };

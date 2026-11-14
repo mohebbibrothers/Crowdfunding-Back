@@ -4,9 +4,13 @@
 # استفاده از flock تضمین می‌کند که در صورت کندی موقت، دو پردازش همزمان اجرا نشوند.
 #
 # نمونه تنظیمات پیشنهادی در بخش Cron Jobs سی‌پنل نایترو:
-#   * * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh outbox >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
-#   */2 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh reap   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
-#   0 * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh anchor >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+#   * * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh outbox   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+#   */2 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh reap     >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+#   0 * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh anchor   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+#
+# ── حلقهٔ نجات وجه: بدون این دو خط، پولی که «گم‌شده» به‌نظر می‌رسد هرگز پیدا نمی‌شود ──
+#   */10 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh recovery >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+#   5 * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh refunds  >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
 # ==============================================================================
 set -euo pipefail
 
@@ -51,13 +55,25 @@ case "${TASK}" in
     anchor)
         run_locked "anchor" anchor_audit_chain
         ;;
+    recovery)
+        # داوری پرداخت‌های رهاشده: آیا وجهی پس از انقضای رزرو نزد درگاه مانده است؟
+        # هر ۱۰ دقیقه؛ دورهٔ تنفس (grace) در سیاست recovery.grace_minutes است.
+        run_locked "recovery" reconcile_abandoned_payments --batch-size 200
+        ;;
+    refunds)
+        # ارسال تعهدهای بازپرداخت به درگاه. مبالغ بالای recovery.auto_refund_max_rial
+        # به‌جای ارسال خودکار، برای تأیید انسانی به وضعیت MANUAL می‌روند.
+        run_locked "refunds" dispatch_pending_refunds --batch-size 100
+        ;;
     all)
         run_locked "outbox" process_outbox --batch-size 100 || true
         run_locked "reap" reap_expired || true
         run_locked "anchor" anchor_audit_chain || true
+        run_locked "recovery" reconcile_abandoned_payments --batch-size 200 || true
+        run_locked "refunds" dispatch_pending_refunds --batch-size 100 || true
         ;;
     *)
-        echo "Unknown cron task: ${TASK} (expected: outbox | reap | anchor | all)" >&2
+        echo "Unknown cron task: ${TASK} (expected: outbox | reap | anchor | recovery | refunds | all)" >&2
         exit 2
         ;;
 esac

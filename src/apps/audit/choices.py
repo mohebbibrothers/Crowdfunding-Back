@@ -37,6 +37,13 @@ class AuditAction(models.TextChoices):
     DISBURSEMENT_REJECTED = "finance.disbursement_rejected", _("رد درخواست تسویه با خیریه")
     DISBURSEMENT_PAID = "finance.disbursement_paid", _("ثبت پرداخت نهایی به شبای خیریه")
     RECONCILIATION_IMPORTED = "finance.reconciliation_imported", _("ورود فایل مغایرت‌گیری درگاه")
+    LATE_CAPTURE_RECOVERED = "finance.late_capture_recovered", _("بازیافت وجه پس از انقضای رزرو")
+    REFUND_OBLIGATION_OPENED = (
+        "finance.refund_obligation_opened",
+        _("ثبت تعهد بازپرداخت وجه به حامی"),
+    )
+    REFUND_SETTLED = "finance.refund_settled", _("تسویه و پایان بازپرداخت وجه")
+    OUTBOX_MESSAGE_REQUEUED = "ops.outbox_requeued", _("بازگردانی پیام متوقف‌شدهٔ صندوق خروجی")
     EXCEL_EXPORTED = "reporting.excel_exported", _("دریافت خروجی اکسل مدیریتی")
 
 

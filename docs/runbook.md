@@ -28,7 +28,49 @@ PYTHONPATH=src python src/manage.py reap_expired
 
 # ۳. راستی‌آزمایی زنجیره ممیزی، امضای لنگر HMAC جدید و ثبت عکس کنترل تراز دفتر کل
 PYTHONPATH=src python src/manage.py anchor_audit_chain
+
+# ۴. داوری پرداخت‌های رهاشده — «آیا وجهی پس از انقضای رزرو نزد درگاه گیر کرده است؟»
+PYTHONPATH=src python src/manage.py reconcile_abandoned_payments --batch-size 200
+
+# ۴ب. همان فرمان، فقط پیش‌نمایش (هیچ نوشتنی در دیتابیس انجام نمی‌شود)
+PYTHONPATH=src python src/manage.py reconcile_abandoned_payments --dry-run
+
+# ۵. ارسال تعهدهای بازپرداخت به درگاه
+PYTHONPATH=src python src/manage.py dispatch_pending_refunds --batch-size 100
 ```
+
+### زمان‌بندی اجباری در Cron (بدون این‌ها حلقهٔ وجه ناقص است)
+
+| وظیفه | تناوب | چرا این تناوب |
+| --- | --- | --- |
+| `process_outbox` | هر دقیقه | تأخیر پیامک/اعلان باید زیر یک دقیقه بماند. |
+| `reap_expired` | هر ۲ دقیقه | آزادسازی سریع سهم‌های رزرو تا ظرفیت حرکت قفل نماند. |
+| `reconcile_abandoned_payments` | **هر ۱۰ دقیقه** | وجهی که پس از انقضا نزد درگاه مانده، تا داوری نشود «معلّق» است: نه درآمد، نه بازپرداخت. هر ۱۰ دقیقه = حداکثر ۱۰ دقیقه تأخیر در بستن پرونده، به‌علاوهٔ دورهٔ تنفس `recovery.grace_minutes`. |
+| `dispatch_pending_refunds` | **هر ۱۰ دقیقه** | تعهد بازپرداخت نباید بیش از ۱۰ دقیقه در صف بماند؛ هر دقیقه انتظار = ریسک شکایت حامی. |
+| `anchor_audit_chain` | ساعتی | لنگر HMAC زنجیرهٔ ممیزی. |
+
+اسکریپت آماده: `deploy/cpanel/cron_jobs.sh` (با `flock` برای جلوگیری از اجرای همزمان).
+
+```cron
+* * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh outbox   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+*/2 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh reap     >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+*/10 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh recovery >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+*/10 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh refunds  >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+0 * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh anchor   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+```
+
+### سیاست‌های قابل تنظیم بدون دیپلوی (پنل مدیر → Policy Rules)
+
+| کلید | پیش‌فرض | اثر |
+| --- | --- | --- |
+| `recovery.grace_minutes` | `30` | فرصت درگاه برای نهایی‌کردن وضعیت پیش از داوری. |
+| `recovery.max_attempts` | `5` | سقف تلاش خودکار؛ پس از آن پرونده به `MANUAL_REVIEW` می‌رود. |
+| `recovery.auto_refund_enabled` | `True` | خاموش‌کردن کامل ارسال خودکار بازپرداخت. |
+| `recovery.auto_refund_max_rial` | `50_000_000` | **سقف ریالی ارسال خودکار.** بالاتر از این، تعهد به `MANUAL` می‌رود و باید دستی تأیید شود. `0` = بدون سقف. |
+
+> **هشدار عملیاتی:** هرگز `auto_refund_max_rial` را روی `0` نگذارید بدون این‌که
+> هشدار `pending_refunds` در `/api/v1/admin/financial-health` را پایش کنید. بدون
+> سقف، یک باگ در منطق داوری می‌تواند کل موجودی حساب درگاه را خودکار خارج کند.
 
 ---
 

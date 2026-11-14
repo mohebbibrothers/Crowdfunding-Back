@@ -22,10 +22,14 @@ from apps.core.metrics import render_prometheus_metrics
 from apps.core.models import PolicyRule
 from apps.core.policy import POLICY_REGISTRY, get_all_policies, set_policy_value
 from apps.core.serializers import (
+    FinancialHealthSerializer,
     HealthStatusSerializer,
+    LateCaptureReconcileInputSerializer,
+    LateCaptureReconcileResultSerializer,
     PlatformMetaSerializer,
     PolicyRuleOutputSerializer,
     PolicyUpdateInputSerializer,
+    RefundDispatchResultSerializer,
 )
 from apps.identity.permissions import (
     HasFreshMfa,
@@ -242,6 +246,74 @@ class AdminPolicyUpdateView(APIView):
                 "version": rule.version,
             }
         )
+
+
+class AdminFinancialHealthView(APIView):
+    """پنل «سلامت مالی» — پاسخ یک‌نگاهی به پرسش «آیا پولی گم شده است؟»
+
+    این نقطهٔ پایانی، حلقهٔ وجه را از سه زاویه اندازه می‌گیرد و هشدارهای
+    ماشین‌خوان می‌دهد تا شیفت عملیات بدون هیچ کوئری دستی بداند وضعیت چیست.
+    """
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_financial_health_retrieve",
+        summary="گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها",
+        responses={200: FinancialHealthSerializer},
+        tags=["Admin - System"],
+    )
+    def get(self, request: Request) -> Response:
+        """تولید گزارش سلامت مالی از داده‌های جاری."""
+        del request
+        from apps.contributions.financial_health import build_financial_health
+
+        return Response(build_financial_health())
+
+
+class AdminLateCaptureReconcileView(APIView):
+    """اجرای دستی داوری پرداخت‌های رهاشده از پنل مدیریت (با قابلیت پیش‌نمایش)."""
+
+    permission_classes = [IsFinanceOrSuperAdmin]
+
+    @extend_schema(
+        operation_id="v1_admin_late_captures_reconcile",
+        summary="اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه",
+        request=LateCaptureReconcileInputSerializer,
+        responses={200: LateCaptureReconcileResultSerializer},
+        tags=["Admin - System"],
+    )
+    def post(self, request: Request) -> Response:
+        """داوری دسته‌ای پرداخت‌های رهاشده و بازگشت آمار."""
+        from apps.contributions.services import reconcile_abandoned_payments
+
+        ser = LateCaptureReconcileInputSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        stats = reconcile_abandoned_payments(
+            batch_size=int(ser.validated_data["batch_size"]),
+            dry_run=bool(ser.validated_data["dry_run"]),
+        )
+        return Response(stats)
+
+
+class AdminRefundDispatchView(APIView):
+    """ارسال دسته‌ای تعهدهای بازپرداخت باز به درگاه (اجرای دستی همان کرون)."""
+
+    permission_classes = [IsFinanceOrSuperAdmin]
+
+    @extend_schema(
+        operation_id="v1_admin_refunds_dispatch",
+        summary="ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت",
+        request=None,
+        responses={200: RefundDispatchResultSerializer},
+        tags=["Admin - System"],
+    )
+    def post(self, request: Request) -> Response:
+        """اجرای ارسال و بازگشت آمار نتیجه."""
+        del request
+        from apps.contributions.services import dispatch_pending_refunds
+
+        return Response(dispatch_pending_refunds())
 
 
 def prometheus_metrics_view(request: HttpRequest) -> HttpResponse:

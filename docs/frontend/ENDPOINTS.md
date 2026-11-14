@@ -2,9 +2,9 @@
 
 > این جدول مستقیماً از [`openapi.yaml`](../api/v1/openapi.yaml) ساخته شده است. هرگونه تغییر مسیر، متد یا پارامتر بدون بازتولید این فایل توسط CI رد میشود.
 
-- تعداد مسیرها: **72**
-- تعداد عملیاتها: **83**
-- تعداد اسکیماها: **112**
+- تعداد مسیرها: **75**
+- تعداد عملیاتها: **86**
+- تعداد اسکیماها: **120**
 - تعداد تگها: **23**
 - سرورها: `https://api.charity.example.org`, `http://localhost:8000`
 
@@ -47,6 +47,9 @@
 | `POST` | `/api/v1/admin/campaigns/{campaign_id}/external-contributions` | `v1_admin_campaigns_external_contributions_create` | الزامی | ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا |
 | `GET` | `/api/v1/admin/payments` | `v1_admin_payments_list` | الزامی | فهرست مدیریتی تراکنش‌های درگاه پرداخت |
 | `POST` | `/api/v1/admin/payments/{payment_id}/refund` | `v1_admin_payments_refund` | الزامی | ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA) |
+| `GET` | `/api/v1/admin/financial-health` | `v1_admin_financial_health_retrieve` | الزامی | گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها |
+| `POST` | `/api/v1/admin/late-captures/reconcile` | `v1_admin_late_captures_reconcile` | الزامی | اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه |
+| `POST` | `/api/v1/admin/refunds/dispatch` | `v1_admin_refunds_dispatch` | الزامی | ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت |
 | `GET` | `/api/v1/health/detailed` | `v1_health_detailed` | الزامی | بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی |
 | `POST` | `/api/v1/auth/logout` | `v1_auth_logout` | الزامی | خروج از نشست جاری |
 | `POST` | `/api/v1/auth/logout-others` | `v1_auth_logout_others` | الزامی | ابطال تمام نشست‌های دیگر به‌جز دستگاه فعلی |

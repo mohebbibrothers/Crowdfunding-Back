@@ -14,8 +14,10 @@ from apps.contributions.choices import (
     ContributionTargetKind,
     DedicationType,
     GatewayName,
+    LateCaptureOutcome,
     PaymentRiskKind,
     PaymentStatus,
+    RefundOutcome,
 )
 from apps.core.models import BaseModel
 
@@ -332,14 +334,121 @@ class PaymentRefund(BaseModel):
     refunded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name="processed_refunds",
         verbose_name=_("کاربر ثبت‌کننده"),
+    )
+
+    outcome = models.CharField(
+        max_length=16,
+        choices=RefundOutcome.choices,
+        default=RefundOutcome.COMPLETED,
+        db_index=True,
+        verbose_name=_("نتیجهٔ اجرای بازپرداخت"),
+    )
+    gateway_reference = models.CharField(
+        max_length=80, blank=True, default="", verbose_name=_("مرجع بازپرداخت در درگاه")
+    )
+    gateway_raw_code = models.CharField(
+        max_length=40, blank=True, default="", verbose_name=_("کد خام پاسخ درگاه")
+    )
+    attempt_count = models.PositiveSmallIntegerField(
+        default=0, verbose_name=_("تعداد تلاش ارسال به درگاه")
+    )
+    last_attempt_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان آخرین تلاش"))
+    automation_note = models.CharField(
+        max_length=400, blank=True, default="", verbose_name=_("توضیح مسیر خودکار")
     )
 
     class Meta:
         verbose_name = _("استرداد پرداخت")
         verbose_name_plural = _("استردادهای پرداخت")
         ordering = ["-created_at"]
+
+
+class LateCaptureRecovery(BaseModel):
+    """دفتر داوری «پرداختِ رهاشده» — قلب حلقهٔ نجات وجه.
+
+    برای هر ``Payment`` که با وضعیت نامعلوم رها می‌شود دقیقاً **یک** رکورد ساخته
+    می‌شود (یکتایی روی ``payment``) تا اجرای مکرر کرون هیچ‌گاه دو بار تخصیص
+    یا دو بار بازپرداخت ایجاد نکند.
+
+    این رکورد پاسخ سه پرسش را برای همیشه نگه می‌دارد:
+      ۱) درگاه چه گفت؟        ⇒ ``gateway_verdict_raw``
+      ۲) ما چه کردیم؟          ⇒ ``outcome``
+      ۳) چرا؟                  ⇒ ``decision_reason``
+    """
+
+    payment = models.OneToOneField(
+        Payment,
+        on_delete=models.PROTECT,
+        related_name="late_capture",
+        verbose_name=_("پرداخت رهاشده"),
+    )
+    contribution = models.ForeignKey(
+        Contribution,
+        on_delete=models.PROTECT,
+        related_name="late_captures",
+        verbose_name=_("مشارکت مرتبط"),
+    )
+
+    outcome = models.CharField(
+        max_length=20,
+        choices=LateCaptureOutcome.choices,
+        default=LateCaptureOutcome.MANUAL_REVIEW,
+        db_index=True,
+        verbose_name=_("داوری نهایی"),
+    )
+    decision_reason = models.CharField(
+        max_length=200, blank=True, default="", verbose_name=_("دلیل تصمیم (ماشین‌خوان)")
+    )
+    gateway_verdict_raw = models.CharField(
+        max_length=40, blank=True, default="", verbose_name=_("کد خام پاسخ درگاه")
+    )
+    gateway_ref_id = models.CharField(
+        max_length=80, blank=True, default="", verbose_name=_("شماره پیگیری درگاه")
+    )
+
+    # وضعیت ظرفیت در لحظهٔ داوری، برای اینکه بعداً بتوان *چرا* را بازسازی کرد.
+    capacity_at_decision = models.IntegerField(
+        default=0, verbose_name=_("سهم آزاد حرکت در لحظهٔ داوری")
+    )
+    recovered_shares = models.PositiveIntegerField(
+        default=0, verbose_name=_("سهم‌های تخصیص‌داده‌شده در مسیر نجات")
+    )
+    refund = models.ForeignKey(
+        PaymentRefund,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="late_capture_recoveries",
+        verbose_name=_("بازپرداخت صادرشده"),
+    )
+
+    resolved_at = models.DateTimeField(
+        null=True, blank=True, db_index=True, verbose_name=_("زمان پایان تعیین تکلیف")
+    )
+    attempt_count = models.PositiveSmallIntegerField(
+        default=0, verbose_name=_("تعداد تلاش استعلام از درگاه")
+    )
+    last_error = models.TextField(blank=True, default="", verbose_name=_("آخرین خطای داوری"))
+
+    class Meta:
+        verbose_name = _("بازیافت پرداخت رهاشده")
+        verbose_name_plural = _("بازیافت‌های پرداخت رهاشده")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["outcome", "-created_at"], name="latecap_outcome_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return f"LateCapture {self.outcome} ({self.payment.authority})"
+
+    @property
+    def is_resolved(self) -> bool:
+        """آیا این تراکنش رهاشده به تعیین تکلیف نهایی رسیده است؟"""
+        return self.outcome != LateCaptureOutcome.MANUAL_REVIEW
 
 
 class ExternalContribution(BaseModel):

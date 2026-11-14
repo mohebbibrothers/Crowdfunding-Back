@@ -7,7 +7,7 @@
 | میخواهم… | بروم به |
 | --- | --- |
 | **تازه آمده‌ام، از کجا شروع کنم؟** | [`../../START-HERE.md`](../../START-HERE.md) — راهنمای ورود ۵ دقیقه‌ای با کد آماده |
-| **همهچیز را یکجا و بصری ببینم** | [`index.html`](./index.html) — پورتال آفلاین با کاوشگر ۸۳ عملیات |
+| **همهچیز را یکجا و بصری ببینم** | [`index.html`](./index.html) — پورتال آفلاین با کاوشگر ۸۶ عملیات |
 | **شروع به کدنویسی کنم** | [`HANDOFF.md`](./HANDOFF.md) — راهنمای جامع، قراردادها، جریانها و نمودارها |
 | **تایپها را import کنم** | [`api-types.d.ts`](./api-types.d.ts) + [`operations.ts`](./operations.ts) |
 | **کلاینت HTTP آماده بردارم** | [`api-client.ts`](./api-client.ts) — بدون وابستگی خارجی |
@@ -91,11 +91,11 @@ window.location.href = checkout.gateway_redirect_url;
 | `HANDOFF.md` | راهنمای جامع | دستنویس | ۹ بخش + نمودارهای Mermaid |
 | `CHECKLIST.md` | چکلیست پذیرش | دستنویس | Definition of Done |
 | `api-client.ts` | کلاینت fetch | دستنویس | CSRF/JWT/refresh/خطا/retry/ETag/pagination |
-| `api-types.d.ts` | ۱۱۲ اسکیما + `ApiOperationMap` | 🟢 خودکار | عدم دستکاری |
-| `operations.ts` | ۸۳ نگاشت operationId | 🟢 خودکار | عدم دستکاری |
+| `api-types.d.ts` | ۱۲۰ اسکیما + `ApiOperationMap` | 🟢 خودکار | عدم دستکاری |
+| `operations.ts` | ۸۶ نگاشت operationId | 🟢 خودکار | عدم دستکاری |
 | `ENDPOINTS.md` | ماتریس متد/مسیر/پارامتر | 🟢 خودکار | عدم دستکاری |
 | `ERRORS.md` | ۳۸ کد خطا + لنگر `type` | 🟢 خودکار | عدم دستکاری |
-| `postman_collection.json` | ۲۳ پوشه / ۸۳ درخواست | 🟢 خودکار | عدم دستکاری |
+| `postman_collection.json` | ۲۳ پوشه / ۸۶ درخواست | 🟢 خودکار | عدم دستکاری |
 | `contract-fingerprint.json` | SHA-256 قرارداد | 🟢 خودکار | مبنای گیت CI |
 | `README.md` | نقشهٔ ورودی بسته | دستنویس | شروع سریع |
 | `tsconfig.json` + `type-tests.ts` | `strict` TypeScript | دستنویس | `make tscheck` |

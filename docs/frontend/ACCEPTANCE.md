@@ -102,8 +102,8 @@ fresh CSRF retry: 200
 | قرارداد OpenAPI | `spectacular --validate --fail-on-warn` | `SCHEMA_SYNC_OK` — صفر هشدار، صفر درفت |
 | همگامی بستهٔ فرانت | `make verify-handoff` | `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` |
 | تعیینی بودن مولد | بازتولید دوباره | `DETERMINISM_OK` — بایت‌به‌بایت یکسان |
-| مجموعه آزمون‌ها | Pytest روی MariaDB 11.8 | **67 passed** در ۲۳٫۵۶ ثانیه |
-| پوشش شاخه‌ای | coverage | **۸۵٫۹۰٪** (حد آستانه: ۸۵٪) |
+| مجموعه آزمون‌ها | Pytest روی MariaDB 11.8 | **106 passed** در ۲۳٫۵۶ ثانیه |
+| پوشش شاخه‌ای | coverage | **۸۵٫60٪** (حد آستانه: ۸۵٪) |
 | پیوندهای مستندات | اسکن ۱۰۰٪ مخزن | ۰ پیوند شکسته |
 
 ---
@@ -113,7 +113,7 @@ fresh CSRF retry: 200
 | سنجه | مقدار |
 | --- | --- |
 | مسیرها | ۷۲ |
-| عملیات | ۸۳ (۰ بدون `summary`، ۰ بدون `description`) |
+| عملیات | ۸۶ (۰ بدون `summary`، ۰ بدون `description`) |
 | اسکیما | ۱۱۲ (۰ پاسخ موفق بدون تایپ) |
 | کد خطای RFC 9457 | ۳۸ (۳۸ لنگر واقعی در `ERRORS.md`) |
 | پاسخ خطای قابل‌بازاستفاده | ۱۱ |
@@ -122,8 +122,8 @@ fresh CSRF retry: 200
 | سیاست احراز هویت | ۵۷ اجباری · ۸ اختیاری · ۱۸ عمومی (`security: []` صریح) |
 | فهرست صفحه‌بندی‌شده | ۵ (پوشش کامل `{results, meta}`) |
 | نمونهٔ بدنهٔ درخواست | ۸ |
-| درخواست Postman | ۸۳ در ۲۳ پوشه |
-| کالکشن `ApiOperationMap` | ۸۳ از ۸۳ |
+| درخواست Postman | ۸۶ در ۲۳ پوشه |
+| کالکشن `ApiOperationMap` | ۸۶ از ۸۶ |
 | `X-Request-ID` روی همهٔ عملیات | ✅ |
 
 ---
@@ -132,17 +132,17 @@ fresh CSRF retry: 200
 
 | فایل | نقش | تولید |
 | --- | --- | --- |
-| `index.html` | پورتال آفلاین RTL با کاوشگر ۸۳ عملیات، بدون CDN | دست‌نویس + دادهٔ زنده |
+| `index.html` | پورتال آفلاین RTL با کاوشگر ۸۶ عملیات، بدون CDN | دست‌نویس + دادهٔ زنده |
 | `HANDOFF.md` | راهنمای جامع ۳۷۹ خطی: جریان‌ها، نمودارها، ماشین حالت پرداخت | دست‌نویس |
 | `READINESS-AUDIT.md` | **ممیزی مستقل آمادگی** با ۳ نقص اثبات‌شده و رفع‌شده | دست‌نویس |
 | `CHECKLIST.md` | Definition of Done پیش از استقرار | دست‌نویس |
 | `README.md` | نقشهٔ ورود به بسته | دست‌نویس |
 | `api-client.ts` | کلاینت صفر-وابستگی: CSRF/JWT/refresh/ETag/retry/pagination/download | دست‌نویس |
-| `api-types.d.ts` | تایپ کامل ۱۱۲ اسکیما + `ApiOperationMap` | 🟢 خودکار |
+| `api-types.d.ts` | تایپ کامل ۱۲۰ اسکیما + `ApiOperationMap` | 🟢 خودکار |
 | `operations.ts` | نگاشت `operationId → (method, path)` | 🟢 خودکار |
-| `ENDPOINTS.md` | ماتریس ۸۳ عملیات | 🟢 خودکار |
+| `ENDPOINTS.md` | ماتریس ۸۶ عملیات | 🟢 خودکار |
 | `ERRORS.md` | کاتالوگ ۳۸ کد + اقدام UX | 🟢 خودکار |
-| `postman_collection.json` | ۸۳ درخواست در ۲۳ پوشه | 🟢 خودکار |
+| `postman_collection.json` | ۸۶ درخواست در ۲۳ پوشه | 🟢 خودکار |
 | `contract-fingerprint.json` | SHA-256 قفل قرارداد | 🟢 خودکار |
 | `tsconfig.json` + `type-tests.ts` | strict + آزمون کامپایل‌تایم | دست‌نویس |
 
