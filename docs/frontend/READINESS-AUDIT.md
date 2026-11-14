@@ -45,8 +45,8 @@
 | ۵۷ اجباری / ۸ اختیاری | ۵۷ / ۸ | ✅ | `x-frontend-policy.auth` |
 | ۸۳ درخواست Postman در ۲۳ پوشه | ۸۳ / ۲۳ | ✅ | `postman_collection.json` |
 | کالکشن کامل `ApiOperationMap` | ۸۳ | ✅ | `api-types.d.ts` |
-| ۱۱ آزمون قرارداد / ۶۴ آزمون کل | ۳۳ در `test_frontend_contract.py` / ۶۴ کل | ✅ | AST شمارش توابع تست |
-| پوشش شاخه‌ای ≥ ۸۵٪ | ۸۵٫۸۴٪ | ✅ | گزارش coverage |
+| ۱۱ آزمون قرارداد / ۶۴ آزمون کل | ۳۳ در `test_frontend_contract.py` / 67 کل | ✅ | AST شمارش توابع تست |
+| پوشش شاخه‌ای ≥ ۸۵٪ | ۸۵٫۹۰٪ | ✅ | گزارش coverage |
 | کوکی نشست `cf_session` | `cf_session` | ✅ | `SESSION_COOKIE_NAME` و `cookieAuth.name` |
 | نوع پاسخ‌ها بدون `any`/`unknown` | ۰ مورد از ۸۳ | ✅ | بازرسی AST TypeScript |
 
@@ -232,7 +232,7 @@ make test
 
 **نتیجهٔ آخرین اجرا:** `All checks passed!` · `Success: no issues found in 137 source files` ·
 `TSCHECK_OK` · `SCHEMA_SYNC_OK` · `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` ·
-`61 passed` · `85.84%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
+`67 passed` · `85.90%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
 `System check identified no issues` · `No changes detected (migrations)`.
 
 ---

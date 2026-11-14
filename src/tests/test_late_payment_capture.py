@@ -1,0 +1,173 @@
+"""اثبات شکاف «پرداخت موفق پس از انقضای رزرو» (Late Capture).
+
+سناریوی واقعی: کاربر به درگاه می‌رود، وجه را پرداخت می‌کند، اما در صفحهٔ درگاه
+(یا در بازگشت) گم می‌شود؛ ۱۵ دقیقه می‌گذرد و ``reap_expired`` رزرو را آزاد می‌کند.
+سپس کاربر برمی‌گردد. پول نزد درگاه است.
+
+این آزمون رفتار *فعلی* را مستند می‌کند؛ اگر روزی مسیر جبران خودکار پیاده شود،
+این فایل باید به‌روزرسانی شود.
+"""
+
+from __future__ import annotations
+
+from datetime import timedelta
+
+from django.utils import timezone
+import pytest
+
+from apps.benefactors.models import Benefactor
+from apps.campaigns.models import Campaign, CampaignCategory, CampaignStatus
+from apps.campaigns.services import create_campaign
+from apps.contributions.models import Contribution, Payment
+from apps.contributions.services import (
+    initiate_contribution_checkout,
+    release_expired_share_holds,
+    verify_payment_callback,
+)
+from apps.core.errors import ConflictError
+from apps.identity.models import User
+
+
+def _admin() -> User:
+    return User.objects.create_superuser(
+        phone="09120007701", first_name="ادمین", last_name="پرداخت دیرهنگام"
+    )
+
+
+def _campaign(admin: User, *, total_shares: int = 10) -> Campaign:
+    ben = Benefactor.objects.create(
+        name="خیریه آزمون دیرهنگام", slug="late-pay-charity", is_verified=True, is_active=True
+    )
+    cat = CampaignCategory.objects.create(title="دستهٔ دیرهنگام", slug="late-pay-cat")
+    return create_campaign(
+        actor=admin,
+        data={
+            "benefactor_id": str(ben.id),
+            "category_id": str(cat.id),
+            "title": "حرکت آزمون پرداخت دیرهنگام",
+            "slug": "late-pay-campaign",
+            "subtitle": "زیرعنوان",
+            "story": "داستان حرکت برای آزمون پرداخت دیرهنگام.",
+            "province": "تهران",
+            "city": "تهران",
+            "total_shares": total_shares,
+            "share_price_rial": 1_000_000,
+            "status": CampaignStatus.ACTIVE,
+        },
+    )
+
+
+@pytest.mark.django_db
+def test_late_payment_after_hold_expiry_raises_conflict_and_loses_money(
+    seeded_policies: None,
+) -> None:
+    """اگر ظرفیت حرکت پس از انقضا پر شده باشد، تأیید پرداخت با خطا شکست می‌خورد."""
+    del seeded_policies
+    admin = _admin()
+    campaign = _campaign(admin, total_shares=2)
+    donor = User.objects.create_user(phone="09120007702", first_name="حامی", last_name="آزمون")
+
+    # ۱) حامی هر ۲ سهم را رزرو می‌کند و به درگاه می‌رود
+    contribution, payment = initiate_contribution_checkout(
+        user=donor,
+        target_kind="campaign_shares",
+        campaign_id=str(campaign.id),
+        shares_count=2,
+    )
+
+    # ۲) کاربر گم می‌شود؛ رزرو منقضی و آزاد می‌شود (همان کاری که cron می‌کند)
+    Contribution.objects.filter(pk=contribution.pk).update(
+        hold_expires_at=timezone.now() - timedelta(minutes=1)
+    )
+    released = release_expired_share_holds(campaign_id=campaign.id)
+    assert released == 1
+
+    contribution.refresh_from_db()
+    payment.refresh_from_db()
+    assert contribution.status == "expired"
+    assert payment.status == "failed"
+
+    # ۳) سهم‌ها به شخص دیگری فروخته می‌شود (ظرفیت تکمیل)
+    campaign.refresh_from_db()
+    campaign.paid_shares = campaign.total_shares  # funded = paid + matched + external
+    campaign.save(update_fields=["paid_shares", "updated_at"])
+
+    # ۴) کاربر با پرداخت موفق برمی‌گردد ⇒ درگاه می‌گوید پول گرفته شده
+    with pytest.raises(ConflictError):
+        verify_payment_callback(authority=payment.authority, gateway_status="OK")
+
+    # نتیجهٔ فعلی: پول نزد درگاه است، مشارکت expired مانده و هیچ رکورد بازپرداختی ساخته نشده.
+    contribution.refresh_from_db()
+    payment.refresh_from_db()
+    assert contribution.status == "expired"
+    assert payment.status == "failed"
+    assert not hasattr(contribution, "refund") or contribution.refund is None
+
+
+@pytest.mark.django_db
+def test_late_payment_when_capacity_still_available_is_accepted(
+    seeded_policies: None,
+) -> None:
+    """اگر ظرفیت هنوز آزاد باشد، پرداخت دیرهنگام *پذیرفته* می‌شود (مسیر خوش‌بینانه)."""
+    del seeded_policies
+    admin = _admin()
+    campaign = _campaign(admin, total_shares=10)
+    donor = User.objects.create_user(phone="09120007703", first_name="حامی۲", last_name="آزمون")
+
+    contribution, payment = initiate_contribution_checkout(
+        user=donor,
+        target_kind="campaign_shares",
+        campaign_id=str(campaign.id),
+        shares_count=2,
+    )
+    Contribution.objects.filter(pk=contribution.pk).update(
+        hold_expires_at=timezone.now() - timedelta(minutes=1)
+    )
+    release_expired_share_holds(campaign_id=campaign.id)
+
+    verified_payment, receipt = verify_payment_callback(
+        authority=payment.authority, gateway_status="OK"
+    )
+    contribution.refresh_from_db()
+    verified_payment.refresh_from_db()
+
+    assert verified_payment.status == "verified"
+    assert contribution.status == "paid"
+    assert receipt is not None
+    campaign.refresh_from_db()
+    assert campaign.funded_shares == 2
+
+
+@pytest.mark.django_db
+def test_no_orphan_payment_without_any_callback(
+    seeded_policies: None,
+) -> None:
+    """اگر کاربر هرگز برنگردد، پول نزد درگاه می‌ماند و هیچ مکانیزم شناسایی وجود ندارد.
+
+    این آزمون شکاف دوم را مستند می‌کند: نبود job مغایرت‌گیری خودکار با گزارش درگاه،
+    هر ``Payment`` با وضعیت INITIATED که درگاه آن را «موفق» می‌داند، فقط با گزارش دستی
+    کاربر کشف می‌شود.
+    """
+    del seeded_policies
+    admin = _admin()
+    campaign = _campaign(admin, total_shares=10)
+    donor = User.objects.create_user(phone="09120007704", first_name="حامی۳", last_name="آزمون")
+
+    contribution, payment = initiate_contribution_checkout(
+        user=donor,
+        target_kind="campaign_shares",
+        campaign_id=str(campaign.id),
+        shares_count=1,
+    )
+    # کاربر پول داد ولی هرگز به سایت برنگشت ⇒ هیچ callback‌ای فراخوانی نمی‌شود.
+    Contribution.objects.filter(pk=contribution.pk).update(
+        hold_expires_at=timezone.now() - timedelta(minutes=1)
+    )
+    release_expired_share_holds(campaign_id=campaign.id)
+
+    payment.refresh_from_db()
+    # پرداخت به‌صورت کورکورانه «failed» علامت‌گذاری شد، در حالی که ممکن است درگاه آن را
+    # تأیید کرده باشد. هیچ فرمان ``reconcile_pending_payments`` وجود ندارد که این را کشف کند.
+    assert payment.status == "failed"
+    assert payment.ref_id == ""
+    assert Payment.objects.filter(status="failed", ref_id="").count() == 1
