@@ -6,6 +6,7 @@
 
 ## الف) قرارداد و تایپها
 
+- [ ] [`READINESS-AUDIT.md`](./READINESS-AUDIT.md) خوانده شد (۳ نقص مسدودکنندهٔ کشف‌شده و رفع‌شده).
 - [ ] `docs/api/v1/openapi.yaml` خوانده شد و `servers[0].url` با `VITE_API_BASE_URL` یکی است.
 - [ ] `api-types.d.ts` و `operations.ts` مستقیماً کپی شدند و **دستکاری نشدند**.
 - [ ] `make handoff` روی مخزن بکاند اجرا شد و خروجی `git status` تمیز است (یعنی درفتی وجود ندارد).

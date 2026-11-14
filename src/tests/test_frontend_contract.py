@@ -227,6 +227,7 @@ def test_documentation_references_real_frontend_assets() -> None:
         "ERRORS.md",
         "postman_collection.json",
         "contract-fingerprint.json",
+        "READINESS-AUDIT.md",
     }
     existing = {p.name for p in FRONTEND_DIR.iterdir() if p.is_file()}
     assert required <= existing, f"Missing: {sorted(required - existing)}"

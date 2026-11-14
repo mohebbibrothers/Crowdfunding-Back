@@ -14,6 +14,7 @@
 | **خطاها را هندل کنم** | [`ERRORS.md`](./ERRORS.md) — ۳۸ کد RFC 9457 + اقدام UX |
 | **سریعاً در Postman تست کنم** | [`postman_collection.json`](./postman_collection.json) |
 | **پیش از استقرار چک کنم** | [`CHECKLIST.md`](./CHECKLIST.md) |
+| **بدانم چه چیزی ممیزی و رفع شده** | [`READINESS-AUDIT.md`](./READINESS-AUDIT.md) — گزارش ممیزی مستقل با ۳ نقص مسدودکنندهٔ اثبات‌شده |
 
 ---
 
