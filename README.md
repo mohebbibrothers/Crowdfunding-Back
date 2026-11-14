@@ -19,6 +19,7 @@
 
 ## 📦 بستهٔ رسمی تحویل به فرانتاند (Frontend Handoff Kit) — نسخهٔ ۱٫۱٫۰
 
+> **👋 تیم فرانت‌اند از اینجا شروع کنید:** [`START-HERE.md`](START-HERE.md) — راهنمای ورود ۵ دقیقه‌ای
 > **همین حالا تحویل بدهید:** [`docs/frontend/index.html`](docs/frontend/index.html) (پورتال بصری آفلاین)
 > · [`docs/frontend/HANDOFF.md`](docs/frontend/HANDOFF.md) (راهنمای جامع)
 > · [`docs/frontend/README.md`](docs/frontend/README.md) (نقشهٔ بسته)

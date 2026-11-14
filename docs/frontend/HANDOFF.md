@@ -9,6 +9,8 @@
 
 ## ۰. شروع ۵ دقیقهای
 
+> 🚀 اگر عجله دارید و فقط یک فایل می‌خواهید: [`../../START-HERE.md`](../../START-HERE.md)
+
 ```bash
 # ۱) دریافت مخزن و اجرای بکاند بهصورت محلی
 git clone https://github.com/mohebbibrothers/Crowdfunding-Back.git
