@@ -6,7 +6,7 @@
 ![MariaDB 11](https://img.shields.io/badge/MariaDB-11.x-003545?logo=mariadb&logoColor=white)
 ![OpenAPI 3.1.0](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapiinitiative&logoColor=white)
 ![Mypy Strict](https://img.shields.io/badge/mypy-strict-blue)
-![Branch Coverage 85.82%](https://img.shields.io/badge/branch%20coverage-85.82%25-brightgreen)
+![Branch Coverage 85.84%](https://img.shields.io/badge/branch%20coverage-85.84%25-brightgreen)
 ![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.1.0-6C5CE7?logo=typescript&logoColor=white)
 ![Release](https://img.shields.io/badge/release-v1.1.0-2ECC71?logo=github)
 
@@ -125,7 +125,7 @@ Crowdfunding-Back/
 ├── src/
 │   ├── config/                   # تنظیمات محیط‌های development / test / production و مسیریابی اصلی
 │   ├── apps/                     # ۹ ماژول محدودشدهٔ دامنه (Bounded Contexts)
-│   └── tests/                    # ۶۰ آزمون یکپارچه، قراردادی، همروندی، امنیتی و خاصیتمحور
+│   └── tests/                    # ۶۱ آزمون یکپارچه، قراردادی، همروندی، امنیتی و خاصیتمحور
 ├── Dockerfile                    # تصویر کانتینر چندمرحله‌ای غیرریشه (Non-Root)
 ├── compose.yaml                  # اجرای یک‌دستوری محلی با MariaDB 11.4 + Web + Cron Worker
 ├── Makefile                      # میانبرهای سریع توسعه، کنترل کیفیت و اجرای آزمون‌ها
@@ -175,7 +175,7 @@ docker compose up --build -d
 make check           # Ruff + Mypy (--strict) + Bandit + pip-audit + OpenAPI 3.1 + همگامی بستهٔ فرانتاند
 make handoff         # بازتولید تایپها، کالکشن Postman، ماتریس، خطاها و پورتال از قرارداد
 make tscheck         # بررسی تایپهای TypeScript بستهٔ فرانتاند (strict)
-make test            # اجرای کامل ۶۰ آزمون Pytest روی MariaDB با شرط پوشش شاخهای >= ۸۵٪
+make test            # اجرای کامل ۶۱ آزمون Pytest روی MariaDB با شرط پوشش شاخهای >= ۸۵٪
 
 # گیتهای تازهٔ نسخهٔ ۱٫۱٫۰: درفت مستندات، تایپشدهبودن تمام پاسخها، پوشش صفحهبندی،
 # کاتالوگ خطاها، طرحهای امنیتی و مسیرهای زندهٔ Swagger/ReDoc.

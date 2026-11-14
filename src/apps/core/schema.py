@@ -12,6 +12,8 @@ from typing import Any
 from drf_spectacular.utils import OpenApiParameter, inline_serializer
 from rest_framework import serializers
 
+from apps.core.policy import DEFAULT_POLICIES
+
 PROBLEM_MEDIA_TYPE = "application/problem+json"
 
 HTTP_METHODS: frozenset[str] = frozenset({"get", "post", "put", "patch", "delete"})
@@ -511,7 +513,33 @@ def enrich_contract_schema(
     del generator, request, public
 
     components = result.setdefault("components", {})
-    components.setdefault("schemas", {})["Problem"] = PROBLEM_SCHEMA
+    schemas = components.setdefault("schemas", {})
+    schemas["Problem"] = PROBLEM_SCHEMA
+
+    # پرچم‌های ویژگی باید در قرارداد «کلیددار» باشند، نه یک نگاشت آزاد؛ در غیر این صورت
+    # هر ``meta.features.x`` در TypeScript به ``boolean | undefined`` تبدیل می‌شود و فرانت
+    # برای پرچمی که سرور همیشه برمی‌گرداند مجبور به null-check بی‌مورد و بدون autocomplete است.
+    feature_flags = {
+        spec.key.removeprefix("feature."): spec
+        for spec in DEFAULT_POLICIES
+        if spec.key.startswith("feature.")
+    }
+    if "PlatformMeta" in schemas and feature_flags:
+        meta_props = schemas["PlatformMeta"].get("properties", {})
+        meta_props["features"] = {
+            "type": "object",
+            "description": "پرچم‌های ویژگی فعال/غیرفعال؛ مبنای نمایش یا پنهان‌سازی بلوک‌های رابط.",
+            "required": sorted(feature_flags),
+            "properties": {
+                name: {
+                    "type": "boolean",
+                    "description": spec.description,
+                }
+                for name, spec in sorted(feature_flags.items())
+            },
+            "additionalProperties": False,
+        }
+
     responses = components.setdefault("responses", {})
     for status, description in ERROR_STATUS_DESCRIPTIONS.items():
         responses[f"Problem{status}"] = {

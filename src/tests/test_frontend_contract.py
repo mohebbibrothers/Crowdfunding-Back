@@ -699,3 +699,36 @@ def test_meta_today_jalali_matches_documented_format() -> None:
     documented = re.search(r'"today_jalali": "([^"]+)"', handoff)
     assert documented is not None
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", documented.group(1)), documented.group(1)
+
+
+def test_feature_flags_are_typed_not_free_form_map() -> None:
+    """پرچم‌های ``features`` باید کلیددار و اجباری باشند تا فرانت null-check بی‌مورد نداشته باشد.
+
+    رگرسیون DX: نگاشت آزاد ``additionalProperties: boolean`` باعث می‌شد در TypeScript
+    هر ``meta.features.x`` از نوع ``boolean | undefined`` شود؛ یعنی پرچم همیشه‌برگشتی
+    مجبور به بررسی وجود بود و هیچ autocompleteای نداشت.
+    """
+    from apps.core.policy import DEFAULT_POLICIES
+
+    doc = _schema()
+    features = doc["components"]["schemas"]["PlatformMeta"]["properties"]["features"]
+    expected = sorted(
+        spec.key.removeprefix("feature.")
+        for spec in DEFAULT_POLICIES
+        if spec.key.startswith("feature.")
+    )
+    assert len(expected) == 9
+    assert sorted(features["required"]) == expected
+    assert set(features["properties"]) == set(expected)
+    assert features["additionalProperties"] is False
+    for name, spec in features["properties"].items():
+        assert spec["type"] == "boolean", name
+        assert spec.get("description"), f"{name} needs a Persian description"
+
+    types_text = (FRONTEND_DIR / "api-types.d.ts").read_text(encoding="utf-8")
+    meta_line = re.search(r"export interface PlatformMeta \{ (.*?) \}", types_text, re.DOTALL)
+    assert meta_line is not None
+    block = meta_line.group(1)
+    for name in expected:
+        assert f"{name}: boolean;" in block, f"{name} must be a required boolean in api-types.d.ts"
+        assert f"{name}?: boolean" not in block, f"{name} must not be optional"

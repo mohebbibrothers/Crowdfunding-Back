@@ -8905,8 +8905,56 @@ components:
           type: string
         features:
           type: object
-          additionalProperties:
-            type: boolean
+          description: پرچم‌های ویژگی فعال/غیرفعال؛ مبنای نمایش یا پنهان‌سازی بلوک‌های
+            رابط.
+          required:
+          - anonymous_and_live_feed
+          - charity_general_jars
+          - express_one_step_checkout
+          - external_offline_funding
+          - impact_updates
+          - matching_grants
+          - merkle_transparency
+          - shortlinks_and_ambassadors
+          - spiritual_dedications
+          properties:
+            anonymous_and_live_feed:
+              type: boolean
+              description: 'ایدهٔ ۳: سوئیچ خیر گمنام و جریان زندهٔ آخرین مشارکت‌ها
+                در صفحهٔ حرکت'
+            charity_general_jars:
+              type: boolean
+              description: 'ایدهٔ ۸-الف: امکان فعال‌سازی قلک عام مبلغ دلخواه برای
+                هر خیریه'
+            express_one_step_checkout:
+              type: boolean
+              description: 'ایدهٔ ۱: مشارکت سریع ۳۰ ثانیه‌ای مهمان با OTP درجا و قفل
+                هم‌زمان سهم'
+            external_offline_funding:
+              type: boolean
+              description: 'ایدهٔ ۶: ثبت کمک‌های خارج از سایت (پویش آفلاین خیریه)
+                در سرفصل مجزای دفتر کل'
+            impact_updates:
+              type: boolean
+              description: 'ایدهٔ ۴: تایم‌لاین گزارش‌های پیشرفت میدانی پس از تأمین
+                مالی و اعلان به خیرین'
+            matching_grants:
+              type: boolean
+              description: 'ایدهٔ ۸-ب: حامی مضاعف‌کننده (Matching Grant) برای دوبرابر
+                شدن اثر سهم‌ها'
+            merkle_transparency:
+              type: boolean
+              description: 'ایدهٔ ۵: شفافیت رمزنگاری درخت مرکل و راستی‌آزمایی ریاضی
+                سهم هر خیر'
+            shortlinks_and_ambassadors:
+              type: boolean
+              description: 'ایدهٔ ۷: پیوندک کوتاه حرکت‌ها و سامانهٔ سفیران خیر برای
+                سنجش اثر معرفی'
+            spiritual_dedications:
+              type: boolean
+              description: 'ایدهٔ ۲: نیت‌نامه، یادبود درگذشتگان و صدور کارت هدیهٔ
+                معنوی قابل اشتراک'
+          additionalProperties: false
         share_hold_ttl_minutes:
           type: integer
       required:

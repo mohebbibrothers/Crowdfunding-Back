@@ -351,7 +351,7 @@ export interface PaymentRefundInputRequest { reason: string; bank_reference?: st
 export interface PaymentVerifyResponse { verified: boolean; payment_status: string; contribution_id: string; ref_id: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; receipt_number: (string | null); verification_code: (string | null); dedication_token: (string | null); }
 
 /** پاسخ نقطهٔ پایانی ``GET /api/v1/meta`` برای بوت‌استرپ فرانت‌اند. */
-export interface PlatformMeta { service: string; environment: string; api_version: string; app_version: string; supported_versions: Array<string>; currency_base: string; currency_display_units: Array<string>; timezone: string; today_jalali: string; features: Record<string, boolean>; share_hold_ttl_minutes: number; }
+export interface PlatformMeta { service: string; environment: string; api_version: string; app_version: string; supported_versions: Array<string>; currency_base: string; currency_display_units: Array<string>; timezone: string; today_jalali: string; features: { anonymous_and_live_feed: boolean; charity_general_jars: boolean; express_one_step_checkout: boolean; external_offline_funding: boolean; impact_updates: boolean; matching_grants: boolean; merkle_transparency: boolean; shortlinks_and_ambassadors: boolean; spiritual_dedications: boolean; }; share_hold_ttl_minutes: number; }
 
 /** نمای خروجی یک قانون سیاست سامانه برای پنل مدیریت. */
 export interface PolicyRuleOutput { key: string; value_type: string; value: unknown; "default": unknown; description: string; version: number; }
