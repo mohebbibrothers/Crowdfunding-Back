@@ -17,7 +17,7 @@
 
 ### افزوده‌شده (Added)
 - **مولد نمونهٔ پاسخ** (`scripts/compile_response_samples.py`): برای هر یک از
-  **۱۰۳** پاسخ JSON، نمونه‌ای از روی اسکیمای خودش می‌سازد، با `jsonschema`
+  **۱۰۲** پاسخ JSON، نمونه‌ای از روی اسکیمای خودش می‌سازد، با `jsonschema`
   اعتبارسنجی می‌کند، و در سه جا می‌نویسد — قرارداد OpenAPI، کالکشن Postman
   (به‌عنوان saved response)، و `docs/frontend/SAMPLES.md`.
   مقادیر **بر اساس معنای نام فیلد** انتخاب می‌شوند: `amount_rial` عدد
@@ -26,7 +26,7 @@
 - **`DELIVERY.md`** — سند تحویل برای تیم فرانت: آمار واقعی، هفت قرارداد
   سراسری (احراز هویت، پول، تاریخ، صفحه‌بندی، خطا، idempotency، CSRF)،
   مسیر ادغام ۵ گامی، و فهرست صادقانهٔ آنچه هنوز نیست.
-- **`SAMPLES.md`** — جدول خوانای ۱۰۳ نمونه.
+- **`SAMPLES.md`** — جدول خوانای ۱۰۲ نمونه.
 - **`make samples`** — گام تازه در زنجیرهٔ `schema → samples → handoff`.
 
 ### تغییر یافته (Changed) — تایپ‌شدن ۱۹ اسکیما
@@ -111,7 +111,7 @@
 ### آزمون‌ها
 - **۹ تست تازه** (۵ قرارداد + ۴ پایان تعهد).
 - **۵ تست تازه** در `test_frontend_contract.py`:
-  `test_every_success_response_carries_a_validated_example` (۱۰۳ نمونه با
+  `test_every_success_response_carries_a_validated_example` (۱۰۲ نمونه با
   jsonschema)، `test_postman_collection_ships_saved_responses`،
   `test_contract_status_enums_match_model_choices` (قفل واگرایی enum).
 - **۵ تست تازه** برای `run_pledge_cycle` که پوشش ۰٪ → **۱۰۰٪** رسید — تنها
