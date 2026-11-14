@@ -7,7 +7,7 @@ from typing import Any
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from django.middleware.csrf import get_token
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -16,20 +16,29 @@ from rest_framework.views import APIView
 from apps.audit.choices import AuditAction
 from apps.audit.services import AuditEntry, record_audit
 from apps.core.conditional import conditional_json_response
+from apps.core.errors import NotFoundError
 from apps.core.health import build_detailed_health, check_cache, check_database
 from apps.core.jalali import today_jalali
 from apps.core.metrics import render_prometheus_metrics
 from apps.core.models import PolicyRule
+from apps.core.pagination import StandardCursorPagination
 from apps.core.policy import POLICY_REGISTRY, get_all_policies, set_policy_value
 from apps.core.serializers import (
     FinancialHealthSerializer,
     HealthStatusSerializer,
     LateCaptureReconcileInputSerializer,
     LateCaptureReconcileResultSerializer,
+    MoneyTruthPanelSerializer,
     PlatformMetaSerializer,
     PolicyRuleOutputSerializer,
     PolicyUpdateInputSerializer,
+    ReconcileInputSerializer,
+    ReconciliationStatsSerializer,
     RefundDispatchResultSerializer,
+    RemediationOutcomeSerializer,
+    SettlementIngestSerializer,
+    SettlementRowSerializer,
+    SettlementStatementSerializer,
 )
 from apps.identity.permissions import (
     HasFreshMfa,
@@ -314,6 +323,284 @@ class AdminRefundDispatchView(APIView):
         from apps.contributions.services import dispatch_pending_refunds
 
         return Response(dispatch_pending_refunds())
+
+
+def _serialize_statement(statement: Any) -> dict[str, Any]:
+    """تبدیل یک سند به دیکشنری پاسخ استاندارد.
+
+    چرا ``to_representation`` و نه ``Serializer(instance).data``؟
+        سریالایزرهای این پروژه برای *نمای خروجی قرارداد* نوشته شده‌اند و
+        تایپ ورودی‌شان ``dict[str, Any] | None`` است؛ ساختنشان با instance
+        مدل، هم از نظر mypy نادرست است و هم به رفتار نامشخص DRF تکیه می‌کند.
+        ``to_representation`` صریح است و نیّت را روشن می‌کند.
+    """
+    return dict(SettlementStatementSerializer().to_representation(statement))
+
+
+class AdminSettlementListCreateView(APIView):
+    """فهرست و ورود صورت‌حساب تسویهٔ درگاه — «چشم مستقل» سامانه.
+
+    چرا ورود صورت‌حساب `IsFinanceOrSuperAdmin` است و نه `IsStaffRole`؟
+        ورود یک صورت‌حساب، حقیقت مالی را جابه‌جا می‌کند: هر پرداختی که در آن
+        سند باشد، برچسب «تأییدشدهٔ مستقل» می‌گیرد و خوددرمانی خودکار مجاز
+        می‌شود. این همان قدرت «تأیید پول» است و باید در دست مدیر مالی باشد.
+    """
+
+    permission_classes = [IsStaffRole]
+
+    def get_permissions(self) -> list[Any]:
+        """خواندن با نقش کارمندی، نوشتن با نقش مالی/ارشد."""
+        if self.request.method == "POST":
+            return [IsFinanceOrSuperAdmin()]
+        return [IsStaffRole()]
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_list",
+        summary="فهرست صورت‌حساب‌های تسویهٔ درگاه",
+        parameters=[
+            OpenApiParameter(
+                name="gateway_name",
+                type=str,
+                required=False,
+                description="فیلتر بر اساس نام درگاه.",
+            ),
+            OpenApiParameter(
+                name="status",
+                type=str,
+                required=False,
+                description="فیلتر بر اساس وضعیت پردازش سند.",
+            ),
+            OpenApiParameter(
+                name="page_size",
+                type=int,
+                required=False,
+                description="تعداد رکورد در هر صفحه (پیش‌فرض ۲۵، حداکثر ۱۰۰).",
+            ),
+            OpenApiParameter(
+                name="cursor",
+                type=str,
+                required=False,
+                description="نشانگر صفحهٔ بعد از پاسخ قبلی.",
+            ),
+        ],
+        responses={200: SettlementStatementSerializer(many=True)},
+        tags=["Admin - Money Truth"],
+    )
+    def get(self, request: Request) -> Response:
+        """برگرداندن اسناد صورت‌حساب با فیلتر و صفحه‌بندی مکان‌نما."""
+        from apps.contributions.models import SettlementStatement
+
+        queryset = SettlementStatement.objects.all().order_by("-period_end", "-created_at")
+        gateway = request.query_params.get("gateway_name")
+        if gateway:
+            queryset = queryset.filter(gateway_name=gateway)
+        status_filter = request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        paginator = StandardCursorPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        return paginator.get_paginated_response(
+            [SettlementStatementSerializer(statement).data for statement in (page or [])]
+        )
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_create",
+        summary="ورود یک صورت‌حساب تسویهٔ درگاه",
+        description=(
+            "ورود idempotent است: اگر همان محتوا برای همان درگاه و همان بازه قبلاً "
+            "وارد شده باشد، همان سند برگردانده می‌شود و ردیف تکراری ساخته نمی‌شود. "
+            "این نقطهٔ پایانی فقط ثبت می‌کند؛ تطبیق در گام جداگانه انجام می‌شود."
+        ),
+        request=SettlementIngestSerializer,
+        responses={201: SettlementStatementSerializer, 200: SettlementStatementSerializer},
+        tags=["Admin - Money Truth"],
+    )
+    def post(self, request: Request) -> Response:
+        """ثبت سند صورت‌حساب از ردیف‌های ورودی."""
+        from apps.contributions.settlement import ingest_settlement_statement
+
+        ser = SettlementIngestSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        data = ser.validated_data
+
+        statement, _parsed, created = ingest_settlement_statement(
+            gateway_name=str(data["gateway_name"]),
+            source_kind=str(data["source_kind"]),
+            period_start=data["period_start"],
+            period_end=data["period_end"],
+            raw_rows=list(data["rows"]),
+            declared_total_rial=data.get("declared_total_rial"),
+            original_filename=str(data.get("original_filename") or ""),
+            actor=authenticated_user(request),
+        )
+        status_code = 201 if created else 200
+        return Response(_serialize_statement(statement), status=status_code)
+
+
+class AdminSettlementDetailView(APIView):
+    """جزئیات یک صورت‌حساب تسویه همراه با شمارش وضعیت ردیف‌ها."""
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_retrieve",
+        summary="دریافت یک صورت‌حساب تسویه با خلاصهٔ تطبیق",
+        responses={200: SettlementStatementSerializer},
+        tags=["Admin - Money Truth"],
+    )
+    def get(self, request: Request, settlement_id: Any) -> Response:
+        """برگرداندن سند و شمارش ردیف‌ها به تفکیک نتیجهٔ تطبیق."""
+        from django.db.models import Count
+
+        from apps.contributions.models import SettlementRow, SettlementStatement
+
+        del request
+        statement = SettlementStatement.objects.filter(pk=settlement_id).first()
+        if statement is None:
+            raise NotFoundError("سند صورت‌حساب تسویه یافت نشد.")
+
+        payload = _serialize_statement(statement)
+        counts = {
+            row["match_status"]: row["total"]
+            for row in SettlementRow.objects.filter(statement=statement)
+            .values("match_status")
+            .annotate(total=Count("id"))
+        }
+        payload["match_status_counts"] = counts
+        return Response(payload)
+
+
+class AdminSettlementRowsView(APIView):
+    """فهرست ردیف‌های یک صورت‌حساب با فیلتر نتیجهٔ تطبیق."""
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_rows_list",
+        summary="فهرست ردیف‌های صورت‌حساب با نتیجهٔ تطبیق",
+        parameters=[
+            OpenApiParameter(
+                name="match_status",
+                type=str,
+                required=False,
+                description="فیلتر بر اساس نتیجهٔ تطبیق ردیف.",
+            ),
+            OpenApiParameter(name="page_size", type=int, required=False),
+            OpenApiParameter(name="cursor", type=str, required=False),
+        ],
+        responses={200: SettlementRowSerializer(many=True)},
+        tags=["Admin - Money Truth"],
+    )
+    def get(self, request: Request, settlement_id: Any) -> Response:
+        """برگرداندن ردیف‌ها با صفحه‌بندی مکان‌نما."""
+        from apps.contributions.models import SettlementRow, SettlementStatement
+
+        statement = SettlementStatement.objects.filter(pk=settlement_id).first()
+        if statement is None:
+            raise NotFoundError("سند صورت‌حساب تسویه یافت نشد.")
+
+        queryset = SettlementRow.objects.filter(statement=statement).order_by("row_number")
+        match_status = request.query_params.get("match_status")
+        if match_status:
+            queryset = queryset.filter(match_status=match_status)
+
+        paginator = StandardCursorPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        return paginator.get_paginated_response(
+            [SettlementRowSerializer(row).data for row in (page or [])]
+        )
+
+
+class AdminSettlementReconcileView(APIView):
+    """اجرای تطبیق سه‌طرفهٔ یک صورت‌حساب (با پیش‌نمایش پیش‌فرض)."""
+
+    permission_classes = [IsFinanceOrSuperAdmin]
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_reconcile",
+        summary="تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی",
+        description=(
+            "پیش‌فرض `dry_run=true` است: هیچ رکوردی نوشته نمی‌شود و فقط آمار "
+            "برمی‌گردد. برای اجرای واقعی باید صریحاً `dry_run=false` بفرستید."
+        ),
+        request=ReconcileInputSerializer,
+        responses={200: ReconciliationStatsSerializer},
+        tags=["Admin - Money Truth"],
+    )
+    def post(self, request: Request, settlement_id: Any) -> Response:
+        """اجرای تطبیق و بازگشت آمار."""
+        from apps.contributions.settlement import (
+            ReconciliationStats,
+            reconcile_settlement_statement,
+        )
+
+        ser = ReconcileInputSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        dry_run = bool(ser.validated_data["dry_run"])
+        result, stats = reconcile_settlement_statement(
+            statement_id=settlement_id,
+            actor=authenticated_user(request),
+            dry_run=dry_run,
+        )
+        payload = stats.as_dict()
+        payload["dry_run"] = dry_run
+        payload["persisted"] = not dry_run
+        if not dry_run and not isinstance(result, ReconciliationStats):
+            payload["is_clean"] = bool(result.is_clean)
+        return Response(payload)
+
+
+class AdminSettlementRemediateView(APIView):
+    """اجرای اقدام‌های مجاز خودکار روی مغایرت‌های یک صورت‌حساب."""
+
+    permission_classes = [IsFinanceOrSuperAdmin]
+
+    @extend_schema(
+        operation_id="v1_admin_settlements_remediate",
+        summary="اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب",
+        description=(
+            "تنها یک حالت خودکار حل می‌شود: پرداختی که صورت‌حساب می‌گوید درگاه "
+            "پولش را گرفته ولی داخلی تأیید نشده — و آن هم با همان موتور داوری "
+            "موجود، نه منطق موازی. پول بی‌مالک، اختلاف مبلغ و پرداخت غایب در "
+            "فایل هرگز خودکار حل نمی‌شوند."
+        ),
+        request=ReconcileInputSerializer,
+        responses={200: RemediationOutcomeSerializer},
+        tags=["Admin - Money Truth"],
+    )
+    def post(self, request: Request, settlement_id: Any) -> Response:
+        """اجرای مرحلهٔ اقدام و بازگشت آمار."""
+        from apps.contributions.settlement import remediate_settlement_statement
+
+        ser = ReconcileInputSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        outcome = remediate_settlement_statement(
+            statement_id=settlement_id,
+            actor=authenticated_user(request),
+            dry_run=bool(ser.validated_data["dry_run"]),
+        )
+        return Response(outcome.as_dict())
+
+
+class AdminMoneyTruthPanelView(APIView):
+    """پنل «حقیقت وجه» — تنها عددی که می‌شود به هیئت‌مدیره گفت."""
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_money_truth_retrieve",
+        summary="پنل حقیقت وجه: فاصلهٔ «چیزی که می‌گوییم» و «چیزی که بانک می‌گوید»",
+        responses={200: MoneyTruthPanelSerializer},
+        tags=["Admin - Money Truth"],
+    )
+    def get(self, request: Request) -> Response:
+        """تولید عکس لحظه‌ای لایهٔ حقیقت به‌همراه هشدارها."""
+        del request
+        from apps.contributions.settlement import build_money_truth_panel, money_truth_alerts
+
+        payload = build_money_truth_panel()
+        payload["alerts"] = money_truth_alerts()
+        return Response(payload)
 
 
 def prometheus_metrics_view(request: HttpRequest) -> HttpResponse:

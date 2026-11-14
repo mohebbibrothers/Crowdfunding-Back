@@ -1,11 +1,11 @@
 {
   "generator": "scripts/build_frontend_kit.py",
   "openapi": "3.1.0",
-  "operations": 86,
-  "paths": 75,
+  "operations": 93,
+  "paths": 81,
   "problem_codes": 38,
-  "schemas": 120,
-  "sha256": "a5a475196fa58ce6b39bb59e999aad432ebd9c1896f99b4f9cd2cee9b54c7305",
+  "schemas": 129,
+  "sha256": "ab5ab8e8ac2e914123925432e9a398b9262fe47ec22d9c270b0695575918654c",
   "source": "docs/api/v1/openapi.yaml",
-  "tags": 23
+  "tags": 24
 }

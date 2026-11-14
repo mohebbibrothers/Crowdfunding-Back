@@ -69,11 +69,19 @@ def build_financial_health() -> dict[str, Any]:
         payment__contribution__status=ContributionStatus.AWAITING_REFUND
     ).count()
 
+    # ── لایهٔ حقیقت وجه: آیا «تأییدشده» یعنی «صورت‌حساب هم می‌گوید»؟ ────────
+    from apps.contributions.settlement import build_money_truth_panel, money_truth_alerts
+
+    money_truth = build_money_truth_panel()
+    truth_alerts = money_truth_alerts()
+
+    # «سالم» یعنی هیچ‌کدام از این‌ها باز نباشد — و بحرانی‌ترین‌شان تناقض قطعی است.
     ready = (
         stale_abandoned.count() == 0
         and unresolved.count() == 0
         and orphan_refunds == 0
         and dead_outbox == 0
+        and money_truth["conflict"] == 0
     )
 
     return {
@@ -97,14 +105,21 @@ def build_financial_health() -> dict[str, Any]:
         "ops": {
             "dead_outbox_messages": dead_outbox,
         },
-        "alerts": _build_alerts(
-            stale_abandoned=stale_abandoned.count(),
-            unresolved=unresolved.count(),
-            pending=pending_refunds.count(),
-            manual=manual_refunds.count(),
-            orphan=orphan_refunds,
-            dead_outbox=dead_outbox,
-        ),
+        "money_truth": money_truth,
+        # هشدارهای دو لایه در یک فهرست ادغام می‌شوند تا شیفت عملیات یک جا
+        # همه‌چیز را ببیند؛ ولی ``code`` هر هشدار یکتاست و ماشین می‌تواند
+        # روی آن قاعده بسازد بی‌آنکه به متن فارسی وابسته باشد.
+        "alerts": [
+            *_build_alerts(
+                stale_abandoned=stale_abandoned.count(),
+                unresolved=unresolved.count(),
+                pending=pending_refunds.count(),
+                manual=manual_refunds.count(),
+                orphan=orphan_refunds,
+                dead_outbox=dead_outbox,
+            ),
+            *[{"severity": a["level"], **a} for a in truth_alerts],
+        ],
     }
 
 

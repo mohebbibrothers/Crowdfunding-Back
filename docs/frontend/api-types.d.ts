@@ -230,7 +230,7 @@ export interface FinancialAlert { severity: SeverityEnum; code: string; message:
 export interface FinancialControlSnapshot { id: string; total_debits_rial: number; total_credits_rial: number; gateway_receivable_rial: number; benefactor_payable_rial: number; external_custody_rial: number; is_balanced: boolean; counter_drift_rial: number; created_at: string; }
 
 /** گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات. */
-export interface FinancialHealth { status: string; generated_at: string; money_loop: MoneyLoopStats; recovery_ledger: Record<string, number>; refund_ledger: Record<string, number>; ops: OpsStats; alerts: Array<FinancialAlert>; }
+export interface FinancialHealth { status: string; generated_at: string; money_loop: MoneyLoopStats; recovery_ledger: Record<string, number>; refund_ledger: Record<string, number>; ops: OpsStats; alerts: Array<FinancialAlert>; money_truth?: MoneyTruthPanel; }
 
 /** * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
 * `zarinpal` - درگاه پرداخت زرین‌پال */
@@ -301,6 +301,9 @@ export type MilestoneTypeEnum = "funding_complete" | "disbursed" | "procurement"
 
 /** آمار اصلی حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و بدهی ریالی. */
 export interface MoneyLoopStats { abandoned_payments: number; abandoned_amount_rial: number; stale_abandoned_over_1h: number; unresolved_late_captures: number; awaiting_refund_contributions: number; awaiting_refund_amount_rial: number; pending_refund_obligations: number; refund_liability_rial: number; manual_refunds_due: number; manual_refund_amount_rial: number; orphan_refund_obligations: number; }
+
+/** پنل «حقیقت وجه» — تنها عددی که می‌توان به هیئت‌مدیره گفت. */
+export interface MoneyTruthPanel { verified_but_unconfirmed: number; statement_confirmed: number; statement_missing: number; conflict: number; last_statement_at: (string | null); statement_age_hours: (number | null); unresolved_findings: number; unresolved_impact_rial: number; statements_total: number; rows_pending_verdict: number; }
 
 /** یک نشان افتخار (قفل/باز) در کارنامهٔ معنوی خیر. */
 export interface MotivationBadgeOutput { code: string; title: string; description: string; earned: boolean; current: number; target: number; }
@@ -380,6 +383,12 @@ export interface PolicyUpdateInputRequest { value: unknown; reason: string; }
 /** استعلام عمومی اصالت رسید رسمی مشارکت (بدون افشای شماره موبایل خیر). */
 export interface ReceiptVerificationOutput { valid: boolean; status: string; receipt_number: string; verification_code: string; signature_hmac: string; donor_display_name: string; benefactor_name: string; target_kind: string; target_title: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; paid_at: (string | null); paid_at_jalali: string; }
 
+/** بدنهٔ اجرای تطبیق/اقدام روی یک صورت‌حساب.
+
+پیش‌فرض ``dry_run=True`` عمدی است: این عملیات وضعیت حقیقت صدها پرداخت را
+تغییر می‌دهد و پیش‌فرض باید بی‌خطر باشد. اپراتور باید صریحاً بگوید «اجرا کن». */
+export interface ReconcileInputRequest { dry_run?: boolean; }
+
 /** نمای خروجی دستهٔ مغایرت‌گیری به همراه مغایرت‌ها. */
 export interface ReconciliationBatch { id: string; gateway_name: string; period_start: string; period_end: string; gateway_reported_count: number; matched_count: number; discrepancy_count: number; gateway_total_rial: number; internal_total_rial: number; items: Array<ReconciliationItem>; created_at: string; }
 
@@ -392,11 +401,17 @@ export interface ReconciliationRowInputRequest { authority: string; ref_id?: str
 /** ورودی اجرای مغایرت‌گیری درگاه پرداخت. */
 export interface ReconciliationRunInputRequest { gateway_name?: string; period_start: string; period_end: string; rows: Array<ReconciliationRowInputRequest>; }
 
+/** آمار خام یک اجرای تطبیق (هم برای dry_run و هم اجرای واقعی). */
+export interface ReconciliationStats { matched: number; amount_mismatch: number; missing_internal: number; missing_gateway: number; internal_not_verified: number; duplicate_in_file: number; financial_impact_rial: number; }
+
 /** خروجی آماری ارسال تعهدهای بازپرداخت به درگاه. */
 export interface RefundDispatchResult { attempted: number; sent: number; manual: number; failed: number; skipped: number; over_cap: number; }
 
 /** نتیجهٔ استرداد وجه همراه با سند معکوس دفترکل. */
 export interface RefundResultOutput { refund_id: string; amount_rial: number; status: string; }
+
+/** نتیجهٔ اجرای مرحلهٔ اقدام روی یک صورت‌حساب. */
+export interface RemediationOutcome { statement_id: string; auto_healed: number; queued_review: number; blocked: number; skipped: number; already_resolved: number; heal_details: Array<Record<string, unknown>>; }
 
 /** نمای تاریخچهٔ خروجی‌های اکسل صادرشده. */
 export interface ReportExportLog { id: string; exported_by_id: string; filters: unknown; include_raw_phones: boolean; reason: string; file_sha256: string; byte_size: number; row_counts: unknown; created_at: string; }
@@ -413,6 +428,18 @@ export interface SandboxPaymentOutput { authority: string; amount_rial: number; 
 /** نمای یک نشست فعال در فهرست دستگاه‌های کاربر. */
 export interface SessionItemOutput { id: string; device: string; network: string; mfa_verified: boolean; created_at: string; last_seen_at: string; is_current: boolean; }
 
+/** بدنهٔ ورود یک صورت‌حساب تسویهٔ درگاه. */
+export interface SettlementIngestRequest { gateway_name: GatewayNameEnum; source_kind?: SourceKindEnum; period_start: string; period_end: string; declared_total_rial?: (number | null); original_filename?: string; rows: Array<SettlementRowInputRequest>; }
+
+/** نمای یک ردیف صورت‌حساب و نتیجهٔ تطبیق آن. */
+export interface SettlementRow { id: string; row_number: number; authority: string; ref_id: string; amount_rial: number; occurred_at: (string | null); match_status: string; match_note: string; payment_id: (string | null); remediation: string; remediation_note: string; }
+
+/** یک ردیف ورودی صورت‌حساب (ورود از API به‌جای فایل). */
+export interface SettlementRowInputRequest { authority: string; amount_rial?: string; ref_id?: string; occurred_at?: string; card_pan_masked?: string; description?: string; }
+
+/** نمای یک سند صورت‌حساب تسویه. */
+export interface SettlementStatement { id: string; gateway_name: string; source_kind: string; status: string; original_filename: string; period_start: string; period_end: string; row_count: number; declared_total_rial: number; computed_total_rial: number; integrity_ok: boolean; integrity_note: string; statement_sha256: string; created_at: string; }
+
 /** * `critical` - critical
 * `warning` - warning
 * `info` - info */
@@ -423,6 +450,12 @@ export interface SharesBreakdownOutput { total_shares: number; paid_online_share
 
 /** پاسخ حل‌کنندهٔ پیوندک کوتاه. */
 export interface ShortLinkResolveResponse { kind: string; short_code: string; slug: string; title: string; target_path: string; ambassador_code?: (string | null); }
+
+/** * `csv` - CSV
+* `xlsx` - اکسل
+* `api` - API
+* `manual` - دستی */
+export type SourceKindEnum = "csv" | "xlsx" | "api" | "manual";
 
 /** ورودی ورود کارکنان با گذرواژه. */
 export interface StaffPasswordLoginInputRequest { phone: string; password: string; }
@@ -480,6 +513,13 @@ export type ApiOperationId =
   | "v1_admin_ledger_entries_list"
   | "v1_admin_reconciliations_list"
   | "v1_admin_reconciliations_create"
+  | "v1_admin_money_truth_retrieve"
+  | "v1_admin_settlements_list"
+  | "v1_admin_settlements_create"
+  | "v1_admin_settlements_retrieve"
+  | "v1_admin_settlements_reconcile"
+  | "v1_admin_settlements_remediate"
+  | "v1_admin_settlements_rows_list"
   | "v1_admin_campaigns_external_contributions_create"
   | "v1_admin_payments_list"
   | "v1_admin_payments_refund"
@@ -568,6 +608,13 @@ export interface ApiOperationMap {
   "v1_admin_ledger_entries_list": { request: never; response: Array<JournalEntry>; auth: "required" };
   "v1_admin_reconciliations_list": { request: never; response: Array<ReconciliationBatch>; auth: "required" };
   "v1_admin_reconciliations_create": { request: ReconciliationRunInputRequest; response: ReconciliationBatch; auth: "required" };
+  "v1_admin_money_truth_retrieve": { request: never; response: MoneyTruthPanel; auth: "required" };
+  "v1_admin_settlements_list": { request: never; response: Array<SettlementStatement>; auth: "required" };
+  "v1_admin_settlements_create": { request: SettlementIngestRequest; response: SettlementStatement; auth: "required" };
+  "v1_admin_settlements_retrieve": { request: never; response: SettlementStatement; auth: "required" };
+  "v1_admin_settlements_reconcile": { request: ReconcileInputRequest; response: ReconciliationStats; auth: "required" };
+  "v1_admin_settlements_remediate": { request: ReconcileInputRequest; response: RemediationOutcome; auth: "required" };
+  "v1_admin_settlements_rows_list": { request: never; response: Array<SettlementRow>; auth: "required" };
   "v1_admin_campaigns_external_contributions_create": { request: ExternalContributionWriteRequest; response: ExternalContribution; auth: "required" };
   "v1_admin_payments_list": { request: never; response: Array<AdminPayment>; auth: "required" };
   "v1_admin_payments_refund": { request: PaymentRefundInputRequest; response: RefundResultOutput; auth: "required" };

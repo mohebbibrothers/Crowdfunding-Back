@@ -7,9 +7,15 @@ from django.urls import path
 from apps.core.views import (
     AdminFinancialHealthView,
     AdminLateCaptureReconcileView,
+    AdminMoneyTruthPanelView,
     AdminPolicyListView,
     AdminPolicyUpdateView,
     AdminRefundDispatchView,
+    AdminSettlementDetailView,
+    AdminSettlementListCreateView,
+    AdminSettlementReconcileView,
+    AdminSettlementRemediateView,
+    AdminSettlementRowsView,
     CsrfBootstrapView,
     HealthDetailedView,
     HealthLiveView,
@@ -43,5 +49,36 @@ urlpatterns = [
         "admin/refunds/dispatch",
         AdminRefundDispatchView.as_view(),
         name="v1-admin-refunds-dispatch",
+    ),
+    # ── لایهٔ حقیقت وجه: صورت‌حساب تسویهٔ درگاه ────────────────────────────────
+    path(
+        "admin/settlements",
+        AdminSettlementListCreateView.as_view(),
+        name="v1-admin-settlements",
+    ),
+    path(
+        "admin/settlements/<uuid:settlement_id>",
+        AdminSettlementDetailView.as_view(),
+        name="v1-admin-settlements-detail",
+    ),
+    path(
+        "admin/settlements/<uuid:settlement_id>/rows",
+        AdminSettlementRowsView.as_view(),
+        name="v1-admin-settlements-rows",
+    ),
+    path(
+        "admin/settlements/<uuid:settlement_id>/reconcile",
+        AdminSettlementReconcileView.as_view(),
+        name="v1-admin-settlements-reconcile",
+    ),
+    path(
+        "admin/settlements/<uuid:settlement_id>/remediate",
+        AdminSettlementRemediateView.as_view(),
+        name="v1-admin-settlements-remediate",
+    ),
+    path(
+        "admin/money-truth",
+        AdminMoneyTruthPanelView.as_view(),
+        name="v1-admin-money-truth",
     ),
 ]

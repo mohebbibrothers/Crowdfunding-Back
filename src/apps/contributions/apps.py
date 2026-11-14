@@ -14,7 +14,24 @@ class ContributionsConfig(AppConfig):
     verbose_name = _("مشارکت‌ها، درگاه پرداخت، شفافیت مرکل و داشبورد خیر")
 
     def ready(self) -> None:
-        """ثبت پردازشگرهای Outbox مرتبط با سهام‌داران حرکت‌ها."""
-        from apps.contributions.services import register_contribution_outbox_handlers
+        """ثبت پردازشگرهای Outbox و پورت‌های لایهٔ حقیقت وجه.
+
+        چرا این ثبت‌ها اینجا و نه در بالای ماژول؟
+            ``settlement`` و ``metrics`` نباید در زمان import به ``services``
+            ارجاع بدهند (چرخهٔ واقعی: services → identity → audit →
+            core.middleware → core.metrics → settlement → services). ثبت در
+            ``ready`` یعنی لبه در زمان اجرا بسته می‌شود، نه در زمان import.
+        """
+        from apps.contributions.services import (
+            reconcile_one_abandoned_payment,
+            register_contribution_outbox_handlers,
+        )
+        from apps.contributions.settlement import (
+            build_money_truth_panel,
+            register_recovery_engine,
+        )
+        from apps.core.metrics import register_money_truth_provider
 
         register_contribution_outbox_handlers()
+        register_recovery_engine(reconcile_one_abandoned_payment)
+        register_money_truth_provider(build_money_truth_panel)

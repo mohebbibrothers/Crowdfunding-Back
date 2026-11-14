@@ -95,3 +95,68 @@ class RefundOutcome(models.TextChoices):
     FAILED = "failed", _("ارسال یا تأیید بازپرداخت ناموفق بود")
     MANUAL = "manual", _("نیازمند بازپرداخت دستی خارج از سامانه (مرجع بانکی ثبت شد)")
     NOT_REQUIRED = "not_required", _("بازپرداخت لازم نبود (وجهی دریافت نشده بود)")
+
+
+class SettlementSourceKind(models.TextChoices):
+    """منبع ورود صورت‌حساب تسویهٔ درگاه."""
+
+    CSV = "csv", _("فایل CSV Export درگاه")
+    XLSX = "xlsx", _("کارپوشهٔ اکسل صورتحساب")
+    API = "api", _("دریافت مستقیم از API درگاه")
+    MANUAL = "manual", _("ورود دستی ردیف‌ها توسط اپراتور")
+
+
+class SettlementStatementStatus(models.TextChoices):
+    """چرخهٔ پردازش یک سند صورت‌حساب تسویه."""
+
+    INGESTED = "ingested", _("ورود یافته؛ تطبیق انجام نشده")
+    MATCHED = "matched", _("تطبیق انجام شد و در انتظار اقدام")
+    CLOSED = "closed", _("همهٔ مغایرت‌ها حل و پرونده بسته شد")
+
+
+class SettlementRowMatchStatus(models.TextChoices):
+    """نتیجهٔ تطبیق یک ردیف صورت‌حساب با دفتر داخلی.
+
+    تفاوت کلیدی با ``ReconciliationItemStatus`` قدیمی: این شمارش، حالت
+    ``DUPLICATE_IN_FILE`` و ``INTERNAL_NOT_VERIFIED`` را هم تفکیک می‌کند، چون
+    این دو، دو *سناریوی اقدام متفاوت* هستند نه یک «مغایرت» کلی.
+    """
+
+    PENDING = "pending", _("در انتظار تطبیق")
+    MATCHED = "matched", _("منطبق با پرداخت تأییدشدهٔ داخلی")
+    DUPLICATE_IN_FILE = "duplicate_in_file", _("Authority تکراری در خود فایل (فایل معیوب)")
+    MISSING_INTERNAL = "missing_internal", _("در صورتحساب هست، پرداخت داخلی ندارد (پول بی‌مالک)")
+    AMOUNT_MISMATCH = "amount_mismatch", _("مبلغ صورتحساب با مبلغ داخلی برابر نیست")
+    INTERNAL_NOT_VERIFIED = (
+        "internal_not_verified",
+        _("درگاه پول را گرفته ولی پرداخت داخلی تأیید نشده است"),
+    )
+    MISSING_GATEWAY = "missing_gateway", _("پرداخت تأییدشدهٔ داخلی در صورتحساب درگاه غایب است")
+
+
+class SettlementRemediation(models.TextChoices):
+    """اقدام انجام‌شده (یا تجویزشده) برای یک ردیف مغایرت."""
+
+    NONE = "none", _("اقدامی لازم نبود")
+    AUTO_HEALED = "auto_healed", _("با موتور داوری خودکار درمان شد")
+    QUEUED_REVIEW = "queued_review", _("در صف بررسی انسانی قرار گرفت")
+    MANUAL_RESOLVED = "manual_resolved", _("توسط اپراتور دستی حل شد")
+    BLOCKED = "blocked", _("به‌دلیل نقض صحت سند، اقدام خودکار مسدود شد")
+
+
+class PaymentTruthState(models.TextChoices):
+    """وضعیت «حقیقت» یک پرداخت از منظر یک منبع مستقل (صورتحساب بانک/درگاه).
+
+    این شمارش قلب لایهٔ حقیقت وجه است و عمداً از ``PaymentStatus`` جدا است:
+
+      • ``PaymentStatus`` می‌گوید **ما چه فکر می‌کنیم**.
+      • ``PaymentTruthState`` می‌گوید **صورتحساب مستقل چه می‌گوید**.
+
+    تا وقتی این دو در یک ستون قاطی شوند، «تأییدشده» یعنی «خودمان گفتیم».
+    """
+
+    UNVERIFIED = "unverified", _("هیچ منبع مستقلی دربارهٔ آن اظهارنظر نکرده است")
+    SELF_REPORTED = "self_reported", _("فقط استعلام خودگواه درگاه را داریم")
+    STATEMENT_CONFIRMED = "statement_confirmed", _("صورتحساب مستقل آن را تأیید کرده است")
+    STATEMENT_MISSING = "statement_missing", _("در سامانه تأیید شده ولی در صورتحساب نیست")
+    CONFLICT = "conflict", _("دفتر ما و صورتحساب در تناقض‌اند")

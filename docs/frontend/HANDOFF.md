@@ -45,14 +45,14 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 
 | فایل | کاربرد | تولید |
 | --- | --- | --- |
-| [`api/v1/openapi.yaml`](../api/v1/openapi.yaml) | قرارداد ماشینی کامل: ۷۵ مسیر، ۸۶ عملیات، ۱۲۰ اسکیما | خودکار از کد (CI قفل میکند) |
+| [`api/v1/openapi.yaml`](../api/v1/openapi.yaml) | قرارداد ماشینی کامل: 81 مسیر، 93 عملیات، 129 اسکیما | خودکار از کد (CI قفل میکند) |
 | [`api/v1/README.md`](../api/v1/README.md) | قراردادهای سراسری پروتکل و نقشهٔ دامنهها | دستی + راستیآزمایی CI |
 | [`ENDPOINTS.md`](./ENDPOINTS.md) | ماتریس کامل متد/مسیر/operationId/سطح دسترسی | 🟢 خودکار |
 | [`ERRORS.md`](./ERRORS.md) | کاتالوگ ۳۸ کد خطای RFC 9457 + اقدام UX برای هر کد | 🟢 خودکار |
 | [`api-types.d.ts`](./api-types.d.ts) | تایپهای TypeScript تمام اسکیماها + `ApiOperationMap` | 🟢 خودکار |
 | [`operations.ts`](./operations.ts) | نگاشت `operationId → (method, path)` | 🟢 خودکار |
 | [`api-client.ts`](./api-client.ts) | کلاینت fetch تایپشده: CSRF، JWT، refresh، خطا، retry، ETag، pagination | دستنویس |
-| [`postman_collection.json`](./postman_collection.json) | ۸۶ درخواست آماده در ۲۳ پوشه؛ import مستقیم در Postman/Bruno/Insomnia | 🟢 خودکار |
+| [`postman_collection.json`](./postman_collection.json) | 93 درخواست آماده در ۲۳ پوشه؛ import مستقیم در Postman/Bruno/Insomnia | 🟢 خودکار |
 | [`contract-fingerprint.json`](./contract-fingerprint.json) | SHA-256 قرارداد؛ CI با آن از همگامی داراییها مطمئن میشود | 🟢 خودکار |
 | [`READINESS-AUDIT.md`](./READINESS-AUDIT.md) | ممیزی مستقل آمادگی: ۳ نقص مسدودکنندهٔ کشف‌شده با پروب واقعی + اثبات رفع | دست‌نویس |
 | [`ACCEPTANCE.md`](./ACCEPTANCE.md) | **تأییدیهٔ نهایی تحویل** (۱ صفحهٔ امضاشده برای ذی‌نفعان) | دست‌نویس |

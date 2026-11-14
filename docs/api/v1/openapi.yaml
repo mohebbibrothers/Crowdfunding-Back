@@ -1997,6 +1997,66 @@ paths:
         errorFormat: application/problem+json
         traceHeader: X-Request-ID
         paginated: false
+  /api/v1/admin/money-truth:
+    get:
+      operationId: v1_admin_money_truth_retrieve
+      description: تولید عکس لحظه‌ای لایهٔ حقیقت به‌همراه هشدارها.
+      summary: 'پنل حقیقت وجه: فاصلهٔ «چیزی که می‌گوییم» و «چیزی که بانک می‌گوید»'
+      tags:
+      - Admin - Money Truth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoneyTruthPanel'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
   /api/v1/admin/payments:
     get:
       operationId: v1_admin_payments_list
@@ -2634,6 +2694,472 @@ paths:
           میشود.
         schema:
           type: string
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/settlements:
+    get:
+      operationId: v1_admin_settlements_list
+      description: برگرداندن اسناد صورت‌حساب با فیلتر و صفحه‌بندی مکان‌نما.
+      summary: فهرست صورت‌حساب‌های تسویهٔ درگاه
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+        description: نشانگر صفحهٔ بعد از پاسخ قبلی.
+      - in: query
+        name: gateway_name
+        schema:
+          type: string
+        description: فیلتر بر اساس نام درگاه.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+        description: تعداد رکورد در هر صفحه (پیش‌فرض ۲۵، حداکثر ۱۰۰).
+      - in: query
+        name: status
+        schema:
+          type: string
+        description: فیلتر بر اساس وضعیت پردازش سند.
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Admin - Money Truth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettlementStatement'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+    post:
+      operationId: v1_admin_settlements_create
+      description: 'ورود idempotent است: اگر همان محتوا برای همان درگاه و همان بازه
+        قبلاً وارد شده باشد، همان سند برگردانده می‌شود و ردیف تکراری ساخته نمی‌شود.
+        این نقطهٔ پایانی فقط ثبت می‌کند؛ تطبیق در گام جداگانه انجام می‌شود.'
+      summary: ورود یک صورت‌حساب تسویهٔ درگاه
+      tags:
+      - Admin - Money Truth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementIngestRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementStatement'
+          description: ''
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementStatement'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/settlements/{settlement_id}:
+    get:
+      operationId: v1_admin_settlements_retrieve
+      description: برگرداندن سند و شمارش ردیف‌ها به تفکیک نتیجهٔ تطبیق.
+      summary: دریافت یک صورت‌حساب تسویه با خلاصهٔ تطبیق
+      parameters:
+      - in: path
+        name: settlement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Admin - Money Truth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementStatement'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/settlements/{settlement_id}/reconcile:
+    post:
+      operationId: v1_admin_settlements_reconcile
+      description: 'پیش‌فرض `dry_run=true` است: هیچ رکوردی نوشته نمی‌شود و فقط آمار
+        برمی‌گردد. برای اجرای واقعی باید صریحاً `dry_run=false` بفرستید.'
+      summary: تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی
+      parameters:
+      - in: path
+        name: settlement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Admin - Money Truth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconcileInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationStats'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/settlements/{settlement_id}/remediate:
+    post:
+      operationId: v1_admin_settlements_remediate
+      description: 'تنها یک حالت خودکار حل می‌شود: پرداختی که صورت‌حساب می‌گوید درگاه
+        پولش را گرفته ولی داخلی تأیید نشده — و آن هم با همان موتور داوری موجود، نه
+        منطق موازی. پول بی‌مالک، اختلاف مبلغ و پرداخت غایب در فایل هرگز خودکار حل
+        نمی‌شوند.'
+      summary: اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب
+      parameters:
+      - in: path
+        name: settlement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Admin - Money Truth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconcileInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemediationOutcome'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/settlements/{settlement_id}/rows:
+    get:
+      operationId: v1_admin_settlements_rows_list
+      description: برگرداندن ردیف‌ها با صفحه‌بندی مکان‌نما.
+      summary: فهرست ردیف‌های صورت‌حساب با نتیجهٔ تطبیق
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: match_status
+        schema:
+          type: string
+        description: فیلتر بر اساس نتیجهٔ تطبیق ردیف.
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: path
+        name: settlement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Admin - Money Truth
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SettlementRow'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
       x-frontend-policy:
         auth: required
         retry: safe
@@ -8228,6 +8754,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FinancialAlert'
+        money_truth:
+          allOf:
+          - $ref: '#/components/schemas/MoneyTruthPanel'
+          description: 'لایهٔ حقیقت وجه: فاصلهٔ «تأیید خودگواه» و «تأیید مستقل صورت‌حساب».'
       required:
       - alerts
       - generated_at
@@ -8696,6 +9226,56 @@ components:
       - refund_liability_rial
       - stale_abandoned_over_1h
       - unresolved_late_captures
+    MoneyTruthPanel:
+      type: object
+      description: پنل «حقیقت وجه» — تنها عددی که می‌توان به هیئت‌مدیره گفت.
+      properties:
+        verified_but_unconfirmed:
+          type: integer
+          description: پرداخت‌هایی که ما تأیید کردیم ولی صورتحساب مستقل هنوز تأییدشان
+            نکرده.
+        statement_confirmed:
+          type: integer
+          description: تنها پرداخت‌هایی که یک منبع مستقل تأییدشان کرده است.
+        statement_missing:
+          type: integer
+          description: پرداخت‌های تأییدشدهٔ ما که در صورتحساب درگاه وجود ندارند.
+        conflict:
+          type: integer
+          description: تناقض قطعی بین دفتر ما و صورتحساب — باید همیشه صفر باشد.
+        last_statement_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        statement_age_hours:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: کهنگی آخرین سند ورودی.
+        unresolved_findings:
+          type: integer
+          description: ردیف‌های مغایرتی که هنوز بررسی انسانی نشده‌اند.
+        unresolved_impact_rial:
+          type: integer
+          description: اثر ریالی خالص مغایرت‌های حل‌نشده.
+        statements_total:
+          type: integer
+        rows_pending_verdict:
+          type: integer
+          description: ردیف‌هایی که تطبیق ندیده‌اند — باید صفر باشند.
+      required:
+      - conflict
+      - last_statement_at
+      - rows_pending_verdict
+      - statement_age_hours
+      - statement_confirmed
+      - statement_missing
+      - statements_total
+      - unresolved_findings
+      - unresolved_impact_rial
+      - verified_but_unconfirmed
     MotivationBadgeOutput:
       type: object
       description: یک نشان افتخار (قفل/باز) در کارنامهٔ معنوی خیر.
@@ -9388,6 +9968,19 @@ components:
       - target_title
       - valid
       - verification_code
+    ReconcileInputRequest:
+      type: object
+      description: |-
+        بدنهٔ اجرای تطبیق/اقدام روی یک صورت‌حساب.
+
+        پیش‌فرض ``dry_run=True`` عمدی است: این عملیات وضعیت حقیقت صدها پرداخت را
+        تغییر می‌دهد و پیش‌فرض باید بی‌خطر باشد. اپراتور باید صریحاً بگوید «اجرا کن».
+      properties:
+        dry_run:
+          type: boolean
+          default: true
+          description: در حالت پیش‌فرض هیچ نوشتنی انجام نمی‌شود؛ برای اجرای واقعی
+            false بفرستید.
     ReconciliationBatch:
       type: object
       description: نمای خروجی دستهٔ مغایرت‌گیری به همراه مغایرت‌ها.
@@ -9496,6 +10089,32 @@ components:
       - period_end
       - period_start
       - rows
+    ReconciliationStats:
+      type: object
+      description: آمار خام یک اجرای تطبیق (هم برای dry_run و هم اجرای واقعی).
+      properties:
+        matched:
+          type: integer
+        amount_mismatch:
+          type: integer
+        missing_internal:
+          type: integer
+        missing_gateway:
+          type: integer
+        internal_not_verified:
+          type: integer
+        duplicate_in_file:
+          type: integer
+        financial_impact_rial:
+          type: integer
+      required:
+      - amount_mismatch
+      - duplicate_in_file
+      - financial_impact_rial
+      - internal_not_verified
+      - matched
+      - missing_gateway
+      - missing_internal
     RefundDispatchResult:
       type: object
       description: خروجی آماری ارسال تعهدهای بازپرداخت به درگاه.
@@ -9536,6 +10155,39 @@ components:
       - amount_rial
       - refund_id
       - status
+    RemediationOutcome:
+      type: object
+      description: نتیجهٔ اجرای مرحلهٔ اقدام روی یک صورت‌حساب.
+      properties:
+        statement_id:
+          type: string
+        auto_healed:
+          type: integer
+          description: تعداد پرونده‌هایی که خودکار درمان شدند.
+        queued_review:
+          type: integer
+          description: تعداد پرونده‌های ارجاع‌شده به انسان.
+        blocked:
+          type: integer
+          description: تعداد اقدام‌های مسدودشده به‌دلیل نقض صحت سند.
+        skipped:
+          type: integer
+        already_resolved:
+          type: integer
+        heal_details:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: جزئیات هر خوددرمانی برای ممیزی.
+      required:
+      - already_resolved
+      - auto_healed
+      - blocked
+      - heal_details
+      - queued_review
+      - skipped
+      - statement_id
     ReportExportLog:
       type: object
       description: نمای تاریخچهٔ خروجی‌های اکسل صادرشده.
@@ -9627,6 +10279,178 @@ components:
       - last_seen_at
       - mfa_verified
       - network
+    SettlementIngestRequest:
+      type: object
+      description: بدنهٔ ورود یک صورت‌حساب تسویهٔ درگاه.
+      properties:
+        gateway_name:
+          allOf:
+          - $ref: '#/components/schemas/GatewayNameEnum'
+          description: |-
+            درگاهی که این صورت‌حساب به آن تعلق دارد.
+
+            * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
+            * `zarinpal` - درگاه پرداخت زرین‌پال
+        source_kind:
+          allOf:
+          - $ref: '#/components/schemas/SourceKindEnum'
+          default: manual
+        period_start:
+          type: string
+          format: date-time
+          description: شروع بازهٔ پوشش — باید از خود فایل بیاید، نه از ساعت اکنون.
+        period_end:
+          type: string
+          format: date-time
+          description: پایان بازهٔ پوشش.
+        declared_total_rial:
+          type:
+          - integer
+          - 'null'
+          description: جمع ریالی که خود فایل ادعا می‌کند؛ اگر با محاسبهٔ ما نخواند،
+            سند معیوب علامت می‌خورد.
+        original_filename:
+          type: string
+          maxLength: 200
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/SettlementRowInputRequest'
+          description: ردیف‌های صورت‌حساب.
+      required:
+      - gateway_name
+      - period_end
+      - period_start
+      - rows
+    SettlementRow:
+      type: object
+      description: نمای یک ردیف صورت‌حساب و نتیجهٔ تطبیق آن.
+      properties:
+        id:
+          type: string
+          format: uuid
+        row_number:
+          type: integer
+        authority:
+          type: string
+        ref_id:
+          type: string
+        amount_rial:
+          type: integer
+        occurred_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        match_status:
+          type: string
+          description: نتیجهٔ تطبیق این ردیف با دفتر داخلی.
+        match_note:
+          type: string
+          description: توضیح فارسی نتیجه — برای نمایش مستقیم به اپراتور.
+        payment_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        remediation:
+          type: string
+          description: اقدام انجام‌شده یا تجویزشده.
+        remediation_note:
+          type: string
+      required:
+      - amount_rial
+      - authority
+      - id
+      - match_note
+      - match_status
+      - occurred_at
+      - payment_id
+      - ref_id
+      - remediation
+      - remediation_note
+      - row_number
+    SettlementRowInputRequest:
+      type: object
+      description: یک ردیف ورودی صورت‌حساب (ورود از API به‌جای فایل).
+      properties:
+        authority:
+          type: string
+          minLength: 1
+          description: شناسهٔ Authority تراکنش در درگاه (اجباری).
+          maxLength: 80
+        amount_rial:
+          type: string
+          description: مبلغ ریالی؛ ارقام فارسی، جداکنندهٔ هزارگان و اعشار صفر پذیرفته
+            می‌شود.
+          maxLength: 40
+        ref_id:
+          type: string
+          maxLength: 80
+        occurred_at:
+          type: string
+          maxLength: 40
+        card_pan_masked:
+          type: string
+          maxLength: 32
+        description:
+          type: string
+          maxLength: 300
+      required:
+      - authority
+    SettlementStatement:
+      type: object
+      description: نمای یک سند صورت‌حساب تسویه.
+      properties:
+        id:
+          type: string
+          format: uuid
+        gateway_name:
+          type: string
+        source_kind:
+          type: string
+        status:
+          type: string
+        original_filename:
+          type: string
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        row_count:
+          type: integer
+        declared_total_rial:
+          type: integer
+        computed_total_rial:
+          type: integer
+        integrity_ok:
+          type: boolean
+          description: آیا جمع اعلامی فایل با جمع محاسبه‌شده از ردیف‌ها برابر است.
+        integrity_note:
+          type: string
+        statement_sha256:
+          type: string
+          description: اثر انگشت محتوا؛ ورود دوبارهٔ همان فایل، همان سند را برمی‌گرداند.
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - computed_total_rial
+      - created_at
+      - declared_total_rial
+      - gateway_name
+      - id
+      - integrity_note
+      - integrity_ok
+      - original_filename
+      - period_end
+      - period_start
+      - row_count
+      - source_kind
+      - statement_sha256
+      - status
     SeverityEnum:
       enum:
       - critical
@@ -9684,6 +10508,18 @@ components:
       - slug
       - target_path
       - title
+    SourceKindEnum:
+      enum:
+      - csv
+      - xlsx
+      - api
+      - manual
+      type: string
+      description: |-
+        * `csv` - CSV
+        * `xlsx` - اکسل
+        * `api` - API
+        * `manual` - دستی
     StaffPasswordLoginInputRequest:
       type: object
       description: ورودی ورود کارکنان با گذرواژه.
@@ -10108,6 +10944,9 @@ tags:
   description: پایش پرداخت‌ها، استرداد وجه و کمک‌های خارج از درگاه.
 - name: Admin - Executive Excel Reports
   description: کتابچهٔ ۸ کاربرگهٔ اکسل راست‌به‌چپ و تاریخچهٔ خروجی‌ها.
+- name: Admin - Money Truth
+  description: 'لایهٔ حقیقت وجه: ورود صورت‌حساب تسویهٔ درگاه، تطبیق سه‌طرفه با دفتر
+    داخلی، خوددرمانی مجاز و پنل «آیا تأیید ما با بانک می‌خواند؟».'
 externalDocs:
   description: راهنمای یکپارچه‌سازی فرانت‌اند، کدهای خطا و کلاینت تایپ‌شده
   url: https://github.com/mohebbibrothers/Crowdfunding-Back/tree/main/docs/frontend

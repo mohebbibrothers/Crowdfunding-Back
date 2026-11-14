@@ -2421,6 +2421,507 @@
     {
       "item": [
         {
+          "name": "پنل حقیقت وجه: فاصلهٔ «چیزی که می‌گوییم» و «چیزی که بانک می‌گوید»",
+          "request": {
+            "description": "`v1_admin_money_truth_retrieve` — پنل حقیقت وجه: فاصلهٔ «چیزی که می‌گوییم» و «چیزی که بانک می‌گوید»\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "money-truth"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/money-truth",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست صورت‌حساب‌های تسویهٔ درگاه",
+          "request": {
+            "description": "`v1_admin_settlements_list` — فهرست صورت‌حساب‌های تسویهٔ درگاه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements"
+              ],
+              "query": [
+                {
+                  "description": "نشانگر صفحهٔ بعد از پاسخ قبلی.",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "فیلتر بر اساس نام درگاه.",
+                  "disabled": true,
+                  "key": "gateway_name",
+                  "value": "<gateway_name>"
+                },
+                {
+                  "description": "تعداد رکورد در هر صفحه (پیش‌فرض ۲۵، حداکثر ۱۰۰).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                },
+                {
+                  "description": "فیلتر بر اساس وضعیت پردازش سند.",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ورود یک صورت‌حساب تسویهٔ درگاه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_settlements_create` — ورود یک صورت‌حساب تسویهٔ درگاه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت یک صورت‌حساب تسویه با خلاصهٔ تطبیق",
+          "request": {
+            "description": "`v1_admin_settlements_retrieve` — دریافت یک صورت‌حساب تسویه با خلاصهٔ تطبیق\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements",
+                ":settlement_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements/:settlement_id",
+              "variable": [
+                {
+                  "key": "settlement_id",
+                  "value": "<settlement_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_settlements_reconcile` — تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements",
+                ":settlement_id",
+                "reconcile"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements/:settlement_id/reconcile",
+              "variable": [
+                {
+                  "key": "settlement_id",
+                  "value": "<settlement_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_settlements_remediate` — اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements",
+                ":settlement_id",
+                "remediate"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements/:settlement_id/remediate",
+              "variable": [
+                {
+                  "key": "settlement_id",
+                  "value": "<settlement_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست ردیف‌های صورت‌حساب با نتیجهٔ تطبیق",
+          "request": {
+            "description": "`v1_admin_settlements_rows_list` — فهرست ردیف‌های صورت‌حساب با نتیجهٔ تطبیق\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "settlements",
+                ":settlement_id",
+                "rows"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "فیلتر بر اساس نتیجهٔ تطبیق ردیف.",
+                  "disabled": true,
+                  "key": "match_status",
+                  "value": "<match_status>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/settlements/:settlement_id/rows",
+              "variable": [
+                {
+                  "key": "settlement_id",
+                  "value": "<settlement_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Money Truth"
+    },
+    {
+      "item": [
+        {
           "name": "ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا",
           "request": {
             "body": {

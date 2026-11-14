@@ -160,6 +160,31 @@ DEFAULT_POLICIES: tuple[PolicySpec, ...] = (
         50_000_000,
         "سقف مبلغ بازپرداخت خودکار (ریال)؛ بالاتر از آن نیازمند تأیید انسانی است",
     ),
+    # ── لایهٔ حقیقت وجه (Money Truth Layer) ──────────────────────────────────
+    PolicySpec(
+        "truth.max_statement_age_hours",
+        PolicyValueType.INT,
+        48,
+        "حداکثر فاصلهٔ مجاز از آخرین ورود صورت‌حساب تسویه؛ پس از آن «چشم مستقل» کور تلقی می‌شود",
+    ),
+    PolicySpec(
+        "truth.auto_heal_enabled",
+        PolicyValueType.BOOL,
+        True,
+        "خوددرمانی خودکار پرداخت‌هایی که صورت‌حساب می‌گوید درگاه پول آن‌ها را گرفته ولی داخلی تأیید نشده‌اند",
+    ),
+    PolicySpec(
+        "truth.auto_heal_max_rial",
+        PolicyValueType.INT,
+        20_000_000,
+        "سقف مبلغ خوددرمانی خودکار (ریال)؛ بالاتر از آن نیازمند تأیید انسانی است",
+    ),
+    PolicySpec(
+        "truth.unresolved_impact_alert_rial",
+        PolicyValueType.INT,
+        5_000_000,
+        "آستانهٔ اثر ریالی مغایرت‌های حل‌نشده که هشدار بحرانی تولید می‌کند",
+    ),
     PolicySpec(
         "governance.maker_checker_disbursement",
         PolicyValueType.BOOL,

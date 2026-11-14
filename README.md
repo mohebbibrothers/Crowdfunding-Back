@@ -6,9 +6,9 @@
 ![MariaDB 11](https://img.shields.io/badge/MariaDB-11.x-003545?logo=mariadb&logoColor=white)
 ![OpenAPI 3.1.0](https://img.shields.io/badge/OpenAPI-3.1.0-6BA539?logo=openapiinitiative&logoColor=white)
 ![Mypy Strict](https://img.shields.io/badge/mypy-strict-blue)
-![Branch Coverage 85.60%](https://img.shields.io/badge/branch%20coverage-85.60%25-brightgreen)
-![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.2.0-6C5CE7?logo=typescript&logoColor=white)
-![Release](https://img.shields.io/badge/release-v1.2.0-2ECC71?logo=github)
+![Branch Coverage 85.43%](https://img.shields.io/badge/branch%20coverage-85.43%25-brightgreen)
+![Frontend Handoff Kit](https://img.shields.io/badge/Frontend%20Kit-v1.3.0-6C5CE7?logo=typescript&logoColor=white)
+![Release](https://img.shields.io/badge/release-v1.3.0-2ECC71?logo=github)
 
 سرویس بک‌اند ماژولار، امن و حسابرسی‌پذیر برای پلتفرم جمع‌آوری مشارکت‌های مردمی و خیرخواهانه بر پایهٔ **سهم (Share-Based Crowdfunding)**، مهندسی‌شده با **Django 6.1، Django REST Framework، پایتون ۳.۱۲ و MariaDB 11.x**.
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 📦 بستهٔ رسمی تحویل به فرانتاند (Frontend Handoff Kit) — نسخهٔ ۱٫۲٫۰
+## 📦 بستهٔ رسمی تحویل به فرانتاند (Frontend Handoff Kit) — نسخهٔ ۱٫۳٫۰
 
 > **👋 تیم فرانت‌اند از اینجا شروع کنید:** [`START-HERE.md`](START-HERE.md) — راهنمای ورود ۵ دقیقه‌ای
 > **همین حالا تحویل بدهید:** [`docs/frontend/index.html`](docs/frontend/index.html) (پورتال بصری آفلاین)
@@ -29,12 +29,12 @@
 
 | دارایی | خروجی | دارایی | خروجی |
 | --- | --- | --- | --- |
-| قرارداد | **۷۵ مسیر · ۸۶ عملیات · ۱۲۰ اسکیما** | خطاها | **۳۸ کد RFC 9457** + اقدام UX |
+| قرارداد | **81 مسیر · 93 عملیات · 129 اسکیما** | خطاها | **۳۸ کد RFC 9457** + اقدام UX |
 | تایپها | `api-types.d.ts` + `operations.ts` | کالکشن | `postman_collection.json` (۲۳ پوشه) |
 | کلاینت | `api-client.ts` (CSRF/JWT/refresh/ETag/retry) | ماتریس | `ENDPOINTS.md` + کاوشگر تعاملی |
 | پذیرش | `CHECKLIST.md` (Definition of Done) | قفل CI | `contract-fingerprint.json` (SHA-256) |
 
-**چهار اصل تحویل:** ① هیچ پاسخ موفقی بدون اسکیمای تایپشده نیست ② تمام ۸۶ عملیات خطاهای
+**چهار اصل تحویل:** ① هیچ پاسخ موفقی بدون اسکیمای تایپشده نیست ② تمام 93 عملیات خطاهای
 استاندارد و هدر ردیابی دارند ③ پنج لیست مکاننمایی دقیقاً همان پوشش `{results, meta}` را اعلام میکنند
 ④ نام کوکی، CSRF، Idempotency، ETag و سرورها همگی از تنظیمات زنده خوانده میشوند — نه حدس.
 
@@ -99,6 +99,7 @@ sequenceDiagram
 | **دفتر کل دوطرفه ریالی (`rial_base_dual_view`)** | ذخیرهٔ تمامی مبالغ با عدد صحیح ریال (`BIGINT` بدون هیچ‌گونه `float`) همگام با شاپرک، همراه با نمایش هم‌زمان ریال و تومان در API، تسویهٔ چهارچشمی (Maker-Checker) و مغایرت‌گیری بانکی. |
 | **صفر بیش‌فروشی سهام زیر بار هم‌روند** | قفل ردیفی `SELECT ... FOR UPDATE` روی ظرفیت سهام حرکت هنگام آغاز پرداخت و آزادسازی خودکار رزروهای منقضی‌شدهٔ ۱۵ دقیقه‌ای توسط زمان‌بند `reap_expired`. |
 | **بستن حلقهٔ وجه پس از انقضای رزرو (Capture Recovery)** | اگر حامی پرداخت را پس از انقضای ۱۵ دقیقه‌ای رزرو به پایان برساند، وجه قبلاً «گم» می‌شد. اکنون موتور داوری با `SELECT ... FOR UPDATE` و Idempotency سه‌مسیره تصمیم می‌گیرد: `NOT_CAPTURED`، `RECOVERED` (تخصیص سهم + رسید + سند دفتر کل + برگ مرکل) یا `REFUND_PENDING` (تعهد بازپرداخت با بدهی صریح `SYS:LIAB:REFUND_PAYABLE`). تراز دفتر کل پس از هر مسیر با آزمون تضمین می‌شود. |
+| **لایهٔ حقیقت وجه (Money Truth Layer)** | تا امروز «تأییدشده» یعنی «خودِ درگاه گفت» — یک تأیید خودگواه. صورت‌حساب تسویهٔ بانک تنها منبعی است که خودش را تأیید نمی‌کند: یا تراکنش در آن هست یا نیست. سه حالت که `verify()` هرگز نمی‌بیند اکنون کشف می‌شوند: پولی که درگاه گرفت و ما ثبت نکردیم، بدهی دفتری بدون پشتوانهٔ بانکی، و **پول بی‌مالک**. ستون `truth_state` روی `Payment` عمداً از `status` جداست: یکی می‌گوید ما چه فکر می‌کنیم، دیگری می‌گوید بانک چه می‌گوید. |
 | **پنل سلامت مالی و دید عملیاتی** | `GET /api/v1/admin/financial-health` عکس لحظه‌ای حلقهٔ پول می‌دهد: پرداخت‌های رهاشده، کهنه‌تر از یک ساعت، تعهدهای بازپرداخت، **بدهی ریالی به حامیان**، تعهدهای یتیم و پیام‌های مردهٔ صف خروجی — همراه هشدارهای درجه‌بندی‌شده. ده متریک Prometheus (۵ شمارنده + ۵ گیج) با پایش از دیتابیس. |
 | **سقف بازپرداخت خودکار (کنترل خروج پول)** | سیاست `recovery.auto_refund_max_rial` (پیش‌فرض ۵۰ میلیون ریال) در زمان ارسال واقعاً اعمال می‌شود: بالاتر از سقف، تعهد به `MANUAL` می‌رود و تا تأیید انسانی ارسال نمی‌شود. `recovery.auto_refund_enabled` و `recovery.max_attempts` هم پویا و بدون دیپلوی قابل تغییرند. |
 | **مشارکت سریع ۳۰ ثانیه‌ای مهمان** | امکان انتخاب سهام و تایید موبایل در یک مرحله بدون نیاز به ثبت‌نام قبلی یا خروج از صفحهٔ حرکت (`ExpressContributionIntent`). |
@@ -181,7 +182,7 @@ make handoff         # بازتولید تایپها، کالکشن Postman، م
 make tscheck         # بررسی تایپهای TypeScript بستهٔ فرانتاند (strict)
 make test            # اجرای کامل 67 آزمون Pytest روی MariaDB با شرط پوشش شاخهای >= ۸۵٪
 
-# گیتهای تازهٔ نسخهٔ ۱٫۲٫۰: درفت مستندات، تایپشدهبودن تمام پاسخها، پوشش صفحهبندی،
+# گیتهای تازهٔ نسخهٔ ۱٫۳٫۰: درفت مستندات، تایپشدهبودن تمام پاسخها، پوشش صفحهبندی،
 # کاتالوگ خطاها، طرحهای امنیتی و مسیرهای زندهٔ Swagger/ReDoc.
 ```
 

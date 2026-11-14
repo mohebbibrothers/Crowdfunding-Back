@@ -2,10 +2,10 @@
 
 > این جدول مستقیماً از [`openapi.yaml`](../api/v1/openapi.yaml) ساخته شده است. هرگونه تغییر مسیر، متد یا پارامتر بدون بازتولید این فایل توسط CI رد میشود.
 
-- تعداد مسیرها: **75**
-- تعداد عملیاتها: **86**
-- تعداد اسکیماها: **120**
-- تعداد تگها: **23**
+- تعداد مسیرها: **81**
+- تعداد عملیاتها: **93**
+- تعداد اسکیماها: **129**
+- تعداد تگها: **24**
 - سرورها: `https://api.charity.example.org`, `http://localhost:8000`
 
 | متد | مسیر | operationId | احراز هویت | خلاصه |
@@ -44,6 +44,13 @@
 | `GET` | `/api/v1/admin/ledger/entries` | `v1_admin_ledger_entries_list` | الزامی | فهرست اسناد روزنامهٔ حسابداری |
 | `GET` | `/api/v1/admin/reconciliations` | `v1_admin_reconciliations_list` | الزامی | فهرست دسته‌های مغایرت‌گیری درگاه پرداخت |
 | `POST` | `/api/v1/admin/reconciliations` | `v1_admin_reconciliations_create` | الزامی | اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی |
+| `GET` | `/api/v1/admin/money-truth` | `v1_admin_money_truth_retrieve` | الزامی | پنل حقیقت وجه: فاصلهٔ «چیزی که می‌گوییم» و «چیزی که بانک می‌گوید» |
+| `GET` | `/api/v1/admin/settlements` | `v1_admin_settlements_list` | الزامی | فهرست صورت‌حساب‌های تسویهٔ درگاه |
+| `POST` | `/api/v1/admin/settlements` | `v1_admin_settlements_create` | الزامی | ورود یک صورت‌حساب تسویهٔ درگاه |
+| `GET` | `/api/v1/admin/settlements/{settlement_id}` | `v1_admin_settlements_retrieve` | الزامی | دریافت یک صورت‌حساب تسویه با خلاصهٔ تطبیق |
+| `POST` | `/api/v1/admin/settlements/{settlement_id}/reconcile` | `v1_admin_settlements_reconcile` | الزامی | تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی |
+| `POST` | `/api/v1/admin/settlements/{settlement_id}/remediate` | `v1_admin_settlements_remediate` | الزامی | اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب |
+| `GET` | `/api/v1/admin/settlements/{settlement_id}/rows` | `v1_admin_settlements_rows_list` | الزامی | فهرست ردیف‌های صورت‌حساب با نتیجهٔ تطبیق |
 | `POST` | `/api/v1/admin/campaigns/{campaign_id}/external-contributions` | `v1_admin_campaigns_external_contributions_create` | الزامی | ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا |
 | `GET` | `/api/v1/admin/payments` | `v1_admin_payments_list` | الزامی | فهرست مدیریتی تراکنش‌های درگاه پرداخت |
 | `POST` | `/api/v1/admin/payments/{payment_id}/refund` | `v1_admin_payments_refund` | الزامی | ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA) |
@@ -138,6 +145,17 @@
 | `/api/v1/admin/disbursements` | `status` | query | خیر |
 | `/api/v1/admin/disbursements/{disbursement_id}/review` | `disbursement_id` | path | بله |
 | `/api/v1/admin/ledger/entries` | `kind` | query | خیر |
+| `/api/v1/admin/settlements` | `cursor` | query | خیر |
+| `/api/v1/admin/settlements` | `gateway_name` | query | خیر |
+| `/api/v1/admin/settlements` | `page_size` | query | خیر |
+| `/api/v1/admin/settlements` | `status` | query | خیر |
+| `/api/v1/admin/settlements/{settlement_id}` | `settlement_id` | path | بله |
+| `/api/v1/admin/settlements/{settlement_id}/reconcile` | `settlement_id` | path | بله |
+| `/api/v1/admin/settlements/{settlement_id}/remediate` | `settlement_id` | path | بله |
+| `/api/v1/admin/settlements/{settlement_id}/rows` | `cursor` | query | خیر |
+| `/api/v1/admin/settlements/{settlement_id}/rows` | `match_status` | query | خیر |
+| `/api/v1/admin/settlements/{settlement_id}/rows` | `page_size` | query | خیر |
+| `/api/v1/admin/settlements/{settlement_id}/rows` | `settlement_id` | path | بله |
 | `/api/v1/admin/campaigns/{campaign_id}/external-contributions` | `campaign_id` | path | بله |
 | `/api/v1/admin/payments` | `status` | query | خیر |
 | `/api/v1/admin/payments/{payment_id}/refund` | `payment_id` | path | بله |

@@ -80,6 +80,48 @@ class OpsStatsSerializer(serializers.Serializer[dict[str, Any]]):
     dead_outbox_messages = serializers.IntegerField()
 
 
+class MoneyTruthPanelSerializer(serializers.Serializer[dict[str, Any]]):
+    """پنل «حقیقت وجه» — تنها عددی که می‌توان به هیئت‌مدیره گفت."""
+
+    verified_but_unconfirmed = serializers.IntegerField(
+        help_text="پرداخت‌هایی که ما تأیید کردیم ولی صورتحساب مستقل هنوز تأییدشان نکرده."
+    )
+    statement_confirmed = serializers.IntegerField(
+        help_text="تنها پرداخت‌هایی که یک منبع مستقل تأییدشان کرده است."
+    )
+    statement_missing = serializers.IntegerField(
+        help_text="پرداخت‌های تأییدشدهٔ ما که در صورتحساب درگاه وجود ندارند."
+    )
+    conflict = serializers.IntegerField(
+        help_text="تناقض قطعی بین دفتر ما و صورتحساب — باید همیشه صفر باشد."
+    )
+    last_statement_at = serializers.DateTimeField(allow_null=True)
+    statement_age_hours = serializers.FloatField(
+        allow_null=True, help_text="کهنگی آخرین سند ورودی."
+    )
+    unresolved_findings = serializers.IntegerField(
+        help_text="ردیف‌های مغایرتی که هنوز بررسی انسانی نشده‌اند."
+    )
+    unresolved_impact_rial = serializers.IntegerField(help_text="اثر ریالی خالص مغایرت‌های حل‌نشده.")
+    statements_total = serializers.IntegerField()
+    rows_pending_verdict = serializers.IntegerField(
+        help_text="ردیف‌هایی که تطبیق ندیده‌اند — باید صفر باشند."
+    )
+
+
+class ReconcileInputSerializer(serializers.Serializer[dict[str, Any]]):
+    """بدنهٔ اجرای تطبیق/اقدام روی یک صورت‌حساب.
+
+    پیش‌فرض ``dry_run=True`` عمدی است: این عملیات وضعیت حقیقت صدها پرداخت را
+    تغییر می‌دهد و پیش‌فرض باید بی‌خطر باشد. اپراتور باید صریحاً بگوید «اجرا کن».
+    """
+
+    dry_run = serializers.BooleanField(
+        default=True,
+        help_text="در حالت پیش‌فرض هیچ نوشتنی انجام نمی‌شود؛ برای اجرای واقعی false بفرستید.",
+    )
+
+
 class FinancialHealthSerializer(serializers.Serializer[dict[str, Any]]):
     """گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات."""
 
@@ -90,6 +132,10 @@ class FinancialHealthSerializer(serializers.Serializer[dict[str, Any]]):
     refund_ledger = serializers.DictField(child=serializers.IntegerField())
     ops = OpsStatsSerializer()
     alerts = FinancialAlertSerializer(many=True)
+    money_truth = MoneyTruthPanelSerializer(
+        required=False,
+        help_text="لایهٔ حقیقت وجه: فاصلهٔ «تأیید خودگواه» و «تأیید مستقل صورت‌حساب».",
+    )
 
 
 class LateCaptureReconcileInputSerializer(serializers.Serializer[dict[str, Any]]):
@@ -141,3 +187,149 @@ class PolicyUpdateInputSerializer(serializers.Serializer[dict[str, Any]]):
 
     value = serializers.JSONField()
     reason = serializers.CharField(min_length=5, max_length=400)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# لایهٔ حقیقت وجه — صورت‌حساب تسویهٔ درگاه
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class SettlementRowInputSerializer(serializers.Serializer[dict[str, Any]]):
+    """یک ردیف ورودی صورت‌حساب (ورود از API به‌جای فایل)."""
+
+    authority = serializers.CharField(
+        max_length=80, help_text="شناسهٔ Authority تراکنش در درگاه (اجباری)."
+    )
+    amount_rial = serializers.CharField(
+        max_length=40,
+        required=False,
+        allow_blank=True,
+        help_text="مبلغ ریالی؛ ارقام فارسی، جداکنندهٔ هزارگان و اعشار صفر پذیرفته می‌شود.",
+    )
+    ref_id = serializers.CharField(max_length=80, required=False, allow_blank=True)
+    occurred_at = serializers.CharField(max_length=40, required=False, allow_blank=True)
+    card_pan_masked = serializers.CharField(max_length=32, required=False, allow_blank=True)
+    description = serializers.CharField(max_length=300, required=False, allow_blank=True)
+
+
+class SettlementIngestSerializer(serializers.Serializer[dict[str, Any]]):
+    """بدنهٔ ورود یک صورت‌حساب تسویهٔ درگاه."""
+
+    gateway_name = serializers.ChoiceField(
+        # فقط دو درگاهی که صورت‌حساب تسویه دارند. مقدارها عیناً برابر
+        # ``GatewayName`` هستند تا مصرف‌کننده‌ای که تایپ `gateway_name` را
+        # از جای دیگر گرفته، همین‌جا هم همان اتحادیه را ببیند.
+        choices=[
+            ("sandbox", "درگاه تعاملی آزمایشی (Sandbox)"),
+            ("zarinpal", "درگاه پرداخت زرین‌پال"),
+        ],
+        help_text="درگاهی که این صورت‌حساب به آن تعلق دارد.",
+    )
+    source_kind = serializers.ChoiceField(
+        choices=[("csv", "CSV"), ("xlsx", "اکسل"), ("api", "API"), ("manual", "دستی")],
+        default="manual",
+    )
+    period_start = serializers.DateTimeField(
+        help_text="شروع بازهٔ پوشش — باید از خود فایل بیاید، نه از ساعت اکنون."
+    )
+    period_end = serializers.DateTimeField(help_text="پایان بازهٔ پوشش.")
+    declared_total_rial = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        help_text="جمع ریالی که خود فایل ادعا می‌کند؛ اگر با محاسبهٔ ما نخواند، سند معیوب علامت می‌خورد.",
+    )
+    original_filename = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    rows = SettlementRowInputSerializer(many=True, help_text="ردیف‌های صورت‌حساب.")
+
+
+class SettlementStatementSerializer(serializers.Serializer[dict[str, Any]]):
+    """نمای یک سند صورت‌حساب تسویه."""
+
+    id = serializers.UUIDField()
+    gateway_name = serializers.CharField()
+    source_kind = serializers.CharField()
+    status = serializers.CharField()
+    original_filename = serializers.CharField()
+    period_start = serializers.DateTimeField()
+    period_end = serializers.DateTimeField()
+    row_count = serializers.IntegerField()
+    declared_total_rial = serializers.IntegerField()
+    computed_total_rial = serializers.IntegerField()
+    integrity_ok = serializers.BooleanField(
+        help_text="آیا جمع اعلامی فایل با جمع محاسبه‌شده از ردیف‌ها برابر است."
+    )
+    integrity_note = serializers.CharField()
+    statement_sha256 = serializers.CharField(
+        help_text="اثر انگشت محتوا؛ ورود دوبارهٔ همان فایل، همان سند را برمی‌گرداند."
+    )
+    created_at = serializers.DateTimeField()
+
+
+class SettlementRowSerializer(serializers.Serializer[dict[str, Any]]):
+    """نمای یک ردیف صورت‌حساب و نتیجهٔ تطبیق آن."""
+
+    id = serializers.UUIDField()
+    row_number = serializers.IntegerField()
+    authority = serializers.CharField()
+    ref_id = serializers.CharField()
+    amount_rial = serializers.IntegerField()
+    occurred_at = serializers.DateTimeField(allow_null=True)
+    match_status = serializers.CharField(help_text="نتیجهٔ تطبیق این ردیف با دفتر داخلی.")
+    match_note = serializers.CharField(
+        help_text="توضیح فارسی نتیجه — برای نمایش مستقیم به اپراتور."
+    )
+    payment_id = serializers.UUIDField(allow_null=True)
+    remediation = serializers.CharField(help_text="اقدام انجام‌شده یا تجویزشده.")
+    remediation_note = serializers.CharField()
+
+
+class SettlementReconciliationSerializer(serializers.Serializer[dict[str, Any]]):
+    """نتیجهٔ یک اجرای تطبیق روی یک صورت‌حساب."""
+
+    id = serializers.UUIDField()
+    statement_id = serializers.UUIDField()
+    matched_count = serializers.IntegerField()
+    amount_mismatch_count = serializers.IntegerField()
+    missing_internal_count = serializers.IntegerField(
+        help_text="تعداد ردیف‌هایی که در صورتحساب هستند ولی پرداخت داخلی ندارند (پول بی‌مالک)."
+    )
+    missing_gateway_count = serializers.IntegerField(
+        help_text="پرداخت‌های تأییدشدهٔ داخلی که در صورتحساب درگاه غایب‌اند."
+    )
+    internal_not_verified_count = serializers.IntegerField(
+        help_text="پرداخت‌هایی که درگاه پول آن‌ها را گرفته ولی داخلی تأیید نشده‌اند."
+    )
+    duplicate_in_file_count = serializers.IntegerField()
+    auto_healed_count = serializers.IntegerField()
+    queued_review_count = serializers.IntegerField()
+    financial_impact_rial = serializers.IntegerField(
+        help_text="اثر ریالی خالص: مثبت = پول پیدا شد که در دفتر نبود، منفی = دفتری که پشتوانه ندارد."
+    )
+    is_clean = serializers.BooleanField()
+    created_at = serializers.DateTimeField()
+
+
+class ReconciliationStatsSerializer(serializers.Serializer[dict[str, Any]]):
+    """آمار خام یک اجرای تطبیق (هم برای dry_run و هم اجرای واقعی)."""
+
+    matched = serializers.IntegerField()
+    amount_mismatch = serializers.IntegerField()
+    missing_internal = serializers.IntegerField()
+    missing_gateway = serializers.IntegerField()
+    internal_not_verified = serializers.IntegerField()
+    duplicate_in_file = serializers.IntegerField()
+    financial_impact_rial = serializers.IntegerField()
+
+
+class RemediationOutcomeSerializer(serializers.Serializer[dict[str, Any]]):
+    """نتیجهٔ اجرای مرحلهٔ اقدام روی یک صورت‌حساب."""
+
+    statement_id = serializers.CharField()
+    auto_healed = serializers.IntegerField(help_text="تعداد پرونده‌هایی که خودکار درمان شدند.")
+    queued_review = serializers.IntegerField(help_text="تعداد پرونده‌های ارجاع‌شده به انسان.")
+    blocked = serializers.IntegerField(help_text="تعداد اقدام‌های مسدودشده به‌دلیل نقض صحت سند.")
+    skipped = serializers.IntegerField()
+    already_resolved = serializers.IntegerField()
+    heal_details = serializers.ListField(
+        child=serializers.DictField(), help_text="جزئیات هر خوددرمانی برای ممیزی."
+    )

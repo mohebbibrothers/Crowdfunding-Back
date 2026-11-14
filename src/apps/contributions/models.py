@@ -17,7 +17,12 @@ from apps.contributions.choices import (
     LateCaptureOutcome,
     PaymentRiskKind,
     PaymentStatus,
+    PaymentTruthState,
     RefundOutcome,
+    SettlementRemediation,
+    SettlementRowMatchStatus,
+    SettlementSourceKind,
+    SettlementStatementStatus,
 )
 from apps.core.models import BaseModel
 
@@ -289,13 +294,29 @@ class Payment(BaseModel):
     )
     verified_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان تأیید درگاه"))
 
+    # ── لایهٔ حقیقت وجه (Money Truth Layer) ────────────────────────────────────
+    # این دو ستون عمداً از ``status`` جدا هستند:
+    #   status      = «ما چه فکر می‌کنیم» (خودگواه)
+    #   truth_state = «منبع مستقل چه می‌گوید» (صورتحساب بانک/درگاه)
+    # تا وقتی این دو در یک ستون قاطی شوند، «تأییدشده» یعنی «خودمان گفتیم».
+    truth_state = models.CharField(
+        max_length=24,
+        choices=PaymentTruthState.choices,
+        default=PaymentTruthState.UNVERIFIED,
+        db_index=True,
+        verbose_name=_("وضعیت حقیقت وجه (منبع مستقل)"),
+    )
+    truth_confirmed_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("زمان تأیید مستقل توسط صورت‌حساب")
+    )
+
     class Meta:
         verbose_name = _("پرداخت درگاه")
         verbose_name_plural = _("پرداخت‌های درگاه")
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.gateway_name}:{self.authority} [{self.status}]"
+        return f"{self.gateway_name}:{self.authority} [{self.status}/{self.truth_state}]"
 
 
 class PaymentEvent(BaseModel):
@@ -597,3 +618,253 @@ class PaymentRiskSignal(BaseModel):
         verbose_name = _("سیگنال ریسک پرداخت")
         verbose_name_plural = _("سیگنال‌های ریسک پرداخت")
         ordering = ["-created_at"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# لایهٔ حقیقت وجه (Money Truth Layer) — صورت‌حساب مستقل تسویهٔ درگاه
+#
+# چرا این مدل‌ها اینجا و نه در ``ledger``؟
+#   • محور همه‌چیز ``Payment`` است که در همین اپ زندگی می‌کند.
+#   • اگر ``SettlementRow`` در ``ledger`` باشد، برای ارجاع به ``Payment`` باید از
+#     یک اپ بالاتر (contributions، رتبهٔ ۸) import کند — نقض صریح DAG.
+#   • پس داده در ``contributions`` می‌ماند و موتور تطبیق هم همین‌جا زندگی می‌کند.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class SettlementStatement(BaseModel):
+    """یک سند صورت‌حساب تسویهٔ درگاه — «چشم مستقل» سامانه.
+
+    این سند تنها منبعی در کل سامانه است که **خودش را تأیید نمی‌کند**: فایل از
+    بانک/درگاه می‌آید، نه از ما. هر جا تناقضی بین ``Payment.status`` و این سند
+    باشد، این سند برندهٔ بحث است، حتی اگر به ضرر ما باشد.
+
+    قاعدهٔ یکتایی ``statement_sha256`` به‌ازای هر درگاه، عمدی است: ورود دوبارهٔ
+    همان فایل باید همان سند را برگرداند، نه یک دستهٔ مغایرت دوم با نتایج متناقض.
+    بدون این قید، بازپردازش یک بازه می‌توانست دو «حقیقت» موازی بسازد.
+    """
+
+    gateway_name = models.CharField(
+        max_length=24, choices=GatewayName.choices, db_index=True, verbose_name=_("درگاه پرداخت")
+    )
+    source_kind = models.CharField(
+        max_length=16,
+        choices=SettlementSourceKind.choices,
+        default=SettlementSourceKind.CSV,
+        verbose_name=_("منبع ورود"),
+    )
+    statement_sha256 = models.CharField(
+        max_length=64, db_index=True, verbose_name=_("اثر انگشت SHA-256 محتوای فایل")
+    )
+    original_filename = models.CharField(
+        max_length=200, blank=True, default="", verbose_name=_("نام فایل مبدأ")
+    )
+    period_start = models.DateTimeField(verbose_name=_("شروع بازهٔ پوشش"))
+    period_end = models.DateTimeField(verbose_name=_("پایان بازهٔ پوشش"))
+
+    row_count = models.PositiveIntegerField(default=0, verbose_name=_("تعداد ردیف فایل"))
+    declared_total_rial = models.BigIntegerField(
+        default=0, verbose_name=_("جمع ریالی اعلامی خودِ فایل")
+    )
+    computed_total_rial = models.BigIntegerField(
+        default=0, verbose_name=_("جمع ریالی محاسبه‌شده از ردیف‌ها")
+    )
+    integrity_ok = models.BooleanField(
+        default=True,
+        verbose_name=_("صحت داخلی سند (جمع اعلامی = جمع محاسبه‌شده)"),
+    )
+    integrity_note = models.CharField(
+        max_length=300, blank=True, default="", verbose_name=_("توضیح نقض صحت")
+    )
+
+    status = models.CharField(
+        max_length=16,
+        choices=SettlementStatementStatus.choices,
+        default=SettlementStatementStatus.INGESTED,
+        db_index=True,
+        verbose_name=_("وضعیت پردازش سند"),
+    )
+    ingested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="ingested_settlements",
+        verbose_name=_("کاربر وروددهنده"),
+    )
+    raw_document = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("فرادادهٔ خام سند"),
+        help_text="فراداده و هدر فایل برای بازبینی آینده؛ ردیف‌ها در SettlementRow هستند.",
+    )
+
+    class Meta:
+        verbose_name = _("سند صورت‌حساب تسویه")
+        verbose_name_plural = _("اسناد صورت‌حساب تسویه")
+        ordering = ["-period_end", "-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["gateway_name", "statement_sha256"],
+                name="uniq_settlement_statement_per_gateway",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["gateway_name", "period_end"], name="stmt_gw_period_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return (
+            f"{self.gateway_name} statement [{self.period_start:%Y-%m-%d}.."
+            f"{self.period_end:%Y-%m-%d}] rows={self.row_count}"
+        )
+
+
+class SettlementRow(BaseModel):
+    """یک ردیف خام صورت‌حساب + نتیجهٔ تطبیق آن با دفتر داخلی.
+
+    ``raw_payload`` عمداً نگه داشته می‌شود: فایل تسویهٔ فردا ستون تازه دارد. اگر
+    فقط ستون‌های شناخته‌شده را ذخیره کنیم، بازپردازش گذشته غیرممکن می‌شود. با
+    نگه‌داشتن ردیف خام، همیشه می‌توانیم گذشته را با منطق امروز دوباره بخوانیم.
+    """
+
+    statement = models.ForeignKey(
+        SettlementStatement,
+        on_delete=models.CASCADE,
+        related_name="rows",
+        verbose_name=_("سند صورت‌حساب"),
+    )
+    row_number = models.PositiveIntegerField(verbose_name=_("شمارهٔ سطر در فایل"))
+    authority = models.CharField(
+        max_length=80, blank=True, default="", db_index=True, verbose_name=_("شناسهٔ Authority")
+    )
+    ref_id = models.CharField(
+        max_length=80, blank=True, default="", verbose_name=_("شمارهٔ پیگیری درگاه")
+    )
+    amount_rial = models.BigIntegerField(default=0, verbose_name=_("مبلغ ردیف (ریال)"))
+    occurred_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("زمان تراکنش طبق فایل")
+    )
+    card_pan_masked = models.CharField(
+        max_length=32, blank=True, default="", verbose_name=_("شماره کارت پوشانده")
+    )
+    description = models.CharField(
+        max_length=300, blank=True, default="", verbose_name=_("توضیح ردیف فایل")
+    )
+    raw_payload = models.JSONField(
+        default=dict, blank=True, verbose_name=_("ردیف خام فایل (برای بازپردازش آینده)")
+    )
+
+    match_status = models.CharField(
+        max_length=24,
+        choices=SettlementRowMatchStatus.choices,
+        default=SettlementRowMatchStatus.PENDING,
+        db_index=True,
+        verbose_name=_("نتیجهٔ تطبیق"),
+    )
+    match_note = models.CharField(
+        max_length=400, blank=True, default="", verbose_name=_("توضیح فارسی نتیجهٔ تطبیق")
+    )
+    payment = models.ForeignKey(
+        Payment,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="settlement_rows",
+        verbose_name=_("پرداخت داخلی متناظر"),
+    )
+    remediation = models.CharField(
+        max_length=20,
+        choices=SettlementRemediation.choices,
+        default=SettlementRemediation.NONE,
+        db_index=True,
+        verbose_name=_("اقدام انجام‌شده"),
+    )
+    remediation_note = models.CharField(
+        max_length=400, blank=True, default="", verbose_name=_("توضیح اقدام")
+    )
+    remediated_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان اقدام"))
+
+    class Meta:
+        verbose_name = _("ردیف صورت‌حساب تسویه")
+        verbose_name_plural = _("ردیف‌های صورت‌حساب تسویه")
+        ordering = ["statement", "row_number"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["statement", "row_number"], name="uniq_settlement_row_number"
+            )
+        ]
+        indexes = [
+            models.Index(fields=["statement", "match_status"], name="stmtrow_match_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return f"row#{self.row_number} {self.authority or '(no authority)'} [{self.match_status}]"
+
+
+class SettlementReconciliation(BaseModel):
+    """نتیجهٔ یک اجرای تطبیق روی یک سند صورت‌حساب — عکس فوری قابل ممیزی.
+
+    چرا جدا از خود سند؟ چون یک سند می‌تواند چند بار تطبیق شود (پس از ورود
+    ردیف‌های تازه یا اصلاح منطق). هر اجرا باید اثر انگشت خودش را برای ممیزی
+    نگه دارد، وگرنه نمی‌توانیم بگوییم «این عدد را کی و با چه منطقی گفته‌ایم».
+    """
+
+    statement = models.ForeignKey(
+        SettlementStatement,
+        on_delete=models.CASCADE,
+        related_name="reconciliations",
+        verbose_name=_("سند صورت‌حساب"),
+    )
+    matched_count = models.PositiveIntegerField(default=0, verbose_name=_("تعداد منطبق"))
+    amount_mismatch_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد مغایرت مبلغ")
+    )
+    missing_internal_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد پول بی‌مالک")
+    )
+    missing_gateway_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد پرداخت داخلی غایب در فایل")
+    )
+    internal_not_verified_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد پرداخت اثبات‌نشده که درگاه پول گرفت")
+    )
+    duplicate_in_file_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد Authority تکراری در فایل")
+    )
+    integrity_violations = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد ردیف‌های ردشده به‌دلیل نقص داده")
+    )
+
+    auto_healed_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد خوددرمانی موفق")
+    )
+    queued_review_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد ارجاع‌شده به بررسی انسانی")
+    )
+    financial_impact_rial = models.BigIntegerField(
+        default=0,
+        verbose_name=_("اثر ریالی خالص کشف‌شده"),
+        help_text="مثبت = پول پیدا شد که در دفتر نبود؛ منفی = دفتری که پشتوانه ندارد.",
+    )
+    is_clean = models.BooleanField(default=False, verbose_name=_("بدون هیچ مغایرت باقی‌مانده"))
+    dry_run = models.BooleanField(default=False, verbose_name=_("اجرای آزمایشی (بدون نوشتن)"))
+    reconciled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="settlement_reconciliations",
+        verbose_name=_("کاربر اجراکننده"),
+    )
+    notes = models.JSONField(
+        default=dict, blank=True, verbose_name=_("فرادادهٔ اجرا (سیاست‌های مؤثر، هشدارها)")
+    )
+
+    class Meta:
+        verbose_name = _("نتیجهٔ تطبیق صورت‌حساب")
+        verbose_name_plural = _("نتایج تطبیق صورت‌حساب‌ها")
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        state = "پاک" if self.is_clean else "مغایرت‌دار"
+        return f"reconciliation[{state}] impact={self.financial_impact_rial}"

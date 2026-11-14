@@ -362,6 +362,13 @@ SPECTACULAR_SETTINGS = {
             "name": "Admin - Executive Excel Reports",
             "description": "کتابچهٔ ۸ کاربرگهٔ اکسل راست‌به‌چپ و تاریخچهٔ خروجی‌ها.",
         },
+        {
+            "name": "Admin - Money Truth",
+            "description": (
+                "لایهٔ حقیقت وجه: ورود صورت‌حساب تسویهٔ درگاه، تطبیق سه‌طرفه با "
+                "دفتر داخلی، خوددرمانی مجاز و پنل «آیا تأیید ما با بانک می‌خواند؟»."
+            ),
+        },
     ],
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
@@ -388,6 +395,12 @@ SPECTACULAR_SETTINGS = {
         "ReconciliationItemStatusEnum": "apps.ledger.choices.ReconciliationItemStatus.choices",
         "RiskReviewStatusEnum": "apps.identity.choices.RiskReviewStatus.choices",
         "SmsDeliveryStatusEnum": "apps.notifications.choices.SmsDeliveryStatus.choices",
+        "GatewayNameEnum": "apps.contributions.choices.GatewayName.choices",
+        "SettlementSourceKindEnum": "apps.contributions.choices.SettlementSourceKind.choices",
+        "SettlementStatementStatusEnum": "apps.contributions.choices.SettlementStatementStatus.choices",
+        "SettlementRowMatchStatusEnum": "apps.contributions.choices.SettlementRowMatchStatus.choices",
+        "SettlementRemediationEnum": "apps.contributions.choices.SettlementRemediation.choices",
+        "PaymentTruthStateEnum": "apps.contributions.choices.PaymentTruthState.choices",
     },
 }
 

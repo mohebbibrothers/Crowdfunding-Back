@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     Counter,
@@ -31,6 +34,18 @@ CONTRIBUTIONS_CONFIRMED_TOTAL = Counter(
     "شمار مشارکت‌های قطعی‌شده به تفکیک نوع (حرکت سهم‌محور یا قلک خیریه)",
     ["kind"],
 )
+
+
+# رجیستری پورت «حقیقت وجه»: اپ مشارکت‌ها آن را در زمان بارگذاری ثبت می‌کند.
+# این الگو (Port Registry) همان چیزی است که چرخهٔ وابستگی را به لبهٔ زمان‌اجرا
+# تبدیل می‌کند؛ core هیچ‌گاه از contributions import نمی‌کند.
+_MONEY_TRUTH_PROVIDER: Callable[[], dict[str, Any]] | None = None
+
+
+def register_money_truth_provider(provider: Callable[[], dict[str, Any]]) -> None:
+    """ثبت تأمین‌کنندهٔ عکس «حقیقت وجه» توسط اپ مشارکت‌ها."""
+    global _MONEY_TRUTH_PROVIDER  # noqa: PLW0603
+    _MONEY_TRUTH_PROVIDER = provider
 
 
 def render_prometheus_metrics() -> tuple[bytes, str]:
@@ -72,6 +87,32 @@ OUTBOX_BY_STATUS = Gauge(
     "تعداد پیام‌های صندوق خروجی به تفکیک وضعیت",
     ["status"],
 )
+# ── لایهٔ حقیقت وجه: آیا «تأییدشده» با صورت‌حساب مستقل هم‌خوان است؟ ──────────
+SETTLEMENT_STATEMENT_AGE_HOURS = Gauge(
+    "crowdfunding_settlement_statement_age_hours",
+    "کهنگی آخرین صورت‌حساب تسویهٔ ورودی (ساعت)؛ -1 یعنی هیچ سندی وارد نشده",
+)
+PAYMENTS_TRUTH_CONFIRMED = Gauge(
+    "crowdfunding_payments_truth_confirmed",
+    "تعداد پرداخت‌هایی که صورت‌حساب مستقل تأییدشان کرده است",
+)
+PAYMENTS_TRUTH_UNCONFIRMED = Gauge(
+    "crowdfunding_payments_truth_unconfirmed",
+    "پرداخت‌های تأییدشدهٔ داخلی که هنوز تأیید مستقل ندارند",
+)
+PAYMENTS_TRUTH_CONFLICT = Gauge(
+    "crowdfunding_payments_truth_conflict",
+    "تناقض قطعی دفتر داخلی با صورت‌حساب مستقل — همیشه باید صفر باشد",
+)
+UNRESOLVED_FINANCIAL_IMPACT_RIAL = Gauge(
+    "crowdfunding_unresolved_financial_impact_rial",
+    "اثر ریالی مغایرت‌های حل‌نشدهٔ صورت‌حساب",
+)
+REFRESH_FAILURES_TOTAL = Counter(
+    "crowdfunding_metrics_refresh_failures_total",
+    "شمار شکست تازه‌سازی گیج‌های مالی از دیتابیس؛ هر مقدار > ۰ یعنی /metrics عدد کهنه نشان می‌دهد",
+    ["error_type"],
+)
 
 
 def _refresh_financial_gauges() -> None:
@@ -96,5 +137,31 @@ def _refresh_financial_gauges() -> None:
         ABANDONED_PAYMENTS.set(Payment.objects.filter(status=PaymentStatus.ABANDONED).count())
         for status, count in outbox_health_snapshot().items():
             OUTBOX_BY_STATUS.labels(status=status).set(count)
-    except Exception:
+
+        # لایهٔ حقیقت وجه — از طریق رجیستری پورت خوانده می‌شود، نه import مستقیم.
+        # چرا؟ چون ``contributions.settlement`` برای خوددرمانی به ``contributions.services``
+        # ارجاع می‌دهد و آن زنجیره از ``audit.services`` → ``core.middleware`` به این
+        # ماژول برمی‌گردد. import مستقیم، چرخهٔ واقعی می‌سازد؛ رجیستری پورت آن را
+        # به یک لبهٔ زمان‌اجرا تبدیل می‌کند که گیت DAG هم آن را نمی‌بیند.
+        truth = _MONEY_TRUTH_PROVIDER() if _MONEY_TRUTH_PROVIDER is not None else None
+        if truth is not None:
+            SETTLEMENT_STATEMENT_AGE_HOURS.set(
+                -1.0
+                if truth["statement_age_hours"] is None
+                else float(truth["statement_age_hours"])
+            )
+            PAYMENTS_TRUTH_CONFIRMED.set(int(truth["statement_confirmed"]))
+            PAYMENTS_TRUTH_UNCONFIRMED.set(int(truth["verified_but_unconfirmed"]))
+            PAYMENTS_TRUTH_CONFLICT.set(int(truth["conflict"]))
+            UNRESOLVED_FINANCIAL_IMPACT_RIAL.set(int(truth["unresolved_impact_rial"]))
+    except Exception as exc:
+        # ── هرگز سکوت نکن ────────────────────────────────────────────────────
+        # پیش‌تر اینجا ``return`` خالی بود. نتیجه: اگر یک کوئری شکست می‌خورد،
+        # همهٔ گیج‌ها روی مقدار قبلی (یا صفر) می‌ماندند و هیچ‌کس نمی‌فهمید که
+        # /metrics دروغ می‌گوید. یک مانیتورینگ دروغ، از نبود مانیتورینگ بدتر است.
+        # حالا شکست را در یک شمارندهٔ عمومی ثبت می‌کنیم تا خودش قابل هشدار باشد.
+        REFRESH_FAILURES_TOTAL.labels(error_type=type(exc).__name__).inc()
+        import logging
+
+        logging.getLogger(__name__).warning("metrics gauge refresh failed: %s", exc, exc_info=True)
         return
