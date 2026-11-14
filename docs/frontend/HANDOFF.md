@@ -46,7 +46,7 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 | [`api/v1/openapi.yaml`](../api/v1/openapi.yaml) | قرارداد ماشینی کامل: ۷۲ مسیر، ۸۳ عملیات، ۱۱۲ اسکیما | خودکار از کد (CI قفل میکند) |
 | [`api/v1/README.md`](../api/v1/README.md) | قراردادهای سراسری پروتکل و نقشهٔ دامنهها | دستی + راستیآزمایی CI |
 | [`ENDPOINTS.md`](./ENDPOINTS.md) | ماتریس کامل متد/مسیر/operationId/سطح دسترسی | 🟢 خودکار |
-| [`ERRORS.md`](./ERRORS.md) | کاتالوگ ۳۶ کد خطای RFC 9457 + اقدام UX برای هر کد | 🟢 خودکار |
+| [`ERRORS.md`](./ERRORS.md) | کاتالوگ ۳۸ کد خطای RFC 9457 + اقدام UX برای هر کد | 🟢 خودکار |
 | [`api-types.d.ts`](./api-types.d.ts) | تایپهای TypeScript تمام اسکیماها + `ApiOperationMap` | 🟢 خودکار |
 | [`operations.ts`](./operations.ts) | نگاشت `operationId → (method, path)` | 🟢 خودکار |
 | [`api-client.ts`](./api-client.ts) | کلاینت fetch تایپشده: CSRF، JWT، refresh، خطا، retry، ETag، pagination | دستنویس |
@@ -78,7 +78,7 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 | `If-None-Match` | روی `GET`های قابل کش؛ پاسخ `304 Not Modified` محتمل است |
 | `ETag` | همراه پاسخهای نسخهدار (meta، فهرست حرکتها، خیریهها، قلکها) |
 | `Idempotency-Key` | UUID روی تمام متدهای نوشتنی مالی؛ پاسخ بازپخششده هدر `X-Idempotent-Replayed: true` دارد |
-| `X-CSRFToken` | فقط در حالت کوکی؛ مقدار از `GET /api/v1/auth/csrf` |
+| `X-CSRFToken` | فقط در حالت کوکی؛ مقدار از `GET /api/v1/auth/csrf` — **پس از هر ورود/خروج/refresh عوض می‌شود** |
 | `Retry-After` | هدر پاسخهای `429` و `503` |
 
 ### ۲٫۲ پول: ریال صحیح، نمایش تومان
@@ -91,7 +91,12 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 
 ### ۲٫۳ تاریخ، شناسهها و جهت
 
-- همهٔ `created_at` / `paid_at` / ... بهصورت **ISO-8601 UTC** (`...Z`) هستند.
+- همهٔ `created_at` / `paid_at` / ... **ISO-8601 با انحراف منطقهٔ زمانی سامانه** هستند؛
+  مثلاً `2026-11-14T10:53:28.017969+03:30`. هرگز فرض نکنید رشته با `Z` تمام می‌شود:
+  همیشه `new Date(value)` بدهید و با `Intl.DateTimeFormat("fa-IR", { timeZone: "Asia/Tehran" })`
+  یا فیلد آمادهٔ `*_jalali` نمایش دهید.
+- `today_jalali` در `/meta` قالب **`YYYY-MM-DD`** (با خط تیره) دارد، دقیقاً مثل `paid_at_jalali`؛
+  برای نمایش با اسلش فقط جداکننده را عوض کنید و هیچ تبدیل تقویمی انجام ندهید.
 - کنار اغلب تاریخها فیلد آمادهٔ `*_jalali` (مثلاً `paid_at_jalali`) وجود دارد؛ **همان را نمایش دهید**
   و تبدیل سمت کلاینت انجام ندهید تا اختلاف منطقهٔ زمانی / تقویم پیش نیاید.
 - منطقهٔ زمانی سرور `Asia/Tehran`، زبان `fa-ir`، جهت رابط `rtl`، فونت پیشنهادی وزیرمتن / Vazirmatn.
@@ -134,7 +139,7 @@ for await (const page of client.paginate("v1_me_contributions_list", {})) { /* .
   "currency_base": "IRR",
   "currency_display_units": ["IRR", "TOMAN"],
   "timezone": "Asia/Tehran",
-  "today_jalali": "1405/08/21",
+  "today_jalali": "1405-08-23",
   "features": { "merkle_transparency": true, "spiritual_dedications": true, "...": true },
   "share_hold_ttl_minutes": 15
 }
@@ -253,7 +258,7 @@ sequenceDiagram
 | ۵۰۳ | `service_overloaded` | «در حال تلاش دوباره…» + backoff |
 | ۵۰۰ | `internal_error` | فقط `trace_id` را به کاربر بدهید |
 
-📖 فهرست کامل ۳۶ کد همراه شرح و اقدام UX: [`ERRORS.md`](./ERRORS.md)
+📖 فهرست کامل ۳۸ کد همراه شرح و اقدام UX: [`ERRORS.md`](./ERRORS.md)
 
 ---
 
@@ -274,7 +279,18 @@ sequenceDiagram
 | ۱۱ | داشبورد خیر | `GET /me/dashboard` + `GET /me/contributions` + `GET /me/notifications` |
 | ۱۲ | سفیر اجتماعی | `GET|POST /me/ambassador-links` |
 | ۱۳ | پنل مدیریت | `POST /auth/staff/password-login` → MFA → `GET /health/detailed` → عملیات حساس با Step-Up |
-| ۱۴ | گزارش اکسل | `GET /admin/reports/excel` (پاسخ باینری xlsx؛ `Content-Disposition` را بخوانید) |
+| ۱۴ | گزارش اکسل | `GET /admin/reports/excel` — پاسخ **`Blob`** است (تایپ تولیدشده)، نه JSON؛ با `client.download(...)` + `client.saveBlob(...)` دانلود کنید |
+
+```ts
+// دانلود گزارش اکسل ۸ کاربرگه با همان نشست، CSRF و Retry خودکار
+const { blob, fileName } = await client.download("v1_admin_reports_excel_export", {
+  query: { date_from: "2026-10-01T00:00:00+03:30", reason: "گزارش ماهانه هیئت‌مدیره" },
+});
+client.saveBlob(blob, fileName);
+
+// پس از هر ورود/خروج/refresh، توکن CSRF را در حافظهٔ کلاینت باطل کنید:
+client.resetCsrf();
+```
 
 ### ۵٫۱ ماشین حالت پرداخت و مشارکت
 
@@ -336,6 +352,8 @@ stateDiagram-v2
 | نشانه | علت محتمل | راهحل |
 | --- | --- | --- |
 | `403` روی POST با وجود لاگین کوکی | `X-CSRFToken` ارسال نشده | `GET /auth/csrf` و ارسال هدر |
+| `403 csrf_failed` بلافاصله بعد از ورود | توکن CSRF کش‌شده پیش از چرخش نشست | `client.resetCsrf()` یا از سرگیری خودکار کلاینت؛ توکن را دستی cache نکنید |
+| تاریخ ۱۹۷۰ در UI | `new Date(number)` روی فیلد رشته‌ای | فیلدهای `*_at` رشتهٔ ISO-8601‌اند؛ همان را به `new Date(string)` بدهید |
 | CORS error در مرورگر | دامنهٔ فرانت در `CORS_ALLOWED_ORIGINS` نیست | تنظیم دقیق دامنه (بدون `*`) |
 | کوکی ست نمیشود روی دامنهٔ متفاوت | `SameSite=Lax` | `DJANGO_SESSION_COOKIE_SAMESITE=None` + HTTPS |
 | `401` بعد از refresh همزمان | چند چرخش موازی | الگوی Single-Flight کلاینت |

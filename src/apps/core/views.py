@@ -88,7 +88,11 @@ class CsrfBootstrapView(APIView):
         tags=["System"],
     )
     def get(self, request: Request) -> Response:
-        """تولید توکن CSRF و ارسال در کوکی و بدنه."""
+        """تولید توکن CSRF و ارسال در کوکی و بدنه.
+
+        این توکن برای نشست کوکی‌محور تنها منبع معتبر است: پس از هر ورود/چرخش نشست،
+        CsrfViewMiddleware توکن کوکی را عوض می‌کند و کلاینت باید مقدار تازه را بگیرد.
+        """
         token = get_token(request._request)
         resp = Response({"csrf_token": token})
         resp["Cache-Control"] = "private, no-store"

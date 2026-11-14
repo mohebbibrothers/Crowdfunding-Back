@@ -214,14 +214,18 @@ def custom_exception_handler(exc: Exception, context: dict[str, Any]) -> Respons
         )
 
     if isinstance(exc, (drf_exc.NotAuthenticated, drf_exc.AuthenticationFailed)):
-        detail = (
-            str(exc.detail) if isinstance(exc.detail, str) else "ورود به حساب کاربری الزامی است."
-        )
+        # پیام‌های DRF/SimpleJWT انگلیسی‌اند؛ به کاربر فارسی‌زبان نباید نشت کنند.
+        # متن اصلی فقط در لاگ می‌ماند و پاسخ، پیام پایدار فارسی می‌گیرد.
+        raw_detail = str(exc.detail) if isinstance(exc.detail, str) else ""
+        if raw_detail:
+            logger.info(
+                "auth_failed", extra={"path": getattr(request, "path", ""), "reason": raw_detail}
+            )
         return problem_response(
             status=401,
             code="authentication_required",
             title="احراز هویت ناموفق",
-            detail=detail,
+            detail="برای انجام این عملیات باید وارد حساب کاربری شوید یا نشست خود را تازه کنید.",
             request=request,
         )
 
@@ -231,11 +235,22 @@ def custom_exception_handler(exc: Exception, context: dict[str, Any]) -> Respons
             if isinstance(exc, drf_exc.PermissionDenied) and isinstance(exc.detail, str)
             else "شما دسترسی لازم برای این عملیات را ندارید."
         )
+        # خطای CSRF متن خام انگلیسی DRF («CSRF Failed: ...») دارد؛ فرانت‌اند باید با یک
+        # کد ماشینی پایدار آن را از «عدم دسترسی نقش» تفکیک کند تا بتواند توکن تازه بگیرد
+        # و همان درخواست را بی‌صدا تکرار کند.
+        if "csrf" in detail.lower():
+            return problem_response(
+                status=403,
+                code="csrf_failed",
+                title="اعتبار توکن CSRF از دست رفت",
+                detail="توکن امنیتی نشست منقضی شده است؛ درخواست با توکن تازه تکرار می‌شود.",
+                request=request,
+            )
         return problem_response(
             status=403,
             code="permission_denied",
             title="عدم مجوز دسترسی",
-            detail=detail,
+            detail="شما مجوز لازم برای این عملیات را ندارید.",
             request=request,
         )
 

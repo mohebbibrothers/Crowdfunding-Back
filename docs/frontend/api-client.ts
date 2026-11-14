@@ -51,6 +51,14 @@ export class ApiClientError extends Error {
       (this.code === "authentication_required" || this.code === "user_inactive")
     );
   }
+
+  /**
+   * آیا مجوز CSRF منقضی شده است؟ (پس از ورود یا چرخش نشست رخ می‌دهد)
+   * کلاینت این حالت را خودکار با گرفتن توکن تازه و تکرار همان درخواست جبران می‌کند.
+   */
+  get isCsrfExpired(): boolean {
+    return this.code === "csrf_failed";
+  }
 }
 
 export type AuthMode = "cookie" | "bearer";
@@ -111,6 +119,15 @@ const interpolate = (path: string, params?: Record<string, string | number>): st
     return encodeURIComponent(String(value));
   });
 
+/** تولید نام فایل پیشنهادی از مسیر عملیات (وقتی سرور Content-Disposition نداد). */
+const suggestedFileName = (path: string): string => {
+  const slug = path
+    .replace(/^\/api\/v1\//, "")
+    .replace(/[^a-z0-9-]+/gi, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${slug || "export"}.xlsx`;
+};
+
 export function createApiClient(options: ApiClientOptions) {
   const doFetch = options.fetchImpl ?? fetch.bind(globalThis);
   const maxRetries = options.maxRetries ?? 2;
@@ -132,6 +149,11 @@ export function createApiClient(options: ApiClientOptions) {
     return url.toString();
   };
 
+  /** ابطال توکن CSRF کش‌شده؛ پس از هر ورود/خروج/چرخش نشست فراخوانی می‌شود. */
+  const resetCsrf = (): void => {
+    state.csrfToken = null;
+  };
+
   /** کاشت یکبارهٔ توکن CSRF (تکپروازه، ایمن در برابر چند درخواست همزمان آغازین). */
   const ensureCsrf = async (): Promise<string> => {
     if (options.authMode !== "cookie") return "";
@@ -139,7 +161,9 @@ export function createApiClient(options: ApiClientOptions) {
     if (!state.csrfPending) {
       state.csrfPending = (async () => {
         const res = await doFetch(buildUrl("/api/v1/auth/csrf"), {
+          method: "GET",
           credentials: "include",
+          cache: "no-store",
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error("CSRF bootstrap failed");
@@ -246,6 +270,7 @@ export function createApiClient(options: ApiClientOptions) {
     const cacheKey = `${method} ${buildUrl(path, opts.query)}`;
     const cached = method === "GET" ? state.etags.get(cacheKey) : undefined;
     let refreshed = false;
+    let csrfRetried = false;
 
     for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
       const headers = await buildHeaders(
@@ -269,19 +294,39 @@ export function createApiClient(options: ApiClientOptions) {
       }
 
       if (res.ok) {
-        if (res.status === 204) return undefined as ApiOperation<K>["response"];
+        // 204/205 یا بدنهٔ خالی: پاسخ از نوع void است و json() روی آن خطا می‌داد.
+        if (res.status === 204 || res.status === 205) {
+          return undefined as ApiOperation<K>["response"];
+        }
         const contentType = res.headers.get("Content-Type") ?? "";
+        if (!contentType && res.headers.get("Content-Length") === "0") {
+          return undefined as ApiOperation<K>["response"];
+        }
         const value = contentType.includes("json") ? await res.json() : await res.blob();
         const etag = res.headers.get("ETag");
-        if (method === "GET" && etag) state.etags.set(cacheKey, { etag, value });
+        // خروجی‌های باینری (xlsx) در کش ETag نگه داشته نمی‌شوند؛ Blob حافظه‌بر است.
+        if (method === "GET" && etag && !contentType.startsWith("application/vnd.")) {
+          state.etags.set(cacheKey, { etag, value });
+        }
         return value as ApiOperation<K>["response"];
       }
 
       const problem = await parseProblem(res);
 
+      // 403 csrf_failed → توکن تازه بگیر و همان درخواست را دقیقاً یک‌بار تکرار کن
+      // (پس از ورود/چرخش نشست رخ می‌دهد و نباید به کاربر نمایش داده شود).
+      if (problem.isCsrfExpired && options.authMode === "cookie" && !csrfRetried) {
+        csrfRetried = true;
+        resetCsrf();
+        attempt -= 1;
+        continue;
+      }
+
       // 401 → دقیقاً یکبار چرخش توکن و سپس بازارسال همان درخواست (بدون حلقه)
       if (problem.isSessionExpired && !refreshed && (await rotateTokens())) {
         refreshed = true;
+        // چرخش نشست در سرور توکن CSRF را هم عوض می‌کند؛ کش قدیمی باید پاک شود.
+        resetCsrf();
         attempt -= 1;
         continue;
       }
@@ -332,13 +377,43 @@ export function createApiClient(options: ApiClientOptions) {
     }
   }
 
+  /**
+   * دانلود امن فایل باینری (مثلاً گزارش اکسل ۸ کاربرگه) با همان احراز هویت و CSRF.
+   * نام فایل از `Content-Disposition` خوانده می‌شود و لینک موقت پس از کلیک آزاد می‌گردد.
+   */
+  async function download<K extends ApiOperationId>(
+    operationId: K,
+    opts: RequestOptions<K> = {},
+    fileName?: string,
+  ): Promise<{ blob: Blob; fileName: string }> {
+    const blob = (await request(operationId, opts)) as unknown as Blob;
+    const descriptor = OPERATIONS[operationId];
+    const resolvedName = fileName ?? suggestedFileName(descriptor.path);
+    return { blob, fileName: resolvedName };
+  }
+
+  /** ذخیرهٔ Blob در فایل (فقط مرورگر؛ در SSR به‌صورت no-op امن رفتار می‌کند). */
+  function saveBlob(blob: Blob, fileName: string): void {
+    if (typeof document === "undefined" || typeof URL.createObjectURL !== "function") return;
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = fileName;
+    anchor.rel = "noopener";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    // آزادسازی حافظه در تیک بعد؛ حذف فوری در Safari دانلود را لغو می‌کند.
+    setTimeout(() => URL.revokeObjectURL(href), 1_000);
+  }
+
   return {
     request,
     paginate,
+    download,
+    saveBlob,
     ensureCsrf,
-    resetCsrf: () => {
-      state.csrfToken = null;
-    },
+    resetCsrf,
     invalidateCache: () => state.etags.clear(),
   };
 }

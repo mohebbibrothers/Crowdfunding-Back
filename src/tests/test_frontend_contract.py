@@ -92,7 +92,7 @@ def test_contract_declares_servers_tags_and_problem_schema() -> None:
     problem = doc["components"]["schemas"]["Problem"]  # type: ignore[index]
     for field in ("type", "title", "status", "detail", "code", "instance", "trace_id"):
         assert field in problem["required"]
-    assert len(problem["properties"]["code"]["enum"]) >= 30
+    assert len(problem["properties"]["code"]["enum"]) >= 38
 
 
 def test_every_operation_documents_standard_problem_errors() -> None:
@@ -349,14 +349,14 @@ def test_every_throttle_scope_has_a_configured_rate() -> None:
 
 
 def test_problem_type_uri_points_to_real_docs_anchor() -> None:
-    """تمام ۳۶ کد خطا باید لنگر واقعی در کاتالوگ فرانتاند داشته باشند."""
+    """تمام ۳۸ کد خطا باید لنگر واقعی در کاتالوگ فرانت‌اند داشته باشند."""
     from apps.core.problems import problem_type_uri
     from apps.core.schema import PROBLEM_CODES
 
     errors_md = (FRONTEND_DIR / "ERRORS.md").read_text(encoding="utf-8")
     anchors = set(re.findall(r'id="(error-[^"]+)"', errors_md))
     codes = {row[0] for row in PROBLEM_CODES}
-    assert len(codes) == 36
+    assert len(codes) == 38
     assert anchors == {f"error-{code}" for code in codes}
     for code in codes:
         assert problem_type_uri(code).endswith(f"ERRORS.md#error-{code}")
@@ -589,3 +589,113 @@ def test_portal_quality_stats_match_test_suite() -> None:
     assert f"{count}/{count}" in text, f"Portal still advertises stale test count ({count})"
     coverage = re.search(r"<b>(\d{2}\.\d{2})%</b>", text)
     assert coverage is not None and float(coverage.group(1)) >= 85
+
+
+# ─── گیت‌های ممیزی زندهٔ نسخهٔ ۱٫۱٫۰ (تایپ تاریخ، CSRF، پیام فارسی) ─────────
+
+
+def test_typescript_types_match_runtime_json_scalars() -> None:
+    """هر فیلد date-time در قرارداد باید در api-types.d.ts رشته باشد (نه epoch).
+
+    رگرسیون واقعی: مولد پیش‌تر ``format: date-time`` را به ``number`` نگاشت می‌کرد
+    در حالی که DRF مقدار ``2026-11-14T10:53:28+03:30`` برمی‌گرداند؛ یعنی فرانت
+    روی ``new Date(number)`` بی‌صدا تاریخ ۱۹۷۰ نشان می‌داد.
+    """
+    doc = _schema()
+    schemas = doc["components"]["schemas"]
+    types_text = (FRONTEND_DIR / "api-types.d.ts").read_text(encoding="utf-8")
+    interfaces = dict(re.findall(r"export interface (\w+) \{ (.*?) \}", types_text, re.DOTALL))
+    offenders: list[str] = []
+    for name, body in interfaces.items():
+        spec = schemas.get(name, {})
+        for field, decl in re.findall(r"(\w+)\??: ([^;]+);", body):
+            prop = spec.get("properties", {}).get(field)
+            if not prop:
+                continue
+            rtype = prop.get("type")
+            kinds = rtype if isinstance(rtype, list) else [rtype]
+            if (
+                "string" in kinds
+                and prop.get("format") in {"date-time", "date"}
+                and "number" in decl
+            ):
+                offenders.append(f"{name}.{field}: {decl.strip()}")
+            if prop.get("format") == "binary" and decl.strip() not in {"Blob", "(Blob | null)"}:
+                offenders.append(f"{name}.{field}: binary → {decl.strip()}")
+    assert not offenders, "Type/runtime drift:\n" + "\n".join(offenders)
+
+
+def test_every_problem_code_has_persian_prose() -> None:
+    """هر کد خطا باید عنوان/شرح/اقدام فارسی داشته باشد و هیچ واژهٔ لاتین نشت نکند."""
+    from apps.core.schema import PROBLEM_CODES
+
+    latin_word = re.compile(r"\b(?:CSRF Failed|Authentication credentials|Not found|Bad Request)\b")
+    for code, status, title, description, action in PROBLEM_CODES:
+        assert re.fullmatch(r"[a-z0-9_]+", code), code
+        assert 400 <= status <= 599, code
+        for text in (title, description, action):
+            assert re.search(r"[\u0600-\u06FF]", text), f"{code}: non-Persian text {text!r}"
+            assert not latin_word.search(text), f"{code}: leaked English phrase in {text!r}"
+
+
+def test_csrf_failure_maps_to_dedicated_problem_code() -> None:
+    """خطای CSRF باید ``csrf_failed`` باشد تا کلاینت بتواند بی‌صدا توکن را تازه کند."""
+    from apps.core.problems import custom_exception_handler
+
+    class _Req:
+        path = "/api/v1/me"
+        trace_id = "trace-csrf"
+
+    exc = __import__("rest_framework.exceptions", fromlist=["PermissionDenied"]).PermissionDenied(
+        "CSRF Failed: CSRF token from the 'X-CSRFToken' HTTP header has incorrect length."
+    )
+    response = custom_exception_handler(exc, {"request": _Req()})
+    assert response is not None
+    assert response.status_code == 403
+    payload = response.data
+    assert payload["code"] == "csrf_failed"
+    assert "csrf" not in str(payload["detail"]).lower()
+    assert re.search(r"[\u0600-\u06FF]", str(payload["detail"]))
+
+
+def test_auth_failures_never_leak_english_drf_messages() -> None:
+    """پیام‌های انگلیسی DRF («Authentication credentials were not provided») نشت نکند."""
+    from rest_framework.exceptions import NotAuthenticated
+
+    from apps.core.problems import custom_exception_handler
+
+    class _Req:
+        path = "/api/v1/me"
+        trace_id = "trace-auth"
+
+    exc = NotAuthenticated("Authentication credentials were not provided.")
+    response = custom_exception_handler(exc, {"request": _Req()})
+    assert response is not None and response.status_code == 401
+    assert response.data["code"] == "authentication_required"
+    assert "Authentication credentials" not in str(response.data["detail"])
+
+
+def test_frontend_client_recovers_from_csrf_rotation() -> None:
+    """کلاینت مرورگری باید پس از ورود، توکن CSRF تازه بگیرد و درخواست را تکرار کند."""
+    client_text = (FRONTEND_DIR / "api-client.ts").read_text(encoding="utf-8")
+    for marker in (
+        "isCsrfExpired",
+        "csrfRetried",
+        'cache: "no-store"',
+        "resetCsrf",
+    ):
+        assert marker in client_text, f"api-client.ts missing: {marker}"
+    assert 'problem.isCsrfExpired && options.authMode === "cookie" && !csrfRetried' in client_text
+
+
+def test_meta_today_jalali_matches_documented_format() -> None:
+    """قالب ``today_jalali`` در کد و مستند یکسان باشد (YYYY-MM-DD با خط تیره)."""
+    from apps.core.jalali import today_jalali
+
+    value = today_jalali()
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", value), value
+    handoff = (FRONTEND_DIR / "HANDOFF.md").read_text(encoding="utf-8")
+    assert '"today_jalali": "' in handoff
+    documented = re.search(r'"today_jalali": "([^"]+)"', handoff)
+    assert documented is not None
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", documented.group(1)), documented.group(1)

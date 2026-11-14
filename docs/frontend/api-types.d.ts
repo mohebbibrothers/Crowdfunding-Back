@@ -40,7 +40,9 @@ export type ProblemCode =
   | "cannot_revoke_current_session"
   | "user_inactive"
   | "sms_budget_exhausted"
-  | "domain_error";
+  | "domain_error"
+  | "csrf_failed"
+  | "session_rotated";
 
 export interface ApiError {
   type: string;
@@ -62,7 +64,7 @@ export interface CursorMeta {
 }
 
 /** نمای مدیریتی پرداخت با پوشاندن شماره موبایل خیر به صورت پیش‌فرض. */
-export interface AdminPayment { id: string; contribution_id: string; gateway_name: string; authority: string; ref_id: string; status: string; amount_rial: number; amount_toman: number; donor_phone_masked: string; donor_user_id: string; benefactor_name: string; target_title: string; verified_at: (number | null); created_at: number; }
+export interface AdminPayment { id: string; contribution_id: string; gateway_name: string; authority: string; ref_id: string; status: string; amount_rial: number; amount_toman: number; donor_phone_masked: string; donor_user_id: string; benefactor_name: string; target_title: string; verified_at: (string | null); created_at: string; }
 
 /** ورودی درخواست مشاهدهٔ شمارهٔ کامل خیر با الزام ثبت هدف. */
 export interface AdminPhoneRevealInputRequest { reason: string; }
@@ -71,7 +73,7 @@ export interface AdminPhoneRevealInputRequest { reason: string; }
 export interface AdminRoleChangeInputRequest { role: RoleEnum; reason: string; }
 
 /** نمای کاربر برای میز عملیاتی ادمین (با شماره تلفن پوشانده در حالت عادی). */
-export interface AdminUserOutput { id: string; masked_phone: string; first_name: string; last_name: string; display_name: string; province: string; city: string; role: RoleEnum; is_active: boolean; created_at: number; }
+export interface AdminUserOutput { id: string; masked_phone: string; first_name: string; last_name: string; display_name: string; province: string; city: string; role: RoleEnum; is_active: boolean; created_at: string; }
 
 /** ورودی ساخت لینک سفیر اجتماعی برای حرکت یا قلک. */
 export interface AmbassadorCreateInputRequest { campaign_id?: (string | null); charity_jar_id?: (string | null); custom_note?: string; }
@@ -80,7 +82,7 @@ export interface AmbassadorCreateInputRequest { campaign_id?: (string | null); c
 export interface AmbassadorImpactLinkOutput { code: string; target_title: string; click_count: number; referred_donors_count: number; attributed_shares: number; attributed_amount_rial: number; attributed_amount_toman: number; }
 
 /** نمای خروجی لینک سفیر اجتماعی. */
-export interface AmbassadorLink { id: string; code: string; campaign_id: (string | null); charity_jar_id: (string | null); target_title: string; custom_note: string; click_count: number; referred_donors_count: number; attributed_shares: number; attributed_amount_rial: number; attributed_amount_toman: number; created_at: number; }
+export interface AmbassadorLink { id: string; code: string; campaign_id: (string | null); charity_jar_id: (string | null); target_title: string; custom_note: string; click_count: number; referred_donors_count: number; attributed_shares: number; attributed_amount_rial: number; attributed_amount_toman: number; created_at: string; }
 
 /** تفکیک مبالغ ریالی/تومانی هدف، جمعآوریشده، مضاعف، آفلاین و تسویهشده. */
 export interface AmountsBreakdownOutput { target_amount_rial: number; target_amount_toman: number; collected_online_rial: number; collected_online_toman: number; matched_amount_rial: number; matched_amount_toman: number; external_amount_rial: number; external_amount_toman: number; disbursed_to_benefactor_rial: number; disbursed_to_benefactor_toman: number; }
@@ -89,7 +91,7 @@ export interface AmountsBreakdownOutput { target_amount_rial: number; target_amo
 export interface AuditChainVerification { chain_valid: boolean; first_broken_sequence: (number | null); anchors_valid: boolean; broken_anchors: Array<number>; total_records: number; }
 
 /** نمای خروجی یک رکورد حسابرسی. */
-export interface AuditRecord { id: string; sequence: number; action: string; outcome: string; actor_id: (string | null); actor_label: string; target_type: string; target_id: string; reason: string; metadata: unknown; request_id: string; previous_hash: string; record_hash: string; created_at: number; created_at_jalali: (string | null); }
+export interface AuditRecord { id: string; sequence: number; action: string; outcome: string; actor_id: (string | null); actor_label: string; target_type: string; target_id: string; reason: string; metadata: unknown; request_id: string; previous_hash: string; record_hash: string; created_at: string; created_at_jalali: (string | null); }
 
 /** ورودی بررسی سیگنال ریسک هویتی. */
 export interface AuthRiskReviewInputRequest { status: AuthRiskReviewInputStatusEnum; note?: string; }
@@ -99,13 +101,13 @@ export interface AuthRiskReviewInputRequest { status: AuthRiskReviewInputStatusE
 export type AuthRiskReviewInputStatusEnum = "reviewed" | "dismissed";
 
 /** نمای سیگنال ریسک احراز هویت. */
-export interface AuthRiskSignalOutput { id: string; signal_type: string; status: string; ip_address: (string | null); phone_masked: string; metadata: unknown; review_note: string; created_at: number; }
+export interface AuthRiskSignalOutput { id: string; signal_type: string; status: string; ip_address: (string | null); phone_masked: string; metadata: unknown; review_note: string; created_at: string; }
 
 /** پاسخ ورود موفق شامل نشست، توکن‌های JWT و وضعیت MFA. */
 export interface AuthTokensOutput { access_token: string; refresh_token: string; session_id: string; mfa_required: boolean; user: UserMeOutput; }
 
 /** نمای مدیریتی خیریه شامل شماره شبا، شناسه ملی و وضعیت فعال بودن. */
-export interface BenefactorAdmin { id: string; name: string; slug: string; registration_number: string; province: string; city: string; short_bio: string; description: string; logo_url: string; cover_url: string; website_url: string; is_verified: boolean; active_campaigns_count: number; completed_campaigns_count: number; total_raised_rial: number; total_raised_toman: number; total_disbursed_rial: number; total_disbursed_toman: number; jars: Array<Record<string, unknown>>; national_identifier: string; contact_phone: string; iban: string; bank_holder_name: string; is_active: boolean; display_order: number; created_at: number; created_at_jalali: (string | null); }
+export interface BenefactorAdmin { id: string; name: string; slug: string; registration_number: string; province: string; city: string; short_bio: string; description: string; logo_url: string; cover_url: string; website_url: string; is_verified: boolean; active_campaigns_count: number; completed_campaigns_count: number; total_raised_rial: number; total_raised_toman: number; total_disbursed_rial: number; total_disbursed_toman: number; jars: Array<Record<string, unknown>>; national_identifier: string; contact_phone: string; iban: string; bank_holder_name: string; is_active: boolean; display_order: number; created_at: string; created_at_jalali: (string | null); }
 
 /** نمای عمومی خیریه بدون افشای شماره شبا یا اطلاعات بانکی حساس. */
 export interface BenefactorPublic { id: string; name: string; slug: string; registration_number: string; province: string; city: string; short_bio: string; description: string; logo_url: string; cover_url: string; website_url: string; is_verified: boolean; active_campaigns_count: number; completed_campaigns_count: number; total_raised_rial: number; total_raised_toman: number; total_disbursed_rial: number; total_disbursed_toman: number; jars: Array<Record<string, unknown>>; }
@@ -120,10 +122,10 @@ export interface CampaignCategory { id: string; title: string; slug: string; ico
 export interface CampaignCategoryWriteRequest { title: string; slug: string; icon_name?: string; description?: string; display_order?: number; is_active?: boolean; }
 
 /** نمای کامل صفحهٔ جزئیات حرکت شامل روایت چیستی‌وچرایی، گالری و تایم‌لاین پیشرفت میدانی. */
-export interface CampaignDetail { id: string; title: string; slug: string; short_code: string; subtitle: string; cover_image_url: string; province: string; city: string; status: string; urgency_level: string; is_featured: boolean; benefactor: Record<string, unknown>; category: (Record<string, unknown> | null); total_shares: number; paid_shares: number; matched_shares: number; external_shares: number; reserved_shares: number; funded_shares: number; remaining_shares: number; progress_percent: number; physical_progress_percent: number; supporter_count: number; share_price_rial: number; share_price_toman: number; target_amount_rial: number; target_amount_toman: number; total_funded_rial: number; total_funded_toman: number; disbursed_amount_rial: number; disbursed_amount_toman: number; active_matching_grant: (Record<string, unknown> | null); ends_at: (number | null); ends_at_jalali: (string | null); created_at: number; created_at_jalali: (string | null); why_and_what: string; video_url: string; min_shares_per_order: number; max_shares_per_order: number; collected_online_rial: number; collected_online_toman: number; matched_amount_rial: number; matched_amount_toman: number; external_amount_rial: number; external_amount_toman: number; allow_anonymous: boolean; allow_dedication: boolean; media_items: Array<CampaignMedia>; impact_updates: Array<Record<string, unknown>>; starts_at: (number | null); completed_at: (number | null); has_financial_activity: boolean; }
+export interface CampaignDetail { id: string; title: string; slug: string; short_code: string; subtitle: string; cover_image_url: string; province: string; city: string; status: string; urgency_level: string; is_featured: boolean; benefactor: Record<string, unknown>; category: (Record<string, unknown> | null); total_shares: number; paid_shares: number; matched_shares: number; external_shares: number; reserved_shares: number; funded_shares: number; remaining_shares: number; progress_percent: number; physical_progress_percent: number; supporter_count: number; share_price_rial: number; share_price_toman: number; target_amount_rial: number; target_amount_toman: number; total_funded_rial: number; total_funded_toman: number; disbursed_amount_rial: number; disbursed_amount_toman: number; active_matching_grant: (Record<string, unknown> | null); ends_at: (string | null); ends_at_jalali: (string | null); created_at: string; created_at_jalali: (string | null); why_and_what: string; video_url: string; min_shares_per_order: number; max_shares_per_order: number; collected_online_rial: number; collected_online_toman: number; matched_amount_rial: number; matched_amount_toman: number; external_amount_rial: number; external_amount_toman: number; allow_anonymous: boolean; allow_dedication: boolean; media_items: Array<CampaignMedia>; impact_updates: Array<Record<string, unknown>>; starts_at: (string | null); completed_at: (string | null); has_financial_activity: boolean; }
 
 /** نمای گزارش پیشرفت میدانی حرکت. */
-export interface CampaignImpactUpdate { id: string; milestone_type: string; title: string; body: string; progress_percent: number; spent_amount_rial: number; spent_amount_toman: number; media_urls: Array<string>; created_at: number; created_at_jalali: (string | null); }
+export interface CampaignImpactUpdate { id: string; milestone_type: string; title: string; body: string; progress_percent: number; spent_amount_rial: number; spent_amount_toman: number; media_urls: Array<string>; created_at: string; created_at_jalali: (string | null); }
 
 /** نمای آیتم رسانه در گالری حرکت. */
 export interface CampaignMedia { id: string; kind: string; url: string; caption: string; display_order: number; }
@@ -141,16 +143,16 @@ export interface CampaignMediaInputRequest { kind?: KindEnum; url: string; capti
 export type CampaignStatusEnum = "draft" | "active" | "paused" | "completed" | "executing" | "fulfilled" | "cancelled";
 
 /** نمای کارت خلاصهٔ حرکت برای فهرست‌های عمومی (با نمایش دوگانه ریال/تومان و سهم‌ها). */
-export interface CampaignSummary { id: string; title: string; slug: string; short_code: string; subtitle: string; cover_image_url: string; province: string; city: string; status: string; urgency_level: string; is_featured: boolean; benefactor: Record<string, unknown>; category: (Record<string, unknown> | null); total_shares: number; paid_shares: number; matched_shares: number; external_shares: number; reserved_shares: number; funded_shares: number; remaining_shares: number; progress_percent: number; physical_progress_percent: number; supporter_count: number; share_price_rial: number; share_price_toman: number; target_amount_rial: number; target_amount_toman: number; total_funded_rial: number; total_funded_toman: number; disbursed_amount_rial: number; disbursed_amount_toman: number; active_matching_grant: (Record<string, unknown> | null); ends_at: (number | null); ends_at_jalali: (string | null); created_at: number; created_at_jalali: (string | null); }
+export interface CampaignSummary { id: string; title: string; slug: string; short_code: string; subtitle: string; cover_image_url: string; province: string; city: string; status: string; urgency_level: string; is_featured: boolean; benefactor: Record<string, unknown>; category: (Record<string, unknown> | null); total_shares: number; paid_shares: number; matched_shares: number; external_shares: number; reserved_shares: number; funded_shares: number; remaining_shares: number; progress_percent: number; physical_progress_percent: number; supporter_count: number; share_price_rial: number; share_price_toman: number; target_amount_rial: number; target_amount_toman: number; total_funded_rial: number; total_funded_toman: number; disbursed_amount_rial: number; disbursed_amount_toman: number; active_matching_grant: (Record<string, unknown> | null); ends_at: (string | null); ends_at_jalali: (string | null); created_at: string; created_at_jalali: (string | null); }
 
 /** یک ردیف از دیوار عمومی همراهان حرکت (با احترام به گمنامی خیر). */
-export interface CampaignSupporterOutput { supporter_name: string; shares_count: number; matched_shares_awarded: number; public_note: (string | null); honoree_name: (string | null); paid_at: (number | null); paid_at_jalali: string; }
+export interface CampaignSupporterOutput { supporter_name: string; shares_count: number; matched_shares_awarded: number; public_note: (string | null); honoree_name: (string | null); paid_at: (string | null); paid_at_jalali: string; }
 
 /** گزارش کامل شفافیت مالی و رمزنگاری یک حرکت خیرخواهانه. */
 export interface CampaignTransparencyOutput { campaign_id: string; campaign_slug: string; campaign_title: string; benefactor_name: string; shares_breakdown: SharesBreakdownOutput; amounts_breakdown: AmountsBreakdownOutput; merkle_anchor: MerkleAnchorOutput | (unknown | null); external_contributions: Array<ExternalTransparencyItem>; }
 
 /** ورودی ایجاد حرکت خیرخواهانهٔ سهم‌محور توسط مدیر. */
-export interface CampaignWriteRequest { benefactor_id: string; category_id?: (string | null); title: string; slug: string; short_code?: string; subtitle?: string; why_and_what?: string; cover_image_url?: string; video_url?: string; province?: string; city?: string; total_shares: number; share_price_rial: number; min_shares_per_order?: number; max_shares_per_order?: number; status?: CampaignStatusEnum; urgency_level?: UrgencyLevelEnum; is_featured?: boolean; allow_anonymous?: boolean; allow_dedication?: boolean; starts_at?: (number | null); ends_at?: (number | null); media_items?: Array<CampaignMediaInputRequest>; }
+export interface CampaignWriteRequest { benefactor_id: string; category_id?: (string | null); title: string; slug: string; short_code?: string; subtitle?: string; why_and_what?: string; cover_image_url?: string; video_url?: string; province?: string; city?: string; total_shares: number; share_price_rial: number; min_shares_per_order?: number; max_shares_per_order?: number; status?: CampaignStatusEnum; urgency_level?: UrgencyLevelEnum; is_featured?: boolean; allow_anonymous?: boolean; allow_dedication?: boolean; starts_at?: (string | null); ends_at?: (string | null); media_items?: Array<CampaignMediaInputRequest>; }
 
 /** نمای عمومی قلک عام خیریه با نمایش ریال و تومان. */
 export interface CharityJarPublic { id: string; benefactor_id: string; benefactor_name: string; benefactor_slug: string; benefactor_logo_url: string; title: string; slug: string; short_code: string; description: string; suggested_amounts_rial: Array<number>; suggested_amounts_toman: Array<number>; min_amount_rial: number; min_amount_toman: number; max_amount_rial: number; max_amount_toman: number; monthly_goal_rial: number; monthly_goal_toman: number; total_raised_rial: number; total_raised_toman: number; donor_count: number; is_active: boolean; }
@@ -162,10 +164,10 @@ export interface CharityJarWriteRequest { benefactor_id: string; title: string; 
 export interface CheckoutInitiateInputRequest { target_kind?: TargetKindEnum; campaign_id?: (string | null); charity_jar_id?: (string | null); shares_count?: number; amount_rial?: number; is_anonymous?: boolean; public_note?: string; ambassador_code?: string; gateway_name?: GatewayNameEnum; dedication?: DedicationInputRequest; }
 
 /** پاسخ ایجاد مشارکت و لینک هدایت به درگاه پرداخت. */
-export interface CheckoutInitiateResponse { contribution_id: string; payment_id: string; authority: string; gateway_name: string; gateway_redirect_url: string; shares_count: number; amount_rial: number; amount_toman: number; hold_expires_at: number; }
+export interface CheckoutInitiateResponse { contribution_id: string; payment_id: string; authority: string; gateway_name: string; gateway_redirect_url: string; shares_count: number; amount_rial: number; amount_toman: number; hold_expires_at: string; }
 
 /** نمای مشارکت در فهرست تاریخچهٔ کاربر. */
-export interface ContributionUser { id: string; target_kind: string; target_title: string; benefactor_name: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; is_anonymous: boolean; status: string; hold_expires_at: number; paid_at: (number | null); paid_at_jalali: (string | null); receipt_verification_code: (string | null); dedication_token: (string | null); }
+export interface ContributionUser { id: string; target_kind: string; target_title: string; benefactor_name: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; is_anonymous: boolean; status: string; hold_expires_at: string; paid_at: (string | null); paid_at_jalali: (string | null); receipt_verification_code: (string | null); dedication_token: (string | null); }
 
 /** کارنامهٔ کلی سفیر اجتماعی خیر. */
 export interface DashboardAmbassadorImpactOutput { links_count: number; total_clicks: number; referred_donors_count: number; attributed_shares: number; attributed_amount_rial: number; attributed_amount_toman: number; links: Array<AmbassadorImpactLinkOutput>; }
@@ -180,7 +182,7 @@ export interface DashboardSummaryOutput { total_contributions_count: number; cam
 export interface DashboardUserOutput { id: string; display_name: string; phone: string; }
 
 /** گواهی عمومی نیتنامه/کارت هدیهٔ معنوی (بدون نمایش هیچ مبلغ ریالی). */
-export interface DedicationCertificateOutput { public_token: string; dedication_type: string; honoree_name: string; dedicator_display_name: string; message: string; benefactor_name: string; benefactor_logo_url: (string | null); target_kind: string; target_title: string; target_slug: string; participation_badge: string; signature_hmac: string; issued_at: number; issued_at_jalali: string; }
+export interface DedicationCertificateOutput { public_token: string; dedication_type: string; honoree_name: string; dedicator_display_name: string; message: string; benefactor_name: string; benefactor_logo_url: (string | null); target_kind: string; target_title: string; target_slug: string; participation_badge: string; signature_hmac: string; issued_at: string; issued_at_jalali: string; }
 
 /** ورودی اختیاری نیت‌نامه هنگام ثبت مشارکت. */
 export interface DedicationInputRequest { dedication_type?: DedicationTypeEnum; honoree_name: string; dedicator_display_name?: string; message?: string; recipient_phone?: string; }
@@ -195,7 +197,7 @@ export type DedicationTypeEnum = "in_memory" | "gift_honor" | "healing_prayer" |
 export interface DisbursementCreateInputRequest { benefactor_id: string; campaign_id?: (string | null); amount_rial: number; request_note?: string; }
 
 /** نمای خروجی درخواست تسویه با خیریه. */
-export interface DisbursementRequest { id: string; benefactor_id: string; benefactor_name: string; campaign_id: (string | null); amount_rial: number; amount_toman: number; destination_iban: string; status: string; requested_by_id: string; request_note: string; reviewed_by_id: (string | null); reviewed_at: (number | null); review_reason: string; bank_reference_number: string; journal_entry_id: (string | null); created_at: number; created_at_jalali: (string | null); }
+export interface DisbursementRequest { id: string; benefactor_id: string; benefactor_name: string; campaign_id: (string | null); amount_rial: number; amount_toman: number; destination_iban: string; status: string; requested_by_id: string; request_note: string; reviewed_by_id: (string | null); reviewed_at: (string | null); review_reason: string; bank_reference_number: string; journal_entry_id: (string | null); created_at: string; created_at_jalali: (string | null); }
 
 /** ورودی تأیید یا رد چهارچشمی درخواست تسویه (Checker + Step-Up MFA). */
 export interface DisbursementReviewInputRequest { approve: boolean; reason: string; bank_reference_number?: string; }
@@ -213,7 +215,7 @@ export interface ExpressStartInputRequest { target_kind?: TargetKindEnum; campai
 export interface ExpressStartResponse { intent_id: string; expires_in: number; amount_rial: number; amount_toman: number; shares_count: number; dev_code?: string; }
 
 /** نمای خروجی مشارکت خارج از درگاه. */
-export interface ExternalContribution { id: string; campaign_id: string; shares_count: number; amount_rial: number; amount_toman: number; donor_display_name: string; reference_code: string; note: string; created_at: number; }
+export interface ExternalContribution { id: string; campaign_id: string; shares_count: number; amount_rial: number; amount_toman: number; donor_display_name: string; reference_code: string; note: string; created_at: string; }
 
 /** ورودی ثبت مشارکت خارج از درگاه آنلاین توسط مدیر. */
 export interface ExternalContributionWriteRequest { shares_count: number; donor_display_name?: string; reference_code: string; note?: string; }
@@ -222,7 +224,7 @@ export interface ExternalContributionWriteRequest { shares_count: number; donor_
 export interface ExternalTransparencyItem { donor_display_name: string; shares_count: number; amount_rial: number; amount_toman: number; reference_code: string; recorded_at_jalali: string; }
 
 /** نمای اسنپ‌شات تراز آزمایشی و کنترل یکپارچگی مالی. */
-export interface FinancialControlSnapshot { id: string; total_debits_rial: number; total_credits_rial: number; gateway_receivable_rial: number; benefactor_payable_rial: number; external_custody_rial: number; is_balanced: boolean; counter_drift_rial: number; created_at: number; }
+export interface FinancialControlSnapshot { id: string; total_debits_rial: number; total_credits_rial: number; gateway_receivable_rial: number; benefactor_payable_rial: number; external_custody_rial: number; is_balanced: boolean; counter_drift_rial: number; created_at: string; }
 
 /** * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
 * `zarinpal` - درگاه پرداخت زرین‌پال */
@@ -235,7 +237,7 @@ export interface HealthStatus { status: string; checks?: Record<string, unknown>
 export interface ImpactUpdateWriteRequest { milestone_type?: MilestoneTypeEnum; title: string; body: string; progress_percent: number; spent_amount_rial?: number; media_urls?: Array<string>; is_published?: boolean; }
 
 /** نمای سند روزنامه. */
-export interface JournalEntry { id: string; reference_key: string; kind: string; description: string; total_amount_rial: number; total_amount_toman: number; campaign_id: (string | null); benefactor_id: (string | null); created_at: number; created_at_jalali: (string | null); }
+export interface JournalEntry { id: string; reference_key: string; kind: string; description: string; total_amount_rial: number; total_amount_toman: number; campaign_id: (string | null); benefactor_id: (string | null); created_at: string; created_at_jalali: (string | null); }
 
 /** * `image` - تصویر
 * `video` - ویدیو
@@ -249,13 +251,13 @@ export interface LedgerAccount { id: string; code: string; title: string; accoun
 export interface MarkAllReadResponse { marked_count: number; }
 
 /** نمای عمومی حامی مضاعف‌کنندهٔ فعال روی حرکت. */
-export interface MatchingGrantPublic { id: string; sponsor_name: string; sponsor_logo_url: string; match_ratio: number; total_pool_shares: number; consumed_shares: number; remaining_pool_shares: number; expires_at: (number | null); }
+export interface MatchingGrantPublic { id: string; sponsor_name: string; sponsor_logo_url: string; match_ratio: number; total_pool_shares: number; consumed_shares: number; remaining_pool_shares: number; expires_at: (string | null); }
 
 /** ورودی تعریف حامی مضاعف‌کننده روی حرکت. */
-export interface MatchingGrantWriteRequest { sponsor_name: string; sponsor_logo_url?: string; match_ratio?: number; total_pool_shares: number; is_active?: boolean; expires_at?: (number | null); }
+export interface MatchingGrantWriteRequest { sponsor_name: string; sponsor_logo_url?: string; match_ratio?: number; total_pool_shares: number; is_active?: boolean; expires_at?: (string | null); }
 
 /** لنگر امضاشدهٔ ریشهٔ درخت مرکل منتشرشده برای یک حرکت. */
-export interface MerkleAnchorOutput { merkle_root: string; leaf_count: number; signature_hmac: string; captured_at: number; captured_at_jalali: string; }
+export interface MerkleAnchorOutput { merkle_root: string; leaf_count: number; signature_hmac: string; captured_at: string; captured_at_jalali: string; }
 
 /** گواهی اثبات شمول یک مشارکت قطعی در درخت مرکل حرکت. */
 export interface MerkleInclusionProofOutput { contribution_id: string; campaign_id: string; campaign_slug: string; leaf_index: number; total_leaves: number; leaf_hash: string; merkle_root: string; proof: Array<Record<string, unknown>>; verified: boolean; }
@@ -276,7 +278,7 @@ export interface MfaConfirmOutput { enrolled: boolean; recovery_codes: Array<str
 export interface MfaSetupOutput { secret: string; otpauth_uri: string; qr_svg: string; }
 
 /** وضعیت عامل دوم کارمند. */
-export interface MfaStatusOutput { enrolled: boolean; session_verified: boolean; verified_at: (number | null); remaining_recovery_codes: number; }
+export interface MfaStatusOutput { enrolled: boolean; session_verified: boolean; verified_at: (string | null); remaining_recovery_codes: number; }
 
 /** * `funding_complete` - تکمیل جذب منابع
 * `disbursed` - واریز وجه به خیریه مجری
@@ -331,7 +333,7 @@ export interface PaginatedUserNotificationMeta { next: (string | null); previous
 export interface PatchedBenefactorPatchRequest { name?: string; slug?: string; registration_number?: string; national_identifier?: string; province?: string; city?: string; short_bio?: string; description?: string; logo_url?: string; cover_url?: string; website_url?: string; contact_phone?: string; iban?: string; bank_holder_name?: string; is_verified?: boolean; is_active?: boolean; display_order?: number; }
 
 /** ورودی ویرایش جزئی حرکت توسط مدیر. */
-export interface PatchedCampaignPatchRequest { benefactor_id?: string; category_id?: (string | null); title?: string; slug?: string; subtitle?: string; why_and_what?: string; cover_image_url?: string; video_url?: string; province?: string; city?: string; total_shares?: number; share_price_rial?: number; min_shares_per_order?: number; max_shares_per_order?: number; status?: CampaignStatusEnum; urgency_level?: UrgencyLevelEnum; is_featured?: boolean; allow_anonymous?: boolean; allow_dedication?: boolean; starts_at?: (number | null); ends_at?: (number | null); reason?: string; }
+export interface PatchedCampaignPatchRequest { benefactor_id?: string; category_id?: (string | null); title?: string; slug?: string; subtitle?: string; why_and_what?: string; cover_image_url?: string; video_url?: string; province?: string; city?: string; total_shares?: number; share_price_rial?: number; min_shares_per_order?: number; max_shares_per_order?: number; status?: CampaignStatusEnum; urgency_level?: UrgencyLevelEnum; is_featured?: boolean; allow_anonymous?: boolean; allow_dedication?: boolean; starts_at?: (string | null); ends_at?: (string | null); reason?: string; }
 
 /** ورودی ویرایش جزئی قلک عام خیریه. */
 export interface PatchedCharityJarPatchRequest { title?: string; description?: string; suggested_amounts_rial?: Array<number>; min_amount_rial?: number; max_amount_rial?: number; monthly_goal_rial?: number; is_active?: boolean; }
@@ -358,10 +360,10 @@ export interface PolicyRuleOutput { key: string; value_type: string; value: unkn
 export interface PolicyUpdateInputRequest { value: unknown; reason: string; }
 
 /** استعلام عمومی اصالت رسید رسمی مشارکت (بدون افشای شماره موبایل خیر). */
-export interface ReceiptVerificationOutput { valid: boolean; status: string; receipt_number: string; verification_code: string; signature_hmac: string; donor_display_name: string; benefactor_name: string; target_kind: string; target_title: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; paid_at: (number | null); paid_at_jalali: string; }
+export interface ReceiptVerificationOutput { valid: boolean; status: string; receipt_number: string; verification_code: string; signature_hmac: string; donor_display_name: string; benefactor_name: string; target_kind: string; target_title: string; shares_count: number; matched_shares_awarded: number; amount_rial: number; amount_toman: number; paid_at: (string | null); paid_at_jalali: string; }
 
 /** نمای خروجی دستهٔ مغایرت‌گیری به همراه مغایرت‌ها. */
-export interface ReconciliationBatch { id: string; gateway_name: string; period_start: number; period_end: number; gateway_reported_count: number; matched_count: number; discrepancy_count: number; gateway_total_rial: number; internal_total_rial: number; items: Array<ReconciliationItem>; created_at: number; }
+export interface ReconciliationBatch { id: string; gateway_name: string; period_start: string; period_end: string; gateway_reported_count: number; matched_count: number; discrepancy_count: number; gateway_total_rial: number; internal_total_rial: number; items: Array<ReconciliationItem>; created_at: string; }
 
 /** نمای ردیف نتیجهٔ مغایرت‌گیری. */
 export interface ReconciliationItem { authority: string; ref_id: string; gateway_amount_rial: number; internal_amount_rial: number; status: string; note: string; }
@@ -370,13 +372,13 @@ export interface ReconciliationItem { authority: string; ref_id: string; gateway
 export interface ReconciliationRowInputRequest { authority: string; ref_id?: string; amount_rial: number; }
 
 /** ورودی اجرای مغایرت‌گیری درگاه پرداخت. */
-export interface ReconciliationRunInputRequest { gateway_name?: string; period_start: number; period_end: number; rows: Array<ReconciliationRowInputRequest>; }
+export interface ReconciliationRunInputRequest { gateway_name?: string; period_start: string; period_end: string; rows: Array<ReconciliationRowInputRequest>; }
 
 /** نتیجهٔ استرداد وجه همراه با سند معکوس دفترکل. */
 export interface RefundResultOutput { refund_id: string; amount_rial: number; status: string; }
 
 /** نمای تاریخچهٔ خروجی‌های اکسل صادرشده. */
-export interface ReportExportLog { id: string; exported_by_id: string; filters: unknown; include_raw_phones: boolean; reason: string; file_sha256: string; byte_size: number; row_counts: unknown; created_at: number; }
+export interface ReportExportLog { id: string; exported_by_id: string; filters: unknown; include_raw_phones: boolean; reason: string; file_sha256: string; byte_size: number; row_counts: unknown; created_at: string; }
 
 /** * `donor` - نیکوکار (کاربر عادی)
 * `operator` - کارشناس عملیات
@@ -388,7 +390,7 @@ export type RoleEnum = "donor" | "operator" | "finance_manager" | "super_admin";
 export interface SandboxPaymentOutput { authority: string; amount_rial: number; amount_toman: number; status: string; }
 
 /** نمای یک نشست فعال در فهرست دستگاه‌های کاربر. */
-export interface SessionItemOutput { id: string; device: string; network: string; mfa_verified: boolean; created_at: number; last_seen_at: number; is_current: boolean; }
+export interface SessionItemOutput { id: string; device: string; network: string; mfa_verified: boolean; created_at: string; last_seen_at: string; is_current: boolean; }
 
 /** تفکیک سهام حرکت به آنلاین، مضاعفشده، آفلاین، رزروشده و باقیمانده. */
 export interface SharesBreakdownOutput { total_shares: number; paid_online_shares: number; matched_sponsor_shares: number; external_offline_shares: number; reserved_shares: number; remaining_shares: number; }
@@ -412,10 +414,10 @@ export interface TokenRefreshInputRequest { refresh_token: string; }
 export type UrgencyLevelEnum = "normal" | "urgent" | "emergency";
 
 /** نمای پروفایل کاربر جاری. */
-export interface UserMeOutput { id: string; phone: string; first_name: string; last_name: string; display_name: string; national_code_masked: string; province: string; city: string; role: RoleEnum; is_profile_complete: boolean; is_staff_member: boolean; created_at: number; created_at_jalali: (string | null); }
+export interface UserMeOutput { id: string; phone: string; first_name: string; last_name: string; display_name: string; national_code_masked: string; province: string; city: string; role: RoleEnum; is_profile_complete: boolean; is_staff_member: boolean; created_at: string; created_at_jalali: (string | null); }
 
 /** نمای خروجی یک اعلان کاربر. */
-export interface UserNotification { id: string; kind: string; title: string; body: string; action_url: string; metadata: unknown; is_read: boolean; read_at: (number | null); created_at: number; created_at_jalali: (string | null); }
+export interface UserNotification { id: string; kind: string; title: string; body: string; action_url: string; metadata: unknown; is_read: boolean; read_at: (string | null); created_at: string; created_at_jalali: (string | null); }
 
 export type ApiOperationId =
   | "v1_admin_audit_logs_list"
@@ -520,7 +522,7 @@ export interface ApiOperationMap {
   "v1_admin_campaigns_partial_update": { request: PatchedCampaignPatchRequest; response: CampaignDetail; auth: "required" };
   "v1_admin_campaigns_impact_updates_create": { request: ImpactUpdateWriteRequest; response: CampaignImpactUpdate; auth: "required" };
   "v1_admin_campaigns_matching_grants_create": { request: MatchingGrantWriteRequest; response: MatchingGrantPublic; auth: "required" };
-  "v1_admin_reports_excel_export": { request: never; response: string; auth: "required" };
+  "v1_admin_reports_excel_export": { request: never; response: Blob; auth: "required" };
   "v1_admin_reports_export_history_list": { request: never; response: Array<ReportExportLog>; auth: "required" };
   "v1_admin_policies_list": { request: never; response: Array<PolicyRuleOutput>; auth: "required" };
   "v1_admin_policies_update": { request: PolicyUpdateInputRequest; response: PolicyRuleOutput; auth: "required" };

@@ -91,8 +91,8 @@
   <div class="stat"><b id="stat-paths">72</b><small>مسیر API</small></div>
   <div class="stat"><b id="stat-ops">83</b><small>عملیات مستندشده</small></div>
   <div class="stat"><b id="stat-schemas">112</b><small>اسکیمای تایپشده</small></div>
-  <div class="stat"><b id="stat-codes">36</b><small>کد خطای RFC 9457</small></div>
-  <div class="stat"><b>54/54</b><small>تست عبورکرده (گزارش نسخهٔ ۱٫۱٫۰)</small></div>
+  <div class="stat"><b id="stat-codes">38</b><small>کد خطای RFC 9457</small></div>
+  <div class="stat"><b>60/60</b><small>تست عبورکرده (گزارش نسخهٔ ۱٫۱٫۰)</small></div>
   <div class="stat"><b>85.82%</b><small>پوشش شاخهای (گزارش نسخهٔ ۱٫۱٫۰)</small></div>
 </div>
 
@@ -113,7 +113,7 @@
     <p><code>api-client.ts</code>: CSRF، چرخش تکپروازهٔ JWT، خطای تایپشده،
     Idempotency، ETag، retry و pagination.<br><a href="./api-client.ts">مشاهده ←</a></p></div>
   <div class="card"><div class="ico">🚨</div><h3>کاتالوگ خطاها 🟢</h3>
-    <p>۳۶ کد پایدار با اقدام UX مشخص برای هرکدام؛ لنگرهای واقعیِ فیلد <code>type</code>.<br>
+    <p>۳۸ کد پایدار با اقدام UX مشخص برای هرکدام؛ لنگرهای واقعیِ فیلد <code>type</code>.<br>
     <a href="./ERRORS.md">ERRORS.md ←</a></p></div>
   <div class="card"><div class="ico">📮</div><h3>کالکشن Postman 🟢</h3>
     <p>۸۳ درخواست در ۲۳ پوشه، همراه بدنهٔ نمونه، متغیرهای <code>baseUrl</code> و توکنها.<br>
@@ -246,7 +246,7 @@
   const q = document.getElementById('q'), tagSel = document.getElementById('tag'),
         methodSel = document.getElementById('method'), rows = document.getElementById('rows'),
         count = document.getElementById('count');
-  /* META_START */ const META = {"paths":72,"operations":83,"schemas":112,"problem_codes":36}; /* META_END */
+  /* META_START */ const META = {"paths":72,"operations":83,"schemas":112,"problem_codes":38}; /* META_END */
   const setStat = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
   setStat('stat-paths', META.paths); setStat('stat-ops', META.operations);
   setStat('stat-schemas', META.schemas); setStat('stat-codes', META.problem_codes);

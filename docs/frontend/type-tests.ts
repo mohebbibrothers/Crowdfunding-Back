@@ -54,7 +54,18 @@ async function integrationSmoke(): Promise<void> {
     break;
   }
 
-  // ۶) خطای RFC 9457 بهصورت تایپشده و با کد ماشینی پایدار قابل branching است.
+  // ۶) تاریخ‌ها رشتهٔ ISO-8601‌اند (نه epoch) و گزارش اکسل Blob برمی‌گرداند.
+  const profile: ApiOperation<"v1_me_profile_retrieve">["response"] =
+    await client.request("v1_me_profile_retrieve");
+  const createdAt: string = profile.created_at;
+  const createdJalali: string | null = profile.created_at_jalali;
+  void new Date(createdAt);
+  void createdJalali;
+
+  const workbook: Blob = await client.request("v1_admin_reports_excel_export");
+  void workbook.size;
+
+  // ۷) خطای RFC 9457 بهصورت تایپشده و با کد ماشینی پایدار قابل branching است.
   try {
     await client.request("v1_auth_otp_request", { body: { phone: "09121112233" } });
   } catch (error: unknown) {
@@ -64,6 +75,8 @@ async function integrationSmoke(): Promise<void> {
       void code;
       void trace;
       void error.needsStepUp;
+      void error.isCsrfExpired;
+      void error.isSessionExpired;
     }
   }
 }

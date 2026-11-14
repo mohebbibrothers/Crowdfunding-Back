@@ -2685,7 +2685,11 @@ paths:
   /api/v1/auth/csrf:
     get:
       operationId: v1_csrf_bootstrap
-      description: تولید توکن CSRF و ارسال در کوکی و بدنه.
+      description: |-
+        تولید توکن CSRF و ارسال در کوکی و بدنه.
+
+        این توکن برای نشست کوکی‌محور تنها منبع معتبر است: پس از هر ورود/چرخش نشست،
+        CsrfViewMiddleware توکن کوکی را عوض می‌کند و کلاینت باید مقدار تازه را بگیرد.
       summary: دریافت و کاشت توکن CSRF برای نشست‌های کوکی‌محور
       tags:
       - System
@@ -9469,6 +9473,8 @@ components:
           - user_inactive
           - sms_budget_exhausted
           - domain_error
+          - csrf_failed
+          - session_rotated
           description: کد ماشینی پایدار؛ مبنای branching در فرانتاند.
         instance:
           type: string

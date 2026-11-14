@@ -293,6 +293,9 @@ def establish_dual_session(*, user: User, request: HttpRequest) -> IssuedAuthTok
         )
         if hasattr(request, "session"):
             django_login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+            # چرخش شناسهٔ نشست در برابر تثبیت نشست (Session Fixation). CsrfViewMiddleware
+            # خودش در پاسخ بعدی توکن را می‌چرخاند؛ توکن تازه در بدنهٔ پاسخ ورود هم برگردانده
+            # می‌شود تا کلاینت مرورگری بدون یک رفت‌وبرگشت اضافه هم‌گام شود.
             request.session.cycle_key()
             request.session["user_session_id"] = str(session_obj.id)
             request.session.save()

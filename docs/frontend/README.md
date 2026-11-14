@@ -11,7 +11,7 @@
 | **تایپها را import کنم** | [`api-types.d.ts`](./api-types.d.ts) + [`operations.ts`](./operations.ts) |
 | **کلاینت HTTP آماده بردارم** | [`api-client.ts`](./api-client.ts) — بدون وابستگی خارجی |
 | **فهرست دقیق متد/مسیر را ببینم** | [`ENDPOINTS.md`](./ENDPOINTS.md) |
-| **خطاها را هندل کنم** | [`ERRORS.md`](./ERRORS.md) — ۳۶ کد RFC 9457 + اقدام UX |
+| **خطاها را هندل کنم** | [`ERRORS.md`](./ERRORS.md) — ۳۸ کد RFC 9457 + اقدام UX |
 | **سریعاً در Postman تست کنم** | [`postman_collection.json`](./postman_collection.json) |
 | **پیش از استقرار چک کنم** | [`CHECKLIST.md`](./CHECKLIST.md) |
 
@@ -91,7 +91,7 @@ window.location.href = checkout.gateway_redirect_url;
 | `api-types.d.ts` | ۱۱۲ اسکیما + `ApiOperationMap` | 🟢 خودکار | عدم دستکاری |
 | `operations.ts` | ۸۳ نگاشت operationId | 🟢 خودکار | عدم دستکاری |
 | `ENDPOINTS.md` | ماتریس متد/مسیر/پارامتر | 🟢 خودکار | عدم دستکاری |
-| `ERRORS.md` | ۳۶ کد خطا + لنگر `type` | 🟢 خودکار | عدم دستکاری |
+| `ERRORS.md` | ۳۸ کد خطا + لنگر `type` | 🟢 خودکار | عدم دستکاری |
 | `postman_collection.json` | ۲۳ پوشه / ۸۳ درخواست | 🟢 خودکار | عدم دستکاری |
 | `contract-fingerprint.json` | SHA-256 قرارداد | 🟢 خودکار | مبنای گیت CI |
 | `README.md` | نقشهٔ ورودی بسته | دستنویس | شروع سریع |

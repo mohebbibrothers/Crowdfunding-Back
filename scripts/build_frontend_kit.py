@@ -113,7 +113,9 @@ def ts_type(schema: Any, *, depth: int = 0) -> str:
         t = non_null[0]
         if t == "string":
             fmt = schema.get("format")
-            base = "number" if fmt in {"date-time", "date"} else "string"
+            # date-time → رشتهٔ ISO-8601 (رانتایم ``+03:30`` می‌فرستد؛ نه epoch)
+            # binary → Blob (پاسخ xlsx/فایل؛ fetch().blob())
+            base = "Blob" if fmt == "binary" else "string"
         elif t in {"integer", "number"}:
             base = "number"
         elif t == "boolean":
