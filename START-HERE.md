@@ -22,25 +22,46 @@
 
 ## ۲. کاری که همین حالا باید بکنید
 
+### الف) ساده‌ترین راه — Docker (بدون نصب MariaDB)
+
 ```bash
-# ۱) بک‌اند را محلی بالا بیاورید (MariaDB لازم است)
+git clone https://github.com/mohebbibrothers/Crowdfunding-Back.git
+cd Crowdfunding-Back
+docker compose up --build -d                  # MariaDB 11.4 + Web + Cron
+docker compose exec web python src/manage.py seed_demo_data   # داده‌های نمایشی
+```
+
+### ب) اگر MariaDB را محلی دارید (`uv` + `make`)
+
+```bash
 git clone https://github.com/mohebbibrothers/Crowdfunding-Back.git
 cd Crowdfunding-Back
 make install      # نصب وابستگی‌های قفل‌شده با uv
-make migrate      # ساخت جداول روی MariaDB
+
+# ⚠️ این خط را جا نیندازید (پیش‌فرض همان مقدار زیر است، ولی صریح بهتر است)
+export DATABASE_URL="mysql://crowdfunding:crowdfunding@127.0.0.1:3306/crowdfunding"
+
+make migrate      # ساخت جداول + جدول کش اتمیک
 make seed         # داده‌های نمایشی: خیریه، حرکت، قلک، دفتر کل
 make run          # http://localhost:8000
+```
 
-# ۲) قرارداد را زنده ببینید
-# Swagger UI : http://localhost:8000/api/v1/docs
-# ReDoc      : http://localhost:8000/api/v1/redoc
-# Schema     : http://localhost:8000/api/v1/schema
+### در هر دو حالت، این‌ها را ببینید
 
-# ۳) بستهٔ فرانت را به پروژهٔ خود کپی کنید
-cp -r docs/frontend ../my-frontend/src/api
+| چه چیزی | آدرس |
+| --- | --- |
+| Swagger UI | `http://localhost:8000/api/v1/docs` |
+| ReDoc | `http://localhost:8000/api/v1/redoc` |
+| اسکیما (JSON/YAML) | `http://localhost:8000/api/v1/schema` |
+| آمادگی سرویس | `http://localhost:8000/api/v1/health/ready` |
 
-# ۴) تایپ‌ها را چک کنید (باید صفر خطا بدهد)
-cd Crowdfunding-Back && make tscheck
+### بعد: بستهٔ فرانت را بردارید
+
+```bash
+cp -r docs/frontend ../my-frontend/src/api   # کل بسته، یک‌جا
+
+# تایپ‌ها را چک کنید — باید «صفر خطا» بدهد (نیازمند Node.js ۲۰+)
+make tscheck
 ```
 
 > 💡 در محیط توسعه `EXPOSE_DEV_OTP_CODE=true` است؛ کد OTP در پاسخ
@@ -51,36 +72,45 @@ cd Crowdfunding-Back && make tscheck
 ## ۳. کد شروع — همین را کپی کنید
 
 ```ts
-import { ApiClientError, createApiClient } from "./src/api/api-client";
+import { createApiClient, ApiClientError } from "./src/api/api-client";
 
 const client = createApiClient({
   baseUrl: import.meta.env.VITE_API_BASE_URL,   // https://api.charity.example.org
-  authMode: "cookie",                            // یا "bearer" برای موبایل
+  authMode: "cookie",                           // یا "bearer" برای موبایل
   onSessionExpired: () => router.push("/login"),
   onStepUpRequired: () => openTotpModal(),
 });
 
-// ۱) بوت: پرچم‌های ویژگی و نسخه را بگیر (همه‌چیز تایپ‌شده است)
+// ۱) بوت: پرچم‌های ویژگی و تاریخ امروز (همه‌چیز تایپ‌شده است)
 const meta = await client.request("v1_meta_retrieve");
 if (!meta.features.merkle_transparency) hideMerkleWidget();
 console.log("backend", meta.app_version, "today", meta.today_jalali);
 
-// ۲) فهرست حرکات
+// ۲) فهرست حرکات — پاسخ یک «آرایهٔ ساده» است، نه صفحه‌بندی‌شده
 const campaigns = await client.request("v1_campaigns_list", {
   query: { order: "fair", status: "active" },
 });
+const [first] = campaigns;
+if (!first) throw new Error("هیچ حرکتی برای نمایش نیست");
 
-// ۳) پرداخت (the sanest flow)
+// ۳) پرداخت: انتخاب سهم ⇒ رزرو ۱۵ دقیقه‌ای ⇒ هدایت به درگاه
 const checkout = await client.request("v1_contributions_checkout_create", {
   body: {
     target_kind: "campaign_shares",
-    campaign_id: campaigns[0].id,
+    campaign_id: first.id,
     shares_count: 3,
     gateway_name: "sandbox",
   },
+  idempotencyKey: crypto.randomUUID(),   // ⚠️ ثابت نگه دارید تا پایان همان تلاش
 });
 window.location.href = checkout.gateway_redirect_url;
 ```
+
+**نکتهٔ تایپ:** پاسخ `v1_campaigns_list` از نوع `CampaignSummary[]` است. فقط این پنج
+عملیات صفحه‌بندی می‌شوند و پاسخ `{ results, meta }` می‌دهند:
+`v1_me_contributions_list`، `v1_me_notifications_list`، `v1_admin_users_list`،
+`v1_admin_audit_logs_list`، `v1_admin_auth_risks_list`. اگر روی بقیه `results` بگذارید،
+`tsc` خطا می‌دهد — و این عمدی است.
 
 **قاعدهٔ طلایی:** هیچ `fetch` خام ننویسید، هیچ مسیری را hardcode نکنید، هیچ خطایی را با
 `detail` مقایسه نکنید. همه‌چیز از `client.request(operationId, ...)` و `error.code` بیاید.

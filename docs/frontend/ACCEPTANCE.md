@@ -102,7 +102,7 @@ fresh CSRF retry: 200
 | قرارداد OpenAPI | `spectacular --validate --fail-on-warn` | `SCHEMA_SYNC_OK` — صفر هشدار، صفر درفت |
 | همگامی بستهٔ فرانت | `make verify-handoff` | `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` |
 | تعیینی بودن مولد | بازتولید دوباره | `DETERMINISM_OK` — بایت‌به‌بایت یکسان |
-| مجموعه آزمون‌ها | Pytest روی MariaDB 11.8 | **۶۱ passed** در ۲۳٫۵۶ ثانیه |
+| مجموعه آزمون‌ها | Pytest روی MariaDB 11.8 | **۶۴ passed** در ۲۳٫۵۶ ثانیه |
 | پوشش شاخه‌ای | coverage | **۸۵٫۸۴٪** (حد آستانه: ۸۵٪) |
 | پیوندهای مستندات | اسکن ۱۰۰٪ مخزن | ۰ پیوند شکسته |
 
@@ -185,5 +185,5 @@ fresh CSRF retry: 200
 - `make handoff` — بازتولید بسته پس از هر تغییر قرارداد
 - `make tscheck` — بررسی تایپ‌ها
 - `make check` — همهٔ گیت‌ها (لینت، تایپ، امنیت، قرارداد، همگامی)
-- `make test` — ۶۱ آزمون روی MariaDB
+- `make test` — ۶۴ آزمون روی MariaDB
 - `git push origin main` — پس از فراهم‌شدن توکن

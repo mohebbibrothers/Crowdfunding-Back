@@ -237,6 +237,90 @@ def test_documentation_references_real_frontend_assets() -> None:
 # ─── همگامی داراییهای تولیدشده ──────────────────────────────────────────────
 
 
+def test_start_here_links_resolve_and_cover_entry_points() -> None:
+    """راهنمای ورود ریشهٔ مخزن باید به سه نقطهٔ ورود واقعی اشاره کند."""
+    start_here = REPO_ROOT / "START-HERE.md"
+    assert start_here.is_file(), "START-HERE.md در ریشهٔ مخزن نیست"
+    text = start_here.read_text(encoding="utf-8")
+    for target in (
+        "docs/frontend/index.html",
+        "docs/frontend/HANDOFF.md",
+        "docs/frontend/ACCEPTANCE.md",
+    ):
+        assert target in text, f"START-HERE.md به {target} اشاره نمی‌کند"
+        assert (REPO_ROOT / target).is_file(), f"{target} وجود ندارد"
+    assert "DATABASE_URL" in text, "START-HERE.md دستور اتصال دیتابیس را ندارد"
+    assert "docker compose" in text, "START-HERE.md مسیر یک‌دستوری Docker را ندارد"
+
+
+def test_start_here_operation_ids_are_real() -> None:
+    """هر operationId ذکرشده در START-HERE.md باید در قرارداد وجود داشته باشد."""
+    doc = _schema()
+    known = {spec["operationId"] for _p, _m, spec in _operations(doc) if "operationId" in spec}
+    text = (REPO_ROOT / "START-HERE.md").read_text(encoding="utf-8")
+    referenced = set(re.findall(r"\b(v1_[a-z0-9_]+)\b", text))
+    unknown = sorted(referenced - known)
+    assert not unknown, f"operationId ناموجود در START-HERE.md: {unknown}"
+
+
+def test_start_here_typescript_snippet_compiles() -> None:
+    """اسنیپت کدِ راهنمای ورود باید با سخت‌گیرانه‌ترین تنظیمات tsc کامپایل شود."""
+    npx = shutil.which("npx")
+    if npx is None:
+        pytest.skip("npx در دسترس نیست")
+    text = (REPO_ROOT / "START-HERE.md").read_text(encoding="utf-8")
+    match = re.search(r"```ts\n(.*?)```", text, re.DOTALL)
+    assert match, "START-HERE.md هیچ بلوک ts ندارد"
+    snippet = match.group(1)
+    with tempfile.TemporaryDirectory() as raw:
+        work = Path(raw)
+        api_dir = work / "src" / "api"
+        api_dir.mkdir(parents=True)
+        for asset in ("api-client.ts", "api-types.d.ts", "operations.ts"):
+            shutil.copy2(FRONTEND_DIR / asset, api_dir / asset)
+        prelude = (
+            "declare const router: { push(p: string): void };\n"
+            "declare const openTotpModal: () => void;\n"
+            "declare const hideMerkleWidget: () => void;\n"
+            "declare const import_meta: { env: { VITE_API_BASE_URL: string } };\n"
+        )
+        body = snippet.replace(
+            "import.meta.env.VITE_API_BASE_URL",
+            "(import_meta.env as { VITE_API_BASE_URL: string }).VITE_API_BASE_URL",
+        )
+        (work / "snip.ts").write_text(prelude + body, encoding="utf-8")
+        result = subprocess.run(  # noqa: S603 -- argv ثابت، بدون shell و ورودی کاربر
+            [
+                npx,
+                "--yes",
+                "--package",
+                "typescript@5.9.3",
+                "tsc",
+                "--noEmit",
+                "--strict",
+                "--noUncheckedIndexedAccess",
+                "--target",
+                "es2022",
+                "--lib",
+                "es2022,dom,dom.iterable",
+                "--module",
+                "esnext",
+                "--moduleResolution",
+                "bundler",
+                "--isolatedModules",
+                "snip.ts",
+            ],
+            cwd=work,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+        assert result.returncode == 0, (
+            f"اسنیپت START-HERE.md کامپایل نشد:\n{result.stdout}{result.stderr}"
+        )
+
+
 def test_generated_frontend_assets_are_in_sync() -> None:
     """بازتولید در حافظه باید بایت به بایت با فایلهای commitشده یکسان باشد."""
     gen = _generator_module()

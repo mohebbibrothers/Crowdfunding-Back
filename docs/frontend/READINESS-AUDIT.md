@@ -45,7 +45,7 @@
 | ۵۷ اجباری / ۸ اختیاری | ۵۷ / ۸ | ✅ | `x-frontend-policy.auth` |
 | ۸۳ درخواست Postman در ۲۳ پوشه | ۸۳ / ۲۳ | ✅ | `postman_collection.json` |
 | کالکشن کامل `ApiOperationMap` | ۸۳ | ✅ | `api-types.d.ts` |
-| ۱۱ آزمون قرارداد / ۶۱ آزمون کل | ۳۰ در `test_frontend_contract.py` / ۶۱ کل | ✅ | AST شمارش توابع تست |
+| ۱۱ آزمون قرارداد / ۶۴ آزمون کل | ۳۳ در `test_frontend_contract.py` / ۶۴ کل | ✅ | AST شمارش توابع تست |
 | پوشش شاخه‌ای ≥ ۸۵٪ | ۸۵٫۸۴٪ | ✅ | گزارش coverage |
 | کوکی نشست `cf_session` | `cf_session` | ✅ | `SESSION_COOKIE_NAME` و `cookieAuth.name` |
 | نوع پاسخ‌ها بدون `any`/`unknown` | ۰ مورد از ۸۳ | ✅ | بازرسی AST TypeScript |
