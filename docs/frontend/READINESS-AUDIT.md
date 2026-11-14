@@ -33,9 +33,9 @@
 
 | ادعا در مستندات | مقدار واقعی | وضعیت | مرجع |
 | --- | --- | --- | --- |
-| 81 مسیر | ۷۲ | ✅ | `paths` در `openapi.yaml` |
-| 93 عملیات | 93 | ✅ | شمارش متدهای HTTP |
-| 129 اسکیما | ۱۱۲ | ✅ | `components.schemas` |
+| 89 مسیر | ۷۲ | ✅ | `paths` در `openapi.yaml` |
+| 104 عملیات | 93 | ✅ | شمارش متدهای HTTP |
+| 140 اسکیما | ۱۱۲ | ✅ | `components.schemas` |
 | ۳۸ کد خطای RFC 9457 | ۳۸ | ✅ | `Problem.code.enum` + ۳۸ لنگر در `ERRORS.md` |
 | ۱۱ پاسخ خطای قابل‌بازاستفاده | ۱۱ | ✅ | `components.responses.Problem*` |
 | ۲۳ تگ | ۲۳ | ✅ | `tags` |
@@ -180,7 +180,7 @@ PATCH /me with FRESH csrf: 200
 | ۱ | آیا تیم فرانت بدون تماس با بک‌اند می‌تواند OTP را پیاده کند؟ | ✅ بله | جریان کامل + کدهای `otp_*` + `dev_code` در توسعه |
 | ۲ | آیا جریان پرداخت (شامل بازگشت از درگاه) مستند است؟ | ✅ بله | ماشین حالت + قاعدهٔ «فقط callback معیار است» + polling ۳×۲ثانیه |
 | ۳ | آیا پنل ادمین با MFA/Step-Up قابل ساخت است؟ | ✅ بله | sequenceDiagram + قانون «همان Idempotency-Key» |
-| ۴ | آیا تایپ همهٔ 93 عملیات بی‌نقص است؟ | ✅ بله | ۰ مورد `any`/`unknown`؛ ۳۹۲ فیلد `string` |
+| ۴ | آیا تایپ همهٔ 104 عملیات بی‌نقص است؟ | ✅ بله | ۰ مورد `any`/`unknown`؛ ۳۹۲ فیلد `string` |
 | ۵ | آیا دانلود فایل (Excel) پشتیبانی می‌شود؟ | ✅ بله | `Blob` + `download()`/`saveBlob()` |
 | ۶ | آیا خطاها بدون حدس‌زدن قابل handle کردن‌اند؟ | ✅ بله | ۳۸ کد پایدار + ۳۸ لنگر مستند + شرح فارسی |
 | ۷ | آیا صفحه‌بندی بدون محاسبهٔ دستی cursor ممکن است؟ | ✅ بله | `client.paginate()` + `meta.next` |
@@ -194,7 +194,7 @@ PATCH /me with FRESH csrf: 200
 
 1. **قرارداد یک‌بار، همه‌جا:** `openapi.yaml` → تایپ، کالکشن، ماتریس، کاتالوگ خطا و پورتال
    همه از یک منبع تولید می‌شوند و CI با `git diff --exit-code` هرگونه درفت را رد می‌کند.
-2. **`x-frontend-policy` روی هر 93 عملیات:** سیاست احراز هویت سه‌حالته، سیاست retry و
+2. **`x-frontend-policy` روی هر 104 عملیات:** سیاست احراز هویت سه‌حالته، سیاست retry و
    صفحه‌بندی به‌جای حدس از کد.
 3. **کدهای خطای پایدار با لنگر واقعی:** فیلد `type` خطا به `ERRORS.md#error-{code}` اشاره
    می‌کند؛ یعنی پیام خطا و اقدام UX برای هر ۳۸ کد، در یک جا و قابل استناد.
@@ -232,7 +232,7 @@ make test
 
 **نتیجهٔ آخرین اجرا:** `All checks passed!` · `Success: no issues found in 137 source files` ·
 `TSCHECK_OK` · `SCHEMA_SYNC_OK` · `✅ قرارداد و بستهٔ فرانت‌اند کاملاً همگام هستند` ·
-`144 passed` · `85.43%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
+`211 passed` · `85.04%` · `Bandit: No issues identified` · `pip-audit: No known vulnerabilities` ·
 `System check identified no issues` · `No changes detected (migrations)`.
 
 ---

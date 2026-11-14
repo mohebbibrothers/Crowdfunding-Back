@@ -11,10 +11,31 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.benefactors.models import CharityJar
+from apps.campaigns.models import Campaign
 from apps.contributions.choices import PaymentStatus
 from apps.contributions.dashboard import build_donor_dashboard
 from apps.contributions.merkle import verify_inclusion_proof
-from apps.contributions.models import DedicationCard, Payment
+from apps.contributions.models import (
+    DedicationCard,
+    Payment,
+    PledgeInstallment,
+    RecurringPledge,
+)
+from apps.contributions.recurring import (
+    build_pledge_stats,
+    cancel_pledge,
+    create_recurring_pledge,
+    dispatch_pledge_reminders,
+    expire_stale_installments,
+    get_owned_pledge,
+    materialize_due_installments,
+    pause_pledge,
+    pay_installment,
+    resume_paused_pledges,
+    skip_installment,
+    update_pledge,
+)
 from apps.contributions.selectors import (
     get_public_campaign_transparency,
     get_public_dedication_certificate,
@@ -26,6 +47,7 @@ from apps.contributions.selectors import (
 )
 from apps.contributions.serializers import (
     AdminPaymentSerializer,
+    AdminPledgeSerializer,
     AmbassadorCreateInputSerializer,
     AmbassadorLinkSerializer,
     CampaignSupporterOutputSerializer,
@@ -46,6 +68,15 @@ from apps.contributions.serializers import (
     PaymentCallbackVerifyInputSerializer,
     PaymentRefundInputSerializer,
     PaymentVerifyResponseSerializer,
+    PledgeCancelInputSerializer,
+    PledgeCreateInputSerializer,
+    PledgeCycleOutputSerializer,
+    PledgeInstallmentOutputSerializer,
+    PledgeOutputSerializer,
+    PledgePayInputSerializer,
+    PledgePayOutputSerializer,
+    PledgeStatsOutputSerializer,
+    PledgeUpdateInputSerializer,
     ReceiptVerificationOutputSerializer,
     RefundResultOutputSerializer,
     SandboxPaymentOutputSerializer,
@@ -60,6 +91,7 @@ from apps.contributions.services import (
     start_express_checkout,
     verify_payment_callback,
 )
+from apps.core.crypto import mask_phone
 from apps.core.errors import NotFoundError
 from apps.core.idempotency import IDEMPOTENCY_HEADER, execute_idempotent
 from apps.core.money import rial_to_toman
@@ -584,4 +616,400 @@ class AdminExternalContributionCreateView(APIView):
         return Response(
             ExternalContributionSerializer(ext).data,
             status=status.HTTP_201_CREATED,
+        )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# تعهد کمک مستمر (v1.4.0)
+#
+# قاعدهٔ مشترک همهٔ نماها: خروجی همیشه با ``rial_to_toman`` هم‌راستا می‌شود.
+# هیچ جا تبدیل در پایگاه داده انجام نمی‌شود — ریال منبع حقیقت است.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def _serialize_installment(installment: PledgeInstallment) -> dict[str, Any]:
+    """تبدیل قسط به دیکشنری قابل‌سریالایز — با پرچم‌های «چه کاری می‌توان کرد»."""
+    return {
+        "id": str(installment.pk),
+        "sequence": int(installment.sequence),
+        "due_date": installment.due_date,
+        "grace_until": installment.grace_until,
+        "amount_rial": int(installment.amount_rial),
+        "amount_toman": rial_to_toman(int(installment.amount_rial)),
+        "status": str(installment.status),
+        "status_display": installment.get_status_display(),
+        "is_open": installment.is_open,
+        "reminder_count": int(installment.reminder_count),
+        "failure_reason": installment.failure_reason or "",
+        "can_pay": installment.is_open
+        and installment.pledge.status
+        in {
+            "active",
+            "paused",
+        },
+        "can_skip": installment.is_open,
+        "contribution_id": str(installment.contribution_id)
+        if installment.contribution_id
+        else None,
+    }
+
+
+def _serialize_pledge(
+    pledge: RecurringPledge, open_installments: list[PledgeInstallment]
+) -> dict[str, Any]:
+    """تبدیل تعهد به دیکشنری — با شمارش اقساط باز و شناسهٔ قسط قابل پرداخت."""
+    payable = [i for i in open_installments if i.pledge_id == pledge.pk and i.is_open]
+    return {
+        "id": str(pledge.pk),
+        "status": str(pledge.status),
+        "status_display": pledge.get_status_display(),
+        "target_kind": str(pledge.target_kind),
+        "target_title": _pledge_target_title(pledge),
+        "amount_rial": int(pledge.amount_rial),
+        "amount_toman": rial_to_toman(int(pledge.amount_rial)),
+        "frequency": str(pledge.frequency),
+        "frequency_display": pledge.get_frequency_display(),
+        "interval_months": int(pledge.interval_months),
+        "anchor_day": int(pledge.anchor_day),
+        "next_due_date": pledge.next_due_date,
+        "total_paid_rial": int(pledge.total_paid_rial),
+        "total_paid_toman": rial_to_toman(int(pledge.total_paid_rial)),
+        "installments_paid": int(pledge.installments_paid),
+        "installments_skipped": int(pledge.installments_skipped),
+        "consecutive_failures": int(pledge.consecutive_failures),
+        "pause_until": pledge.pause_until,
+        "created_at": pledge.created_at,
+        "open_installments": len(payable),
+        "next_payable_installment_id": str(payable[0].pk) if payable else None,
+    }
+
+
+def _pledge_target_title(pledge: RecurringPledge) -> str:
+    """عنوان خوانا مقصد تعهد."""
+    if pledge.campaign_id:
+        return str(getattr(pledge.campaign, "title", "") or "")
+    if pledge.charity_jar_id:
+        return str(getattr(pledge.charity_jar, "title", "") or "")
+    return ""
+
+
+class MePledgeListCreateView(APIView):
+    """فهرست و ساخت تعهد کمک مستمر برای خیر وارد‌شده."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="v1_me_pledges_list",
+        summary="فهرست تعهدهای کمک مستمر من",
+        parameters=[OpenApiParameter(name="status", type=str, required=False)],
+        responses={200: PledgeOutputSerializer(many=True)},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def get(self, request: Request) -> Response:
+        user = authenticated_user(request)
+        qs = RecurringPledge.objects.filter(user=user).select_related("campaign", "charity_jar")
+        status_filter = (request.query_params.get("status") or "").strip()
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        pledges = list(qs.order_by("-created_at")[:100])
+        open_inst = list(
+            PledgeInstallment.objects.filter(
+                pledge__in=pledges,
+                status__in=["scheduled", "reminded"],
+            ).order_by("due_date")
+        )
+        return Response([_serialize_pledge(p, open_inst) for p in pledges])
+
+    @extend_schema(
+        operation_id="v1_me_pledges_create",
+        summary="ساخت تعهد کمک مستمر (ماهانه یا سه‌ماهه)",
+        request=PledgeCreateInputSerializer,
+        responses={201: PledgeOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def post(self, request: Request) -> Response:
+        user = authenticated_user(request)
+        serializer = PledgeCreateInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        campaign = None
+        charity_jar = None
+        if data.get("campaign_id"):
+            campaign = Campaign.objects.filter(pk=data["campaign_id"]).first()
+            if campaign is None:
+                raise NotFoundError("حرکت یافت نشد.")
+        if data.get("charity_jar_id"):
+            charity_jar = CharityJar.objects.filter(pk=data["charity_jar_id"]).first()
+            if charity_jar is None:
+                raise NotFoundError("قلک یافت نشد.")
+
+        if campaign is not None:
+            benefactor = campaign.benefactor
+        elif charity_jar is not None:
+            benefactor = charity_jar.benefactor
+        else:  # pragma: no cover - serializer هر دو را رد می‌کند
+            raise NotFoundError("مقصد تعهد یافت نشد.")
+        result = create_recurring_pledge(
+            user=user,
+            benefactor=benefactor,
+            target_kind=data["target_kind"],
+            amount_rial=int(data["amount_rial"]),
+            frequency=data["frequency"],
+            campaign=campaign,
+            charity_jar=charity_jar,
+            shares_count=int(data.get("shares_count") or 0),
+            start_day=data.get("start_day"),
+        )
+        pledge = RecurringPledge.objects.select_related("campaign", "charity_jar").get(
+            pk=result.pledge.pk
+        )
+        return Response(
+            _serialize_pledge(pledge, [result.first_installment]),
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class MePledgeDetailView(APIView):
+    """جزئیات، ویرایش و لغو یک تعهد متعلق به خیر."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="v1_me_pledges_retrieve",
+        summary="جزئیات یک تعهد کمک مستمر",
+        responses={200: PledgeOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def get(self, request: Request, pledge_id: str) -> Response:
+        user = authenticated_user(request)
+        pledge = get_owned_pledge(pledge_id=pledge_id, user=user)
+        open_inst = list(
+            PledgeInstallment.objects.filter(
+                pledge=pledge, status__in=["scheduled", "reminded"]
+            ).order_by("due_date")
+        )
+        return Response(_serialize_pledge(pledge, open_inst))
+
+    @extend_schema(
+        operation_id="v1_me_pledges_update",
+        summary="ویرایش تعهد (مبلغ، تناوب، روز شروع) یا توقف موقت",
+        request=PledgeUpdateInputSerializer,
+        responses={200: PledgeOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def patch(self, request: Request, pledge_id: str) -> Response:
+        user = authenticated_user(request)
+        serializer = PledgeUpdateInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        if "pause_until" in serializer.validated_data:
+            if data.get("pause_until") is None and "amount_rial" not in data:
+                pause_pledge(pledge_id=pledge_id, user=user, until=None)
+            else:
+                pause_pledge(pledge_id=pledge_id, user=user, until=data.get("pause_until"))
+
+        pledge = update_pledge(
+            pledge_id=pledge_id,
+            user=user,
+            amount_rial=data.get("amount_rial"),
+            frequency=data.get("frequency"),
+            start_day=data.get("start_day"),
+        )
+        pledge = RecurringPledge.objects.select_related("campaign", "charity_jar").get(pk=pledge.pk)
+        open_inst = list(
+            PledgeInstallment.objects.filter(
+                pledge=pledge, status__in=["scheduled", "reminded"]
+            ).order_by("due_date")
+        )
+        return Response(_serialize_pledge(pledge, open_inst))
+
+    @extend_schema(
+        operation_id="v1_me_pledges_destroy",
+        summary="لغو دائمی تعهد کمک مستمر",
+        request=PledgeCancelInputSerializer,
+        responses={200: PledgeOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def delete(self, request: Request, pledge_id: str) -> Response:
+        user = authenticated_user(request)
+        body = PledgeCancelInputSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        pledge = cancel_pledge(
+            pledge_id=pledge_id,
+            user=user,
+            reason=body.validated_data.get("reason") or "user_request",
+        )
+        pledge = RecurringPledge.objects.select_related("campaign", "charity_jar").get(pk=pledge.pk)
+        return Response(_serialize_pledge(pledge, []))
+
+
+class MePledgeInstallmentListView(APIView):
+    """تاریخچهٔ اقساط یک تعهد."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="v1_me_pledges_installments_list",
+        summary="فهرست اقساط یک تعهد کمک مستمر",
+        responses={200: PledgeInstallmentOutputSerializer(many=True)},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def get(self, request: Request, pledge_id: str) -> Response:
+        user = authenticated_user(request)
+        pledge = get_owned_pledge(pledge_id=pledge_id, user=user)
+        installments = PledgeInstallment.objects.filter(pledge=pledge).order_by("sequence")
+        return Response([_serialize_installment(i) for i in installments])
+
+
+class MePledgePayView(APIView):
+    """آغاز پرداخت یک قسط سررسیدشده — از طریق درگاه همیشگی."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="v1_me_pledges_pay",
+        summary="پرداخت قسط تعهد مستمر (هدایت به درگاه)",
+        request=PledgePayInputSerializer,
+        responses={200: PledgePayOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def post(self, request: Request, pledge_id: str) -> Response:
+        user = authenticated_user(request)
+        body = PledgePayInputSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        result = pay_installment(
+            pledge_id=pledge_id,
+            installment_id=body.validated_data["installment_id"],
+            user=user,
+            request=request,
+        )
+        result["amount_toman"] = rial_to_toman(int(result.get("amount_rial") or 0))
+        return Response(result)
+
+
+class MePledgeSkipInstallmentView(APIView):
+    """رد یک قسط — «این ماه نمی‌پردازم» بدون از دست دادن تعهد."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        operation_id="v1_me_pledges_skip_installment",
+        summary="رد قسط جاری (تعهد باقی می‌ماند)",
+        request=PledgeCancelInputSerializer,
+        responses={200: PledgeInstallmentOutputSerializer},
+        tags=["Donor - Recurring Pledges"],
+    )
+    def post(self, request: Request, pledge_id: str, installment_id: str) -> Response:
+        user = authenticated_user(request)
+        body = PledgeCancelInputSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        installment = skip_installment(
+            pledge_id=pledge_id,
+            installment_id=installment_id,
+            user=user,
+            reason=body.validated_data.get("reason") or "",
+        )
+        return Response(_serialize_installment(installment))
+
+
+class AdminPledgeListView(APIView):
+    """فهرست مدیریتی تعهدهای مستمر با پوشاندن شمارهٔ خیر."""
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_pledges_list",
+        summary="فهرست تعهدهای کمک مستمر (مدیریت)",
+        parameters=[
+            OpenApiParameter(name="status", type=str, required=False),
+            OpenApiParameter(name="frequency", type=str, required=False),
+        ],
+        responses={200: AdminPledgeSerializer(many=True)},
+        tags=["Admin - Recurring Pledges"],
+    )
+    def get(self, request: Request) -> Response:
+        qs = RecurringPledge.objects.select_related("user", "campaign", "charity_jar").order_by(
+            "-created_at"
+        )
+        status_filter = (request.query_params.get("status") or "").strip()
+        freq_filter = (request.query_params.get("frequency") or "").strip()
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        if freq_filter:
+            qs = qs.filter(frequency=freq_filter)
+        rows = []
+        for pledge in qs[:200]:
+            rows.append(
+                {
+                    "id": str(pledge.pk),
+                    "user_id": str(pledge.user_id),
+                    "user_phone_masked": mask_phone(str(getattr(pledge.user, "phone", "") or "")),
+                    "status": str(pledge.status),
+                    "target_kind": str(pledge.target_kind),
+                    "target_title": _pledge_target_title(pledge),
+                    "amount_rial": int(pledge.amount_rial),
+                    "amount_toman": rial_to_toman(int(pledge.amount_rial)),
+                    "frequency": str(pledge.frequency),
+                    "next_due_date": pledge.next_due_date,
+                    "total_paid_rial": int(pledge.total_paid_rial),
+                    "installments_paid": int(pledge.installments_paid),
+                    "consecutive_failures": int(pledge.consecutive_failures),
+                    "created_at": pledge.created_at,
+                }
+            )
+        return Response(rows)
+
+
+class AdminPledgeStatsView(APIView):
+    """آمار تعهدهای مستمر: MRR، نرخ وصول، ریزش و علل شکست."""
+
+    permission_classes = [IsStaffRole]
+
+    @extend_schema(
+        operation_id="v1_admin_pledges_stats",
+        summary="آمار تجمیعی تعهدهای مستمر (MRR، نرخ وصول، ریزش)",
+        parameters=[OpenApiParameter(name="window_days", type=int, required=False)],
+        responses={200: PledgeStatsOutputSerializer},
+        tags=["Admin - Recurring Pledges"],
+    )
+    def get(self, request: Request) -> Response:
+        raw = request.query_params.get("window_days") or "90"
+        try:
+            window_days = max(1, min(int(raw), 3650))
+        except (TypeError, ValueError):
+            window_days = 90
+        stats = build_pledge_stats(window_days=window_days)
+        stats["monthly_recurring_revenue_toman"] = rial_to_toman(
+            int(stats["monthly_recurring_revenue_rial"])
+        )
+        return Response(stats)
+
+
+class AdminPledgeRunCycleView(APIView):
+    """اجرای دستی چرخهٔ تعهد مستمر — همان کاری که کرون شبانه می‌کند."""
+
+    permission_classes = [IsFinanceOrSuperAdmin]
+
+    @extend_schema(
+        operation_id="v1_admin_pledges_run_cycle",
+        summary="اجرای دستی چرخهٔ تعهد مستمر (تولید قسط، یادآوری، انقضا)",
+        request=None,
+        responses={200: PledgeCycleOutputSerializer},
+        tags=["Admin - Recurring Pledges"],
+    )
+    def post(self, request: Request) -> Response:
+        del request  # چرخه به ورودی HTTP وابسته نیست؛ زمان از سیاست خوانده می‌شود
+        resumed = resume_paused_pledges()
+        materialize = materialize_due_installments()
+        reminders = dispatch_pledge_reminders()
+        expiry = expire_stale_installments()
+        return Response(
+            {
+                "materialize": materialize.as_dict(),
+                "reminders": reminders.as_dict(),
+                "expiry": expiry.as_dict(),
+                "resumed": resumed,
+            }
         )

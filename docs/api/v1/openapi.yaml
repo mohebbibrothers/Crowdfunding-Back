@@ -2208,6 +2208,206 @@ paths:
         errorFormat: application/problem+json
         traceHeader: X-Request-ID
         paginated: false
+  /api/v1/admin/pledges:
+    get:
+      operationId: v1_admin_pledges_list
+      description: فهرست مدیریتی تعهدهای مستمر با پوشاندن شمارهٔ خیر.
+      summary: فهرست تعهدهای کمک مستمر (مدیریت)
+      parameters:
+      - in: query
+        name: frequency
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Admin - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminPledge'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/pledges/run-cycle:
+    post:
+      operationId: v1_admin_pledges_run_cycle
+      description: اجرای دستی چرخهٔ تعهد مستمر — همان کاری که کرون شبانه می‌کند.
+      summary: اجرای دستی چرخهٔ تعهد مستمر (تولید قسط، یادآوری، انقضا)
+      tags:
+      - Admin - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeCycleOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/admin/pledges/stats:
+    get:
+      operationId: v1_admin_pledges_stats
+      description: 'آمار تعهدهای مستمر: MRR، نرخ وصول، ریزش و علل شکست.'
+      summary: آمار تجمیعی تعهدهای مستمر (MRR، نرخ وصول، ریزش)
+      parameters:
+      - in: query
+        name: window_days
+        schema:
+          type: integer
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Admin - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeStatsOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
   /api/v1/admin/policies:
     get:
       operationId: v1_admin_policies_list
@@ -5957,6 +6157,578 @@ paths:
         errorFormat: application/problem+json
         traceHeader: X-Request-ID
         paginated: false
+  /api/v1/me/pledges:
+    get:
+      operationId: v1_me_pledges_list
+      description: فهرست و ساخت تعهد کمک مستمر برای خیر وارد‌شده.
+      summary: فهرست تعهدهای کمک مستمر من
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PledgeOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+    post:
+      operationId: v1_me_pledges_create
+      description: فهرست و ساخت تعهد کمک مستمر برای خیر وارد‌شده.
+      summary: ساخت تعهد کمک مستمر (ماهانه یا سه‌ماهه)
+      tags:
+      - Donor - Recurring Pledges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PledgeCreateInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      parameters:
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/me/pledges/{pledge_id}:
+    get:
+      operationId: v1_me_pledges_retrieve
+      description: جزئیات، ویرایش و لغو یک تعهد متعلق به خیر.
+      summary: جزئیات یک تعهد کمک مستمر
+      parameters:
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+    patch:
+      operationId: v1_me_pledges_update
+      description: جزئیات، ویرایش و لغو یک تعهد متعلق به خیر.
+      summary: ویرایش تعهد (مبلغ، تناوب، روز شروع) یا توقف موقت
+      parameters:
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPledgeUpdateInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+    delete:
+      operationId: v1_me_pledges_destroy
+      description: جزئیات، ویرایش و لغو یک تعهد متعلق به خیر.
+      summary: لغو دائمی تعهد کمک مستمر
+      parameters:
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/me/pledges/{pledge_id}/installments:
+    get:
+      operationId: v1_me_pledges_installments_list
+      description: تاریخچهٔ اقساط یک تعهد.
+      summary: فهرست اقساط یک تعهد کمک مستمر
+      parameters:
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: If-None-Match
+        required: false
+        description: ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت
+          میشود.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PledgeInstallmentOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: safe
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/me/pledges/{pledge_id}/installments/{installment_id}/skip:
+    post:
+      operationId: v1_me_pledges_skip_installment
+      description: رد یک قسط — «این ماه نمی‌پردازم» بدون از دست دادن تعهد.
+      summary: رد قسط جاری (تعهد باقی می‌ماند)
+      parameters:
+      - in: path
+        name: installment_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PledgeCancelInputRequest'
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgeInstallmentOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
+  /api/v1/me/pledges/{pledge_id}/pay:
+    post:
+      operationId: v1_me_pledges_pay
+      description: آغاز پرداخت یک قسط سررسیدشده — از طریق درگاه همیشگی.
+      summary: پرداخت قسط تعهد مستمر (هدایت به درگاه)
+      parameters:
+      - in: path
+        name: pledge_id
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: X-Request-ID
+        required: false
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور
+          یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
+        schema:
+          type: string
+      - in: header
+        name: Idempotency-Key
+        required: false
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان
+          بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
+        schema:
+          type: string
+      - in: header
+        name: X-CSRFToken
+        required: false
+        description: توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.
+        schema:
+          type: string
+      tags:
+      - Donor - Recurring Pledges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PledgePayInputRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PledgePayOutput'
+          description: ''
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '405':
+          $ref: '#/components/responses/Problem405'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '410':
+          $ref: '#/components/responses/Problem410'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+        '500':
+          $ref: '#/components/responses/Problem500'
+        '503':
+          $ref: '#/components/responses/Problem503'
+      x-frontend-policy:
+        auth: required
+        retry: idempotency-key
+        errorFormat: application/problem+json
+        traceHeader: X-Request-ID
+        paginated: false
   /api/v1/me/sessions:
     get:
       operationId: v1_me_sessions_list
@@ -6626,6 +7398,57 @@ components:
           maxLength: 400
       required:
       - reason
+    AdminPledge:
+      type: object
+      description: ردیف تعهد در پنل مدیریت — با هویت خیر (ماسک‌شدهٔ امن).
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        user_phone_masked:
+          type: string
+        status:
+          type: string
+        target_kind:
+          type: string
+        target_title:
+          type: string
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        frequency:
+          type: string
+        next_due_date:
+          type: string
+          format: date
+        total_paid_rial:
+          type: integer
+        installments_paid:
+          type: integer
+        consecutive_failures:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rial
+      - amount_toman
+      - consecutive_failures
+      - created_at
+      - frequency
+      - id
+      - installments_paid
+      - next_due_date
+      - status
+      - target_kind
+      - target_title
+      - total_paid_rial
+      - user_id
+      - user_phone_masked
     AdminRoleChangeInputRequest:
       type: object
       description: ورودی تغییر نقش کاربری با الزام دلیل.
@@ -8766,6 +9589,14 @@ components:
       - recovery_ledger
       - refund_ledger
       - status
+    FrequencyEnum:
+      enum:
+      - monthly
+      - quarterly
+      type: string
+      description: |-
+        * `monthly` - ماهانه
+        * `quarterly` - سه‌ماهه
     GatewayNameEnum:
       enum:
       - sandbox
@@ -9697,6 +10528,24 @@ components:
           minimum: 0
         is_active:
           type: boolean
+    PatchedPledgeUpdateInputRequest:
+      type: object
+      description: 'ورودی ویرایش تعهد: مبلغ، تناوب، روز شروع یا توقف موقت.'
+      properties:
+        amount_rial:
+          type: integer
+          minimum: 1
+        frequency:
+          $ref: '#/components/schemas/FrequencyEnum'
+        start_day:
+          type: integer
+          maximum: 31
+          minimum: 1
+        pause_until:
+          type:
+          - string
+          - 'null'
+          format: date
     PatchedProfileUpdateInputRequest:
       type: object
       description: ورودی ویرایش مشخصات پروفایل خیر.
@@ -9882,6 +10731,293 @@ components:
       - supported_versions
       - timezone
       - today_jalali
+    PledgeCancelInputRequest:
+      type: object
+      description: ورودی لغو یا رد قسط.
+      properties:
+        reason:
+          type: string
+          default: user_request
+    PledgeCreateInputRequest:
+      type: object
+      description: ورودی ساخت تعهد کمک مستمر.
+      properties:
+        target_kind:
+          $ref: '#/components/schemas/TargetKindEnum'
+        campaign_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        charity_jar_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        amount_rial:
+          type: integer
+          minimum: 1
+        frequency:
+          allOf:
+          - $ref: '#/components/schemas/FrequencyEnum'
+          default: monthly
+        shares_count:
+          type: integer
+          minimum: 0
+          default: 0
+        start_day:
+          type:
+          - integer
+          - 'null'
+          maximum: 31
+          minimum: 1
+      required:
+      - amount_rial
+      - target_kind
+    PledgeCycleOutput:
+      type: object
+      description: نتیجهٔ یک اجرای دستی چرخهٔ تعهد مستمر.
+      properties:
+        materialize:
+          type: object
+          additionalProperties: {}
+        reminders:
+          type: object
+          additionalProperties: {}
+        expiry:
+          type: object
+          additionalProperties: {}
+        resumed:
+          type: integer
+      required:
+      - expiry
+      - materialize
+      - reminders
+      - resumed
+    PledgeInstallmentOutput:
+      type: object
+      description: یک قسط تعهد مستمر — با وضعیت خوانا و مبلغ به تومان.
+      properties:
+        id:
+          type: string
+          format: uuid
+        sequence:
+          type: integer
+        due_date:
+          type: string
+          format: date
+        grace_until:
+          type: string
+          format: date
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        status:
+          type: string
+        status_display:
+          type: string
+        is_open:
+          type: boolean
+        reminder_count:
+          type: integer
+        failure_reason:
+          type: string
+        can_pay:
+          type: boolean
+        can_skip:
+          type: boolean
+        contribution_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - amount_rial
+      - amount_toman
+      - can_pay
+      - can_skip
+      - contribution_id
+      - due_date
+      - failure_reason
+      - grace_until
+      - id
+      - is_open
+      - reminder_count
+      - sequence
+      - status
+      - status_display
+    PledgeOutput:
+      type: object
+      description: تعهد مستمر با خلاصهٔ اقساط و وضعیت قابل‌اقدام.
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        status_display:
+          type: string
+        target_kind:
+          type: string
+        target_title:
+          type: string
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        frequency:
+          type: string
+        frequency_display:
+          type: string
+        interval_months:
+          type: integer
+        anchor_day:
+          type: integer
+        next_due_date:
+          type: string
+          format: date
+        total_paid_rial:
+          type: integer
+        total_paid_toman:
+          type: integer
+        installments_paid:
+          type: integer
+        installments_skipped:
+          type: integer
+        consecutive_failures:
+          type: integer
+        pause_until:
+          type:
+          - string
+          - 'null'
+          format: date
+        created_at:
+          type: string
+          format: date-time
+        open_installments:
+          type: integer
+        next_payable_installment_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+      required:
+      - amount_rial
+      - amount_toman
+      - anchor_day
+      - consecutive_failures
+      - created_at
+      - frequency
+      - frequency_display
+      - id
+      - installments_paid
+      - installments_skipped
+      - interval_months
+      - next_due_date
+      - next_payable_installment_id
+      - open_installments
+      - pause_until
+      - status
+      - status_display
+      - target_kind
+      - target_title
+      - total_paid_rial
+      - total_paid_toman
+    PledgePayInputRequest:
+      type: object
+      description: ورودی آغاز پرداخت یک قسط.
+      properties:
+        installment_id:
+          type: string
+          format: uuid
+        gateway_name:
+          type: string
+          default: ''
+      required:
+      - installment_id
+    PledgePayOutput:
+      type: object
+      description: 'نتیجهٔ آغاز پرداخت قسط: شناسهٔ پرداخت و لینک درگاه.'
+      properties:
+        installment_id:
+          type: string
+          format: uuid
+        contribution_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+        amount_rial:
+          type: integer
+        amount_toman:
+          type: integer
+        redirect_url:
+          type: string
+      required:
+      - amount_rial
+      - amount_toman
+      - contribution_id
+      - installment_id
+      - payment_id
+      - redirect_url
+    PledgeStatsOutput:
+      type: object
+      description: آمار تجمیعی تعهدهای مستمر — مبنای بودجه‌بندی خیریه.
+      properties:
+        active_pledges:
+          type: integer
+        paused_pledges:
+          type: integer
+        expired_pledges:
+          type: integer
+        cancelled_pledges:
+          type: integer
+        monthly_recurring_revenue_rial:
+          type: integer
+        monthly_recurring_revenue_toman:
+          type: integer
+        active_pledge_amount_rial:
+          type: integer
+        collection_rate:
+          type: number
+          format: double
+        paid_installments_window:
+          type: integer
+        failed_installments_window:
+          type: integer
+        churn_window:
+          type: integer
+        churn_rate:
+          type: number
+          format: double
+        average_pledge_lifetime_months:
+          type: number
+          format: double
+        top_failure_reasons:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        generated_for_window_days:
+          type: integer
+      required:
+      - active_pledge_amount_rial
+      - active_pledges
+      - average_pledge_lifetime_months
+      - cancelled_pledges
+      - churn_rate
+      - churn_window
+      - collection_rate
+      - expired_pledges
+      - failed_installments_window
+      - generated_for_window_days
+      - monthly_recurring_revenue_rial
+      - monthly_recurring_revenue_toman
+      - paid_installments_window
+      - paused_pledges
+      - top_failure_reasons
     PolicyRuleOutput:
       type: object
       description: نمای خروجی یک قانون سیاست سامانه برای پنل مدیریت.
@@ -10944,6 +12080,12 @@ tags:
   description: پایش پرداخت‌ها، استرداد وجه و کمک‌های خارج از درگاه.
 - name: Admin - Executive Excel Reports
   description: کتابچهٔ ۸ کاربرگهٔ اکسل راست‌به‌چپ و تاریخچهٔ خروجی‌ها.
+- name: Donor - Recurring Pledges
+  description: 'تعهد کمک مستمر: ساخت تعهد ماهانه/سه‌ماهه، مشاهده و پرداخت اقساط، رد
+    قسط، توقف موقت و لغو — بدون ذخیرهٔ کارت و بدون موتور پرداخت موازی.'
+- name: Admin - Recurring Pledges
+  description: 'مدیریت تعهدهای مستمر: فهرست، آمار MRR و نرخ وصول، ریزش و اجرای دستی
+    چرخهٔ تولید قسط و یادآوری.'
 - name: Admin - Money Truth
   description: 'لایهٔ حقیقت وجه: ورود صورت‌حساب تسویهٔ درگاه، تطبیق سه‌طرفه با دفتر
     داخلی، خوددرمانی مجاز و پنل «آیا تأیید ما با بانک می‌خواند؟».'

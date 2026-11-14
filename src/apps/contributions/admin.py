@@ -17,6 +17,8 @@ from apps.contributions.models import (
     LateCaptureRecovery,
     Payment,
     PaymentRefund,
+    PledgeInstallment,
+    RecurringPledge,
     SettlementReconciliation,
     SettlementRow,
     SettlementStatement,
@@ -297,5 +299,112 @@ class SettlementReconciliationAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
         self, request: HttpRequest, obj: SettlementReconciliation | None = None
     ) -> bool:
         """تغییر نتیجهٔ تطبیق ممنوع است — این رکورد شاهد ممیزی است."""
+        del request, obj
+        return False
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# تعهد کمک مستمر (v1.4.0)
+#
+# پنل مدیریت تعهد عمداً «فقط‌خواندنی» است برای مبلغ و تاریخ‌ها. تغییر مبلغ
+# تعهد از پنل ادمین، یعنی تغییر تعهدی که خیر با آن موافقت کرده — این کار
+# باید از مسیر خود خیر انجام شود، نه از پشت صحنه.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+@admin.register(RecurringPledge)
+class RecurringPledgeAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """مدیریت تعهدهای کمک مستمر با تمرکز بر وضعیت و شمارنده‌های سلامت."""
+
+    list_display = (
+        "short_id",
+        "user",
+        "target_label",
+        "amount_rial",
+        "frequency",
+        "status",
+        "next_due_date",
+        "installments_paid",
+        "consecutive_failures",
+    )
+    list_filter = ("status", "frequency", "target_kind")
+    search_fields = ("user__phone", "user__first_name", "user__last_name")
+    readonly_fields = (
+        "id",
+        "user",
+        "benefactor",
+        "target_kind",
+        "campaign",
+        "charity_jar",
+        "amount_rial",
+        "shares_count",
+        "frequency",
+        "interval_months",
+        "anchor_day",
+        "total_paid_rial",
+        "installments_paid",
+        "installments_skipped",
+        "last_paid_at",
+        "created_at",
+        "updated_at",
+    )
+    ordering = ("-created_at",)
+    date_hierarchy = "created_at"
+
+    @admin.display(description="شناسه")
+    def short_id(self, obj: RecurringPledge) -> str:
+        """نمایش کوتاه شناسه برای جدول."""
+        return str(obj.pk)[:8]
+
+    @admin.display(description="مقصد")
+    def target_label(self, obj: RecurringPledge) -> str:
+        """عنوان مقصد تعهد (حرکت یا قلک)."""
+        if obj.campaign_id:
+            return str(getattr(obj.campaign, "title", "") or "—")
+        if obj.charity_jar_id:
+            return str(getattr(obj.charity_jar, "title", "") or "—")
+        return "—"
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        """تعهد فقط توسط خیر ساخته می‌شود، نه از پنل مدیریت."""
+        del request
+        return False
+
+
+@admin.register(PledgeInstallment)
+class PledgeInstallmentAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
+    """اقساط تعهد — فقط‌خواندنی، چون هر تغییر دستی یعنی جعل تاریخ مالی."""
+
+    list_display = (
+        "short_id",
+        "pledge",
+        "sequence",
+        "due_date",
+        "grace_until",
+        "amount_rial",
+        "status",
+        "reminder_count",
+        "paid_at",
+    )
+    list_filter = ("status", "due_date")
+    search_fields = ("pledge__user__phone", "idempotency_key")
+    readonly_fields = [f.name for f in PledgeInstallment._meta.fields]
+    ordering = ("-due_date",)
+    date_hierarchy = "due_date"
+
+    @admin.display(description="شناسه")
+    def short_id(self, obj: PledgeInstallment) -> str:
+        """نمایش کوتاه شناسه برای جدول."""
+        return str(obj.pk)[:8]
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        """قسط فقط توسط موتور ساخته می‌شود."""
+        del request
+        return False
+
+    def has_change_permission(
+        self, request: HttpRequest, obj: PledgeInstallment | None = None
+    ) -> bool:
+        """ویرایش قسط ممنوع است — این رکورد سند مالی است."""
         del request, obj
         return False

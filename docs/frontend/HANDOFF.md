@@ -45,7 +45,7 @@ make tscheck     # npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/fro
 
 | فایل | کاربرد | تولید |
 | --- | --- | --- |
-| [`api/v1/openapi.yaml`](../api/v1/openapi.yaml) | قرارداد ماشینی کامل: 81 مسیر، 93 عملیات، 129 اسکیما | خودکار از کد (CI قفل میکند) |
+| [`api/v1/openapi.yaml`](../api/v1/openapi.yaml) | قرارداد ماشینی کامل: 89 مسیر، 104 عملیات، 140 اسکیما | خودکار از کد (CI قفل میکند) |
 | [`api/v1/README.md`](../api/v1/README.md) | قراردادهای سراسری پروتکل و نقشهٔ دامنهها | دستی + راستیآزمایی CI |
 | [`ENDPOINTS.md`](./ENDPOINTS.md) | ماتریس کامل متد/مسیر/operationId/سطح دسترسی | 🟢 خودکار |
 | [`ERRORS.md`](./ERRORS.md) | کاتالوگ ۳۸ کد خطای RFC 9457 + اقدام UX برای هر کد | 🟢 خودکار |

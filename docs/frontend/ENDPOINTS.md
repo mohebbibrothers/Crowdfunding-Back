@@ -2,10 +2,10 @@
 
 > این جدول مستقیماً از [`openapi.yaml`](../api/v1/openapi.yaml) ساخته شده است. هرگونه تغییر مسیر، متد یا پارامتر بدون بازتولید این فایل توسط CI رد میشود.
 
-- تعداد مسیرها: **81**
-- تعداد عملیاتها: **93**
-- تعداد اسکیماها: **129**
-- تعداد تگها: **24**
+- تعداد مسیرها: **89**
+- تعداد عملیاتها: **104**
+- تعداد اسکیماها: **140**
+- تعداد تگها: **26**
 - سرورها: `https://api.charity.example.org`, `http://localhost:8000`
 
 | متد | مسیر | operationId | احراز هویت | خلاصه |
@@ -54,6 +54,9 @@
 | `POST` | `/api/v1/admin/campaigns/{campaign_id}/external-contributions` | `v1_admin_campaigns_external_contributions_create` | الزامی | ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا |
 | `GET` | `/api/v1/admin/payments` | `v1_admin_payments_list` | الزامی | فهرست مدیریتی تراکنش‌های درگاه پرداخت |
 | `POST` | `/api/v1/admin/payments/{payment_id}/refund` | `v1_admin_payments_refund` | الزامی | ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA) |
+| `GET` | `/api/v1/admin/pledges` | `v1_admin_pledges_list` | الزامی | فهرست تعهدهای کمک مستمر (مدیریت) |
+| `POST` | `/api/v1/admin/pledges/run-cycle` | `v1_admin_pledges_run_cycle` | الزامی | اجرای دستی چرخهٔ تعهد مستمر (تولید قسط، یادآوری، انقضا) |
+| `GET` | `/api/v1/admin/pledges/stats` | `v1_admin_pledges_stats` | الزامی | آمار تجمیعی تعهدهای مستمر (MRR، نرخ وصول، ریزش) |
 | `GET` | `/api/v1/admin/financial-health` | `v1_admin_financial_health_retrieve` | الزامی | گزارش سلامت حلقهٔ وجه: پرداخت‌های رهاشده، تعهدهای بازپرداخت و هشدارها |
 | `POST` | `/api/v1/admin/late-captures/reconcile` | `v1_admin_late_captures_reconcile` | الزامی | اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه |
 | `POST` | `/api/v1/admin/refunds/dispatch` | `v1_admin_refunds_dispatch` | الزامی | ارسال تعهدهای بازپرداخت معلق به درگاه پرداخت |
@@ -78,6 +81,14 @@
 | `PATCH` | `/api/v1/me` | `v1_me_profile_update` | الزامی | تکمیل یا ویرایش پروفایل خیر (نام، استان، شهر، کد ملی رمزشده) |
 | `GET` | `/api/v1/me/sessions` | `v1_me_sessions_list` | الزامی | مشاهدهٔ فهرست دستگاه‌ها و نشست‌های فعال من |
 | `POST` | `/api/v1/me/sessions/{session_id}/revoke` | `v1_me_sessions_revoke` | الزامی | ابطال یک نشست مشخص از راه دور |
+| `GET` | `/api/v1/me/pledges` | `v1_me_pledges_list` | الزامی | فهرست تعهدهای کمک مستمر من |
+| `POST` | `/api/v1/me/pledges` | `v1_me_pledges_create` | الزامی | ساخت تعهد کمک مستمر (ماهانه یا سه‌ماهه) |
+| `DELETE` | `/api/v1/me/pledges/{pledge_id}` | `v1_me_pledges_destroy` | الزامی | لغو دائمی تعهد کمک مستمر |
+| `GET` | `/api/v1/me/pledges/{pledge_id}` | `v1_me_pledges_retrieve` | الزامی | جزئیات یک تعهد کمک مستمر |
+| `PATCH` | `/api/v1/me/pledges/{pledge_id}` | `v1_me_pledges_update` | الزامی | ویرایش تعهد (مبلغ، تناوب، روز شروع) یا توقف موقت |
+| `GET` | `/api/v1/me/pledges/{pledge_id}/installments` | `v1_me_pledges_installments_list` | الزامی | فهرست اقساط یک تعهد کمک مستمر |
+| `POST` | `/api/v1/me/pledges/{pledge_id}/installments/{installment_id}/skip` | `v1_me_pledges_skip_installment` | الزامی | رد قسط جاری (تعهد باقی می‌ماند) |
+| `POST` | `/api/v1/me/pledges/{pledge_id}/pay` | `v1_me_pledges_pay` | الزامی | پرداخت قسط تعهد مستمر (هدایت به درگاه) |
 | `GET` | `/api/v1/benefactors` | `v1_benefactors_list` | عمومی | فهرست خیریه‌ها و نهادهای نیکوکاری فعال |
 | `GET` | `/api/v1/benefactors/{slug}` | `v1_benefactors_retrieve` | عمومی | دریافت جزئیات خیریه و قلک‌های عام آن |
 | `GET` | `/api/v1/jars` | `v1_jars_list` | عمومی | فهرست قلک‌های عام فعال خیریه‌ها |
@@ -159,6 +170,9 @@
 | `/api/v1/admin/campaigns/{campaign_id}/external-contributions` | `campaign_id` | path | بله |
 | `/api/v1/admin/payments` | `status` | query | خیر |
 | `/api/v1/admin/payments/{payment_id}/refund` | `payment_id` | path | بله |
+| `/api/v1/admin/pledges` | `frequency` | query | خیر |
+| `/api/v1/admin/pledges` | `status` | query | خیر |
+| `/api/v1/admin/pledges/stats` | `window_days` | query | خیر |
 | `/api/v1/me/contributions` | `cursor` | query | خیر |
 | `/api/v1/me/contributions` | `page_size` | query | خیر |
 | `/api/v1/me/notifications` | `cursor` | query | خیر |
@@ -166,6 +180,14 @@
 | `/api/v1/me/notifications` | `unread` | query | خیر |
 | `/api/v1/me/notifications/{notification_id}/read` | `notification_id` | path | بله |
 | `/api/v1/me/sessions/{session_id}/revoke` | `session_id` | path | بله |
+| `/api/v1/me/pledges` | `status` | query | خیر |
+| `/api/v1/me/pledges/{pledge_id}` | `pledge_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}` | `pledge_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}` | `pledge_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}/installments` | `pledge_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}/installments/{installment_id}/skip` | `installment_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}/installments/{installment_id}/skip` | `pledge_id` | path | بله |
+| `/api/v1/me/pledges/{pledge_id}/pay` | `pledge_id` | path | بله |
 | `/api/v1/benefactors` | `province` | query | خیر |
 | `/api/v1/benefactors` | `q` | query | خیر |
 | `/api/v1/benefactors/{slug}` | `slug` | path | بله |

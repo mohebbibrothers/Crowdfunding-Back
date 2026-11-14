@@ -13,7 +13,11 @@ from apps.core.logging import redact_value
 from apps.core.models import OutboxMessage
 from apps.core.outbox import register_outbox_handler
 from apps.identity.choices import OtpPurpose
-from apps.notifications.choices import SmsDeliveryStatus, SmsPatternCode
+from apps.notifications.choices import (
+    SmsDeliveryStatus,
+    SmsPatternCode,
+    UserNotificationKind,
+)
 from apps.notifications.models import SmsDeliveryLog, UserNotification
 from apps.notifications.providers import resolve_sms_provider
 
@@ -142,8 +146,53 @@ def _handle_dedication_gift_outbox(msg: OutboxMessage) -> None:
     )
 
 
+def _handle_pledge_reminder_outbox(msg: OutboxMessage) -> None:
+    """یادآوری محترمانهٔ قسط تعهد مستمر.
+
+    متن الگو کوتاه است چون SMS فارسی هر کاراکترش حساب دارد و پیامک بلند
+    به دو پیامک شکسته می‌شود — هزینهٔ خیریه دو برابر، پیام یکی.
+    """
+    phone = str(msg.payload.get("phone") or "")
+    if not phone:
+        return
+    dispatch_sms_pattern(
+        phone=phone,
+        pattern_code=SmsPatternCode.PLEDGE_REMINDER,
+        tokens={
+            "amount": f"{int(msg.payload.get('amount_rial') or 0):,}",
+            "target": str(msg.payload.get("target_title", ""))[:30],
+            "date": str(msg.payload.get("due_date", "")),
+        },
+    )
+
+
+def _handle_pledge_expired_outbox(msg: OutboxMessage) -> None:
+    """اعلان انقضای تعهد — خیر باید بداند کمکش متوقف شده است."""
+    from uuid import UUID
+
+    raw_user_id = str(msg.payload.get("user_id") or "")
+    if not raw_user_id:
+        return
+    user_id = UUID(raw_user_id)
+    amount_toman = int(msg.payload.get("amount_rial") or 0) // 10
+    create_user_notification(
+        user_id=user_id,
+        kind=UserNotificationKind.PLEDGE_EXPIRED,
+        title="تعهد کمک مستمر شما متوقف شد",
+        body=(
+            f"تعهد کمک مستمر شما به مبلغ {amount_toman:,} تومان پس از "
+            f"{int(msg.payload.get('consecutive_failures') or 0)} قسط پرداخت‌نشده "
+            "متوقف شد. هر زمان بخواهید می‌توانید تعهد تازه‌ای بسازید."
+        ),
+        action_url="/me/pledges",
+        metadata={"pledge_id": str(msg.payload.get("pledge_id") or "")},
+    )
+
+
 def register_notification_outbox_handlers() -> None:
     """اتصال پردازشگرهای پیامک به رجیستری مرکزی صندوق خروجی."""
     register_outbox_handler("sms.otp_requested", _handle_otp_outbox)
     register_outbox_handler("sms.receipt_issued", _handle_receipt_outbox)
     register_outbox_handler("sms.dedication_gift", _handle_dedication_gift_outbox)
+    register_outbox_handler("sms.pledge_reminder", _handle_pledge_reminder_outbox)
+    register_outbox_handler("notification.pledge_expired", _handle_pledge_expired_outbox)

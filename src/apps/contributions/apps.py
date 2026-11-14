@@ -22,7 +22,9 @@ class ContributionsConfig(AppConfig):
             core.middleware → core.metrics → settlement → services). ثبت در
             ``ready`` یعنی لبه در زمان اجرا بسته می‌شود، نه در زمان import.
         """
+        from apps.contributions.recurring import register_pledge_checkout_provider
         from apps.contributions.services import (
+            checkout_pledge_installment,
             reconcile_one_abandoned_payment,
             register_contribution_outbox_handlers,
         )
@@ -35,3 +37,4 @@ class ContributionsConfig(AppConfig):
         register_contribution_outbox_handlers()
         register_recovery_engine(reconcile_one_abandoned_payment)
         register_money_truth_provider(build_money_truth_panel)
+        register_pledge_checkout_provider(checkout_pledge_installment)

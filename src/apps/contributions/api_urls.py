@@ -8,6 +8,9 @@ from apps.contributions.views import (
     AdminExternalContributionCreateView,
     AdminPaymentListView,
     AdminPaymentRefundView,
+    AdminPledgeListView,
+    AdminPledgeRunCycleView,
+    AdminPledgeStatsView,
     ContributionInitiateView,
     ExpressCheckoutConfirmView,
     ExpressCheckoutStartView,
@@ -15,6 +18,11 @@ from apps.contributions.views import (
     MeContributionListView,
     MeContributionMerkleProofView,
     MeDonorDashboardView,
+    MePledgeDetailView,
+    MePledgeInstallmentListView,
+    MePledgeListCreateView,
+    MePledgePayView,
+    MePledgeSkipInstallmentView,
     PaymentCallbackVerifyView,
     PublicCampaignSupportersView,
     PublicCampaignTransparencyView,
@@ -93,6 +101,40 @@ urlpatterns = [
         "me/ambassador-links",
         MeAmbassadorLinkListCreateView.as_view(),
         name="v1-me-ambassador-links",
+    ),
+    # تعهد کمک مستمر — خیر و مدیریت (v1.4.0)
+    path("me/pledges", MePledgeListCreateView.as_view(), name="v1-me-pledges"),
+    path(
+        "me/pledges/<str:pledge_id>",
+        MePledgeDetailView.as_view(),
+        name="v1-me-pledges-detail",
+    ),
+    path(
+        "me/pledges/<str:pledge_id>/installments",
+        MePledgeInstallmentListView.as_view(),
+        name="v1-me-pledges-installments",
+    ),
+    path(
+        "me/pledges/<str:pledge_id>/pay",
+        MePledgePayView.as_view(),
+        name="v1-me-pledges-pay",
+    ),
+    path(
+        "me/pledges/<str:pledge_id>/installments/<str:installment_id>/skip",
+        MePledgeSkipInstallmentView.as_view(),
+        name="v1-me-pledges-installment-skip",
+    ),
+    # مسیرهای مدیریتی تعهد مستمر
+    path("admin/pledges", AdminPledgeListView.as_view(), name="v1-admin-pledges"),
+    path(
+        "admin/pledges/stats",
+        AdminPledgeStatsView.as_view(),
+        name="v1-admin-pledges-stats",
+    ),
+    path(
+        "admin/pledges/run-cycle",
+        AdminPledgeRunCycleView.as_view(),
+        name="v1-admin-pledges-run-cycle",
     ),
     # مسیرهای مدیریتی پرداخت‌ها، استرداد و مشارکت خارجی
     path("admin/payments", AdminPaymentListView.as_view(), name="v1-admin-payments-list"),

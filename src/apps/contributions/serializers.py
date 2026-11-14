@@ -519,3 +519,173 @@ class RefundResultOutputSerializer(serializers.Serializer[Any]):
     refund_id = serializers.UUIDField()
     amount_rial = serializers.IntegerField()
     status = serializers.CharField()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# تعهد کمک مستمر (v1.4.0)
+#
+# طراحی خروجی‌ها با یک قاعده: عدد ریالی **همیشه** هم به ریال و هم به تومان
+# برگردد. خیر ایرانی به تومان فکر می‌کند، دفتر کل به ریال. تبدیل در نمایش،
+# نه در پایگاه داده — همان قاعده‌ای که از v1.1.0 رعایت شده است.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class PledgeCreateInputSerializer(serializers.Serializer[Any]):
+    """ورودی ساخت تعهد کمک مستمر."""
+
+    target_kind = serializers.ChoiceField(choices=ContributionTargetKind.choices)
+    campaign_id = serializers.UUIDField(required=False, allow_null=True)
+    charity_jar_id = serializers.UUIDField(required=False, allow_null=True)
+    amount_rial = serializers.IntegerField(min_value=1)
+    frequency = serializers.ChoiceField(
+        choices=[("monthly", "ماهانه"), ("quarterly", "سه‌ماهه")], default="monthly"
+    )
+    shares_count = serializers.IntegerField(min_value=0, default=0)
+    start_day = serializers.IntegerField(min_value=1, max_value=31, required=False, allow_null=True)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """اعتبارسنجی متقابل: مقصد باید با نوع هم‌خوان باشد و دقیقاً یکی باشد."""
+        kind = attrs.get("target_kind")
+        has_campaign = attrs.get("campaign_id") is not None
+        has_jar = attrs.get("charity_jar_id") is not None
+        if kind == ContributionTargetKind.CAMPAIGN_SHARES and not has_campaign:
+            raise serializers.ValidationError(
+                {"campaign_id": "برای تعهد سهم‌محور، شناسهٔ حرکت الزامی است."}
+            )
+        if kind == ContributionTargetKind.CHARITY_JAR and not has_jar:
+            raise serializers.ValidationError(
+                {"charity_jar_id": "برای تعهد قلک، شناسهٔ قلک الزامی است."}
+            )
+        if has_campaign and has_jar:
+            raise serializers.ValidationError(
+                {"non_field_errors": "فقط یکی از حرکت یا قلک را انتخاب کنید، نه هر دو."}
+            )
+        return attrs
+
+
+class PledgeUpdateInputSerializer(serializers.Serializer[Any]):
+    """ورودی ویرایش تعهد: مبلغ، تناوب، روز شروع یا توقف موقت."""
+
+    amount_rial = serializers.IntegerField(min_value=1, required=False)
+    frequency = serializers.ChoiceField(
+        choices=[("monthly", "ماهانه"), ("quarterly", "سه‌ماهه")], required=False
+    )
+    start_day = serializers.IntegerField(min_value=1, max_value=31, required=False)
+    pause_until = serializers.DateField(required=False, allow_null=True)
+
+
+class PledgeInstallmentOutputSerializer(serializers.Serializer[Any]):
+    """یک قسط تعهد مستمر — با وضعیت خوانا و مبلغ به تومان."""
+
+    id = serializers.UUIDField()
+    sequence = serializers.IntegerField()
+    due_date = serializers.DateField()
+    grace_until = serializers.DateField()
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    status = serializers.CharField()
+    status_display = serializers.CharField()
+    is_open = serializers.BooleanField()
+    reminder_count = serializers.IntegerField()
+    failure_reason = serializers.CharField(allow_blank=True)
+    can_pay = serializers.BooleanField()
+    can_skip = serializers.BooleanField()
+    contribution_id = serializers.UUIDField(allow_null=True)
+
+
+class PledgeOutputSerializer(serializers.Serializer[Any]):
+    """تعهد مستمر با خلاصهٔ اقساط و وضعیت قابل‌اقدام."""
+
+    id = serializers.UUIDField()
+    status = serializers.CharField()
+    status_display = serializers.CharField()
+    target_kind = serializers.CharField()
+    target_title = serializers.CharField(allow_blank=True)
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    frequency = serializers.CharField()
+    frequency_display = serializers.CharField()
+    interval_months = serializers.IntegerField()
+    anchor_day = serializers.IntegerField()
+    next_due_date = serializers.DateField()
+    total_paid_rial = serializers.IntegerField()
+    total_paid_toman = serializers.IntegerField()
+    installments_paid = serializers.IntegerField()
+    installments_skipped = serializers.IntegerField()
+    consecutive_failures = serializers.IntegerField()
+    pause_until = serializers.DateField(allow_null=True)
+    created_at = serializers.DateTimeField()
+    open_installments = serializers.IntegerField()
+    next_payable_installment_id = serializers.UUIDField(allow_null=True)
+
+
+class PledgePayInputSerializer(serializers.Serializer[Any]):
+    """ورودی آغاز پرداخت یک قسط."""
+
+    installment_id = serializers.UUIDField()
+    gateway_name = serializers.CharField(required=False, allow_blank=True, default="")
+
+
+class PledgePayOutputSerializer(serializers.Serializer[Any]):
+    """نتیجهٔ آغاز پرداخت قسط: شناسهٔ پرداخت و لینک درگاه."""
+
+    installment_id = serializers.UUIDField()
+    contribution_id = serializers.UUIDField()
+    payment_id = serializers.UUIDField()
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    redirect_url = serializers.CharField(allow_blank=True)
+
+
+class PledgeCancelInputSerializer(serializers.Serializer[Any]):
+    """ورودی لغو یا رد قسط."""
+
+    reason = serializers.CharField(required=False, allow_blank=True, default="user_request")
+
+
+class AdminPledgeSerializer(serializers.Serializer[Any]):
+    """ردیف تعهد در پنل مدیریت — با هویت خیر (ماسک‌شدهٔ امن)."""
+
+    id = serializers.UUIDField()
+    user_id = serializers.UUIDField()
+    user_phone_masked = serializers.CharField()
+    status = serializers.CharField()
+    target_kind = serializers.CharField()
+    target_title = serializers.CharField(allow_blank=True)
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    frequency = serializers.CharField()
+    next_due_date = serializers.DateField()
+    total_paid_rial = serializers.IntegerField()
+    installments_paid = serializers.IntegerField()
+    consecutive_failures = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+
+
+class PledgeStatsOutputSerializer(serializers.Serializer[Any]):
+    """آمار تجمیعی تعهدهای مستمر — مبنای بودجه‌بندی خیریه."""
+
+    active_pledges = serializers.IntegerField()
+    paused_pledges = serializers.IntegerField()
+    expired_pledges = serializers.IntegerField()
+    cancelled_pledges = serializers.IntegerField()
+    monthly_recurring_revenue_rial = serializers.IntegerField()
+    monthly_recurring_revenue_toman = serializers.IntegerField()
+    active_pledge_amount_rial = serializers.IntegerField()
+    collection_rate = serializers.FloatField()
+    paid_installments_window = serializers.IntegerField()
+    failed_installments_window = serializers.IntegerField()
+    churn_window = serializers.IntegerField()
+    churn_rate = serializers.FloatField()
+    average_pledge_lifetime_months = serializers.FloatField()
+    top_failure_reasons = serializers.ListField(child=serializers.DictField())
+    generated_for_window_days = serializers.IntegerField()
+
+
+class PledgeCycleOutputSerializer(serializers.Serializer[Any]):
+    """نتیجهٔ یک اجرای دستی چرخهٔ تعهد مستمر."""
+
+    materialize = serializers.DictField()
+    reminders = serializers.DictField()
+    expiry = serializers.DictField()
+    resumed = serializers.IntegerField()

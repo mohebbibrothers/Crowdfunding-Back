@@ -77,6 +77,7 @@ PYTHONPATH=src python src/manage.py dispatch_pending_refunds --batch-size 100
 | `reap_expired` | هر ۲ دقیقه | آزادسازی سریع سهم‌های رزرو تا ظرفیت حرکت قفل نماند. |
 | `reconcile_abandoned_payments` | **هر ۱۰ دقیقه** | وجهی که پس از انقضا نزد درگاه مانده، تا داوری نشود «معلّق» است: نه درآمد، نه بازپرداخت. هر ۱۰ دقیقه = حداکثر ۱۰ دقیقه تأخیر در بستن پرونده، به‌علاوهٔ دورهٔ تنفس `recovery.grace_minutes`. |
 | `dispatch_pending_refunds` | **هر ۱۰ دقیقه** | تعهد بازپرداخت نباید بیش از ۱۰ دقیقه در صف بماند؛ هر دقیقه انتظار = ریسک شکایت حامی. |
+| `run_pledge_cycle` | **روزی یک‌بار، ۱۰ صبح** | چرخهٔ تعهد مستمر چهار گام دارد و گام یادآوری فقط در پنجرهٔ ۹ تا ۲۱ تهران کار می‌کند. اجرای نیمه‌شب یعنی قسط ساخته می‌شود ولی پیامک ساعت ۹ می‌رود — تأخیر ۹ ساعته میان «قسط شما سررسید شد» و «همین حالا». |
 | `anchor_audit_chain` | ساعتی | لنگر HMAC زنجیرهٔ ممیزی. |
 
 اسکریپت آماده: `deploy/cpanel/cron_jobs.sh` (با `flock` برای جلوگیری از اجرای همزمان).
@@ -86,6 +87,7 @@ PYTHONPATH=src python src/manage.py dispatch_pending_refunds --batch-size 100
 */2 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh reap     >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
 */10 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh recovery >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
 */10 * * * * /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh refunds  >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
+0 10 * * *  /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh pledges  >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
 0 * * * *   /home/CPANEL_USER/Crowdfunding-Back/deploy/cpanel/cron_jobs.sh anchor   >> /home/CPANEL_USER/logs/cf-cron.log 2>&1
 ```
 
@@ -138,3 +140,69 @@ PYTHONPATH=src python src/manage.py dispatch_pending_refunds --batch-size 100
 - **تست بازیابی**: پس از بازیابی روی محیط آزمایشی، حتماً دو فرمان زیر را اجرا و خروجی سبز آن‌ها را تایید کنید:
   1. `python src/manage.py migrate --check`
   2. `python src/manage.py anchor_audit_chain` (تایید سلامت زنجیرهٔ هش ممیزی و تراز صفر دفتر کل).
+
+---
+
+## تعهد کمک مستمر (Recurring Pledges) — v1.4.0
+
+### چرا این‌گونه طراحی شده است
+
+درگاه‌های ایرانی **توکن کارت** نمی‌دهند؛ هیچ راهی نیست که سرور شما هر ماه
+بدون حضور خیر از حساب او پول بردارد. هر محصولی که «کمک ماهانهٔ خودکار»
+وعده بدهد و به کارت خیر دسترسی نداشته باشد، در بهترین حالت اشتباه است.
+
+این ماژول صادق است: **تعهد** می‌سازد، **یادآوری** می‌کند، و پرداخت را از
+همان درگاه معمولی می‌گذراند. هیچ موتور پرداخت موازی، هیچ ذخیرهٔ کارت، هیچ
+ادعای کسر خودکار.
+
+### چرخهٔ روزانه — چهار گام مستقل
+
+```
+run_pledge_cycle
+  ├─ ۱. resume_paused_pledges      تعهدهایی که دورهٔ توقفشان تمام شده
+  ├─ ۲. materialize_due_installments  قسط جدید برای سررسیدهای رسیده
+  ├─ ۳. dispatch_pledge_reminders     پیامک، فقط ۹ تا ۲۱ تهران، حداکثر ۲ بار
+  └─ ۴. expire_stale_installments     اقساط معوق + انقضای تعهد پس از ۳ شکست
+```
+
+**چرا گام ۲ و ۳ جدا هستند؟** اگر یک تراکنش بودند، خطای اپراتور پیامک
+تولید قسط را هم برمی‌گرداند. جدا بودن یعنی حتی با پیامک خراب، خیر در پنلش
+قسطِ قابل‌پرداخت می‌بیند.
+
+### اجرای دستی
+
+```bash
+# کل چرخه
+PYTHONPATH=src python src/manage.py run_pledge_cycle
+
+# فقط تولید قسط، بدون هیچ پیامکی (برای عیب‌یابی یا اجرای اضطراری)
+PYTHONPATH=src python src/manage.py run_pledge_cycle --skip-reminders
+
+# فقط یک گام
+PYTHONPATH=src python src/manage.py run_pledge_cycle --only expire --json
+```
+
+### شش حالت شکست و نشانهٔ هرکدام
+
+| نشانه | معنا | اقدام |
+|---|---|---|
+| `installments_created = 0` ولی تعهد فعال با سررسید گذشته زیاد است | `pledge.engine_enabled` خاموش است یا کرون اجرا نمی‌شود | سیاست را چک کن، لاگ cron را ببین |
+| `reminders.sent = 0` و `window_open = false` | چرخه بیرون پنجرهٔ ۹–۲۱ اجرا شده | خط cron را به ساعت ۱۰ منتقل کن |
+| `reminders.skipped_cap` بالا | همه به سقف یادآوری رسیده‌اند | طبیعی است؛ اگر زیاد بود، `max_reminders_per_installment` را بازبینی کن |
+| `pledges_expired` جهش کرد | شکست زنجیره‌ای پیامک یا درگاه | `OutboxMessage` با `event_type=sms.pledge_reminder` و وضعیت FAILED را ببین |
+| `errors > 0` در materialize | یک تعهد دادهٔ معیوب دارد | شناسه در لاگ؛ بقیهٔ دسته سالم پیش رفته‌اند |
+| قسط PAID است ولی `total_paid_rial` نه | نشانهٔ تسویهٔ نیمه‌کاره | `settle_installment_payment` را دوباره اجرا کن (idempotent است) |
+
+### پنل‌های مدیریتی
+
+* پنل جنگو ← بخش **مشارکت‌ها** ← *تعهدهای کمک مستمر* — فهرست تعهدها،
+  فقط‌خواندنی برای مبلغ و تاریخ. **تغییر مبلغ تعهد از پنل ادمین ممنوع است**: تعهد، توافق خیر
+  است و باید از مسیر خودش تغییر کند.
+* پنل جنگو ← بخش **مشارکت‌ها** ← *اقساط تعهد* — فقط‌خواندنی. هر تغییر دستی
+  روی قسط یعنی جعل سند مالی.
+
+### آمار برای مدیریت
+
+`GET /api/v1/admin/pledges/stats` — مهم‌ترین عدد `monthly_recurring_revenue_rial`
+(MRR) است: تعهدهای سه‌ماهه به معادل ماهانه تبدیل می‌شوند تا با ماهانه‌ها
+جمع‌شدنی باشند. بدون این نرمال‌سازی، MRR تا سه برابر اشتباه می‌شود.

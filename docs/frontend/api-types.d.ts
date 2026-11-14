@@ -69,6 +69,9 @@ export interface AdminPayment { id: string; contribution_id: string; gateway_nam
 /** ورودی درخواست مشاهدهٔ شمارهٔ کامل خیر با الزام ثبت هدف. */
 export interface AdminPhoneRevealInputRequest { reason: string; }
 
+/** ردیف تعهد در پنل مدیریت — با هویت خیر (ماسک‌شدهٔ امن). */
+export interface AdminPledge { id: string; user_id: string; user_phone_masked: string; status: string; target_kind: string; target_title: string; amount_rial: number; amount_toman: number; frequency: string; next_due_date: string; total_paid_rial: number; installments_paid: number; consecutive_failures: number; created_at: string; }
+
 /** ورودی تغییر نقش کاربری با الزام دلیل. */
 export interface AdminRoleChangeInputRequest { role: RoleEnum; reason: string; }
 
@@ -232,6 +235,10 @@ export interface FinancialControlSnapshot { id: string; total_debits_rial: numbe
 /** گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات. */
 export interface FinancialHealth { status: string; generated_at: string; money_loop: MoneyLoopStats; recovery_ledger: Record<string, number>; refund_ledger: Record<string, number>; ops: OpsStats; alerts: Array<FinancialAlert>; money_truth?: MoneyTruthPanel; }
 
+/** * `monthly` - ماهانه
+* `quarterly` - سه‌ماهه */
+export type FrequencyEnum = "monthly" | "quarterly";
+
 /** * `sandbox` - درگاه تعاملی آزمایشی (Sandbox)
 * `zarinpal` - درگاه پرداخت زرین‌پال */
 export type GatewayNameEnum = "sandbox" | "zarinpal";
@@ -359,6 +366,9 @@ export interface PatchedCampaignPatchRequest { benefactor_id?: string; category_
 /** ورودی ویرایش جزئی قلک عام خیریه. */
 export interface PatchedCharityJarPatchRequest { title?: string; description?: string; suggested_amounts_rial?: Array<number>; min_amount_rial?: number; max_amount_rial?: number; monthly_goal_rial?: number; is_active?: boolean; }
 
+/** ورودی ویرایش تعهد: مبلغ، تناوب، روز شروع یا توقف موقت. */
+export interface PatchedPledgeUpdateInputRequest { amount_rial?: number; frequency?: FrequencyEnum; start_day?: number; pause_until?: (string | null); }
+
 /** ورودی ویرایش مشخصات پروفایل خیر. */
 export interface PatchedProfileUpdateInputRequest { first_name?: string; last_name?: string; national_code?: string; province?: string; city?: string; }
 
@@ -373,6 +383,30 @@ export interface PaymentVerifyResponse { verified: boolean; payment_status: stri
 
 /** پاسخ نقطهٔ پایانی ``GET /api/v1/meta`` برای بوت‌استرپ فرانت‌اند. */
 export interface PlatformMeta { service: string; environment: string; api_version: string; app_version: string; supported_versions: Array<string>; currency_base: string; currency_display_units: Array<string>; timezone: string; today_jalali: string; features: { anonymous_and_live_feed: boolean; charity_general_jars: boolean; express_one_step_checkout: boolean; external_offline_funding: boolean; impact_updates: boolean; matching_grants: boolean; merkle_transparency: boolean; shortlinks_and_ambassadors: boolean; spiritual_dedications: boolean; }; share_hold_ttl_minutes: number; }
+
+/** ورودی لغو یا رد قسط. */
+export interface PledgeCancelInputRequest { reason?: string; }
+
+/** ورودی ساخت تعهد کمک مستمر. */
+export interface PledgeCreateInputRequest { target_kind: TargetKindEnum; campaign_id?: (string | null); charity_jar_id?: (string | null); amount_rial: number; frequency?: FrequencyEnum; shares_count?: number; start_day?: (number | null); }
+
+/** نتیجهٔ یک اجرای دستی چرخهٔ تعهد مستمر. */
+export interface PledgeCycleOutput { materialize: Record<string, unknown>; reminders: Record<string, unknown>; expiry: Record<string, unknown>; resumed: number; }
+
+/** یک قسط تعهد مستمر — با وضعیت خوانا و مبلغ به تومان. */
+export interface PledgeInstallmentOutput { id: string; sequence: number; due_date: string; grace_until: string; amount_rial: number; amount_toman: number; status: string; status_display: string; is_open: boolean; reminder_count: number; failure_reason: string; can_pay: boolean; can_skip: boolean; contribution_id: (string | null); }
+
+/** تعهد مستمر با خلاصهٔ اقساط و وضعیت قابل‌اقدام. */
+export interface PledgeOutput { id: string; status: string; status_display: string; target_kind: string; target_title: string; amount_rial: number; amount_toman: number; frequency: string; frequency_display: string; interval_months: number; anchor_day: number; next_due_date: string; total_paid_rial: number; total_paid_toman: number; installments_paid: number; installments_skipped: number; consecutive_failures: number; pause_until: (string | null); created_at: string; open_installments: number; next_payable_installment_id: (string | null); }
+
+/** ورودی آغاز پرداخت یک قسط. */
+export interface PledgePayInputRequest { installment_id: string; gateway_name?: string; }
+
+/** نتیجهٔ آغاز پرداخت قسط: شناسهٔ پرداخت و لینک درگاه. */
+export interface PledgePayOutput { installment_id: string; contribution_id: string; payment_id: string; amount_rial: number; amount_toman: number; redirect_url: string; }
+
+/** آمار تجمیعی تعهدهای مستمر — مبنای بودجه‌بندی خیریه. */
+export interface PledgeStatsOutput { active_pledges: number; paused_pledges: number; expired_pledges: number; cancelled_pledges: number; monthly_recurring_revenue_rial: number; monthly_recurring_revenue_toman: number; active_pledge_amount_rial: number; collection_rate: number; paid_installments_window: number; failed_installments_window: number; churn_window: number; churn_rate: number; average_pledge_lifetime_months: number; top_failure_reasons: Array<Record<string, unknown>>; generated_for_window_days: number; }
 
 /** نمای خروجی یک قانون سیاست سامانه برای پنل مدیریت. */
 export interface PolicyRuleOutput { key: string; value_type: string; value: unknown; "default": unknown; description: string; version: number; }
@@ -523,6 +557,9 @@ export type ApiOperationId =
   | "v1_admin_campaigns_external_contributions_create"
   | "v1_admin_payments_list"
   | "v1_admin_payments_refund"
+  | "v1_admin_pledges_list"
+  | "v1_admin_pledges_run_cycle"
+  | "v1_admin_pledges_stats"
   | "v1_admin_financial_health_retrieve"
   | "v1_admin_late_captures_reconcile"
   | "v1_admin_refunds_dispatch"
@@ -547,6 +584,14 @@ export type ApiOperationId =
   | "v1_me_profile_update"
   | "v1_me_sessions_list"
   | "v1_me_sessions_revoke"
+  | "v1_me_pledges_list"
+  | "v1_me_pledges_create"
+  | "v1_me_pledges_destroy"
+  | "v1_me_pledges_retrieve"
+  | "v1_me_pledges_update"
+  | "v1_me_pledges_installments_list"
+  | "v1_me_pledges_skip_installment"
+  | "v1_me_pledges_pay"
   | "v1_benefactors_list"
   | "v1_benefactors_retrieve"
   | "v1_jars_list"
@@ -618,6 +663,9 @@ export interface ApiOperationMap {
   "v1_admin_campaigns_external_contributions_create": { request: ExternalContributionWriteRequest; response: ExternalContribution; auth: "required" };
   "v1_admin_payments_list": { request: never; response: Array<AdminPayment>; auth: "required" };
   "v1_admin_payments_refund": { request: PaymentRefundInputRequest; response: RefundResultOutput; auth: "required" };
+  "v1_admin_pledges_list": { request: never; response: Array<AdminPledge>; auth: "required" };
+  "v1_admin_pledges_run_cycle": { request: never; response: PledgeCycleOutput; auth: "required" };
+  "v1_admin_pledges_stats": { request: never; response: PledgeStatsOutput; auth: "required" };
   "v1_admin_financial_health_retrieve": { request: never; response: FinancialHealth; auth: "required" };
   "v1_admin_late_captures_reconcile": { request: LateCaptureReconcileInputRequest; response: LateCaptureReconcileResult; auth: "required" };
   "v1_admin_refunds_dispatch": { request: never; response: RefundDispatchResult; auth: "required" };
@@ -642,6 +690,14 @@ export interface ApiOperationMap {
   "v1_me_profile_update": { request: PatchedProfileUpdateInputRequest; response: UserMeOutput; auth: "required" };
   "v1_me_sessions_list": { request: never; response: Array<SessionItemOutput>; auth: "required" };
   "v1_me_sessions_revoke": { request: never; response: void; auth: "required" };
+  "v1_me_pledges_list": { request: never; response: Array<PledgeOutput>; auth: "required" };
+  "v1_me_pledges_create": { request: PledgeCreateInputRequest; response: PledgeOutput; auth: "required" };
+  "v1_me_pledges_destroy": { request: never; response: PledgeOutput; auth: "required" };
+  "v1_me_pledges_retrieve": { request: never; response: PledgeOutput; auth: "required" };
+  "v1_me_pledges_update": { request: PatchedPledgeUpdateInputRequest; response: PledgeOutput; auth: "required" };
+  "v1_me_pledges_installments_list": { request: never; response: Array<PledgeInstallmentOutput>; auth: "required" };
+  "v1_me_pledges_skip_installment": { request: PledgeCancelInputRequest; response: PledgeInstallmentOutput; auth: "required" };
+  "v1_me_pledges_pay": { request: PledgePayInputRequest; response: PledgePayOutput; auth: "required" };
   "v1_benefactors_list": { request: never; response: Array<BenefactorPublic>; auth: "none" };
   "v1_benefactors_retrieve": { request: never; response: BenefactorPublic; auth: "none" };
   "v1_jars_list": { request: never; response: Array<CharityJarPublic>; auth: "none" };

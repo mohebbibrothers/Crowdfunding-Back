@@ -65,15 +65,23 @@ case "${TASK}" in
         # به‌جای ارسال خودکار، برای تأیید انسانی به وضعیت MANUAL می‌روند.
         run_locked "refunds" dispatch_pending_refunds --batch-size 100
         ;;
+    pledges)
+        # چرخهٔ تعهد کمک مستمر: بازگشت از توقف → تولید قسط → یادآوری → انقضا.
+        # چرا ساعت ۱۰ صبح؟ چون یادآوری فقط در پنجرهٔ ۹ تا ۲۱ تهران ارسال
+        # می‌شود. اجرای نیمه‌شب یعنی قسط‌ها ساخته می‌شوند ولی پیامک فردا
+        # می‌رود — که خیر را سردرگم می‌کند.
+        run_locked "pledges" run_pledge_cycle --batch-size 500
+        ;;
     all)
         run_locked "outbox" process_outbox --batch-size 100 || true
         run_locked "reap" reap_expired || true
         run_locked "anchor" anchor_audit_chain || true
         run_locked "recovery" reconcile_abandoned_payments --batch-size 200 || true
         run_locked "refunds" dispatch_pending_refunds --batch-size 100 || true
+        run_locked "pledges" run_pledge_cycle --batch-size 500 || true
         ;;
     *)
-        echo "Unknown cron task: ${TASK} (expected: outbox | reap | anchor | recovery | refunds | all)" >&2
+        echo "Unknown cron task: ${TASK} (expected: outbox | reap | anchor | recovery | refunds | pledges | all)" >&2
         exit 2
         ;;
 esac

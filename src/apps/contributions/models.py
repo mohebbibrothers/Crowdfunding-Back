@@ -14,10 +14,14 @@ from apps.contributions.choices import (
     ContributionTargetKind,
     DedicationType,
     GatewayName,
+    InstallmentStatus,
     LateCaptureOutcome,
     PaymentRiskKind,
     PaymentStatus,
     PaymentTruthState,
+    PledgeCancelReason,
+    PledgeFrequency,
+    PledgeStatus,
     RefundOutcome,
     SettlementRemediation,
     SettlementRowMatchStatus,
@@ -173,6 +177,18 @@ class Contribution(BaseModel):
         null=True, blank=True, db_index=True, verbose_name=_("زمان پرداخت")
     )
     refunded_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان استرداد"))
+
+    # ── پیوند به تعهد مستمر (اختیاری) ────────────────────────────────────────
+    # هیچ منطق حسابداری تازه‌ای ساخته نمی‌شود: قسط ماهانه دقیقاً همان مسیر
+    # مشارکت معمولی را طی می‌کند. این دو ستون فقط «منبع» را شفاف می‌کنند.
+    pledge = models.ForeignKey(
+        "RecurringPledge",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="contributions",
+        verbose_name=_("تعهد مستمر مبدأ"),
+    )
 
     class Meta:
         verbose_name = _("مشارکت")
@@ -868,3 +884,208 @@ class SettlementReconciliation(BaseModel):
     def __str__(self) -> str:
         state = "پاک" if self.is_clean else "مغایرت‌دار"
         return f"reconciliation[{state}] impact={self.financial_impact_rial}"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# تعهد کمک مستمر (Recurring Pledge)
+#
+# واقعیت درگاه‌های ایران: زرین‌پال و شاپرک «توکن کارت» و برداشت خودکار بدون
+# حضور را نمی‌دهند. پس هر طراحی که فکر کند «مثل Stripe Subscription» است،
+# در تولید شکست می‌خورد. مدل واقعی: تعهد + یادآوری + هدایت به همان درگاه.
+# صداقت با خیر: نمی‌گوییم «خودکار»، می‌گوییم «ما یادت می‌اندازیم».
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class RecurringPledge(BaseModel):
+    """تعهد کمک مستمر یک خیر به یک حرکت یا قلک.
+
+    ``next_due_date`` عمداً ذخیره می‌شود و نه محاسبه: «ماه بعد» با ماه‌های
+    ۲۸/۲۹/۳۰/۳۱ روزه به‌طور باورنکردنی باگ‌زا است. تصمیم یک بار گرفته
+    می‌شود (روز ناموجود ⇒ آخرین روز ماه) و از آن به بعد فقط خوانده می‌شود.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="recurring_pledges",
+        verbose_name=_("خیر تعهددهنده"),
+    )
+    benefactor = models.ForeignKey(
+        Benefactor,
+        on_delete=models.PROTECT,
+        related_name="recurring_pledges",
+        verbose_name=_("خیریهٔ ذی‌نفع"),
+    )
+    target_kind = models.CharField(
+        max_length=24,
+        choices=ContributionTargetKind.choices,
+        verbose_name=_("نوع مقصد قسط"),
+    )
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="recurring_pledges",
+        verbose_name=_("حرکت"),
+    )
+    charity_jar = models.ForeignKey(
+        CharityJar,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="recurring_pledges",
+        verbose_name=_("قلک عام"),
+    )
+
+    amount_rial = models.BigIntegerField(verbose_name=_("مبلغ هر قسط (ریال)"))
+    shares_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد سهم در هر قسط (در صورت حرکت سهم‌محور)")
+    )
+    frequency = models.CharField(
+        max_length=16,
+        choices=PledgeFrequency.choices,
+        default=PledgeFrequency.MONTHLY,
+        verbose_name=_("تناوب"),
+    )
+    interval_months = models.PositiveSmallIntegerField(
+        default=1, verbose_name=_("فاصلهٔ ماهانه بین اقساط")
+    )
+    anchor_day = models.PositiveSmallIntegerField(
+        help_text=_("روز ماه که قسط‌ها روی آن میخ می‌شوند (۱ تا ۳۱)."),
+        verbose_name=_("روز مرجع در ماه"),
+    )
+
+    status = models.CharField(
+        max_length=16,
+        choices=PledgeStatus.choices,
+        default=PledgeStatus.ACTIVE,
+        db_index=True,
+        verbose_name=_("وضعیت تعهد"),
+    )
+    next_due_date = models.DateField(db_index=True, verbose_name=_("تاریخ سررسید قسط بعدی"))
+    pause_until = models.DateField(null=True, blank=True, verbose_name=_("توقف تا تاریخ"))
+
+    total_paid_rial = models.BigIntegerField(default=0, verbose_name=_("جمع پرداختی (ریال)"))
+    installments_paid = models.PositiveIntegerField(
+        default=0, verbose_name=_("تعداد قسط پرداخت‌شده")
+    )
+    installments_skipped = models.PositiveIntegerField(default=0, verbose_name=_("تعداد قسط رد‌شده"))
+    consecutive_failures = models.PositiveSmallIntegerField(
+        default=0, verbose_name=_("شمار شکست‌های متوالی پرداخت")
+    )
+    last_paid_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("زمان آخرین قسط موفق")
+    )
+
+    cancel_reason = models.CharField(
+        max_length=24,
+        choices=PledgeCancelReason.choices,
+        blank=True,
+        default="",
+        verbose_name=_("دلیل لغو/انقضا"),
+    )
+    cancelled_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان لغو"))
+
+    class Meta:
+        verbose_name = _("تعهد کمک مستمر")
+        verbose_name_plural = _("تعهدهای کمک مستمر")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "next_due_date"], name="pledge_status_due_idx"),
+            models.Index(fields=["user", "status"], name="pledge_user_status_idx"),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(anchor_day__gte=1) & models.Q(anchor_day__lte=31),
+                name="pledge_anchor_day_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(amount_rial__gt=0), name="pledge_amount_positive"
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"pledge[{self.status}] {self.amount_rial:,} ریال · due {self.next_due_date}"
+
+    @property
+    def is_payable(self) -> bool:
+        """آیا این تعهد می‌تواند قسط تازه تولید کند."""
+        return self.status == PledgeStatus.ACTIVE
+
+
+class PledgeInstallment(BaseModel):
+    """یک قسط مشخص از یک تعهد — واحد دقیق «چیزی که باید پرداخت شود».
+
+    قاعدهٔ آهنین: یکتایی روی ``(pledge, sequence)``. اجرای دوبارهٔ کرون
+    **نمی‌تواند** دو قسط هم‌شماره بسازد. این تنها محافظ واقعی در برابر
+    «دو بار کسر از حساب خیر» است — نه منطق برنامه، بلکه قید دیتابیس.
+    """
+
+    pledge = models.ForeignKey(
+        RecurringPledge,
+        on_delete=models.CASCADE,
+        related_name="installments",
+        verbose_name=_("تعهد"),
+    )
+    sequence = models.PositiveIntegerField(verbose_name=_("شمارهٔ ترتیبی قسط"))
+    due_date = models.DateField(db_index=True, verbose_name=_("تاریخ سررسید"))
+    grace_until = models.DateField(verbose_name=_("پایان مهلت پرداخت پس از سررسید"))
+    amount_rial = models.BigIntegerField(
+        help_text=_("عمداً جدا از تعهد: خیر می‌تواند مبلغ یک ماه را تغییر دهد."),
+        verbose_name=_("مبلغ این قسط (ریال)"),
+    )
+    shares_count = models.PositiveIntegerField(default=0, verbose_name=_("تعداد سهم این قسط"))
+
+    status = models.CharField(
+        max_length=16,
+        choices=InstallmentStatus.choices,
+        default=InstallmentStatus.SCHEDULED,
+        db_index=True,
+        verbose_name=_("وضعیت قسط"),
+    )
+    reminded_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان آخرین یادآوری"))
+    reminder_count = models.PositiveSmallIntegerField(default=0, verbose_name=_("تعداد یادآوری"))
+
+    contribution = models.ForeignKey(
+        "Contribution",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="pledge_installments",
+        verbose_name=_("مشارکت پرداخت‌شدهٔ متناظر"),
+    )
+    paid_at = models.DateTimeField(null=True, blank=True, verbose_name=_("زمان پرداخت"))
+    failure_reason = models.CharField(
+        max_length=200, blank=True, default="", verbose_name=_("دلیل پرداخت‌نشدن")
+    )
+    idempotency_key = models.CharField(
+        max_length=120,
+        help_text=_("کلید قطعی «pledge:{id}:seq:{n}» برای جلوگیری از کسر دوباره."),
+        verbose_name=_("کلید هم‌توانی پرداخت"),
+    )
+
+    class Meta:
+        verbose_name = _("قسط تعهد مستمر")
+        verbose_name_plural = _("اقساط تعهد مستمر")
+        ordering = ["pledge", "sequence"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["pledge", "sequence"], name="uniq_installment_sequence_per_pledge"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["status", "due_date"], name="installment_status_due_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return f"installment#{self.sequence} of pledge {self.pledge_id} [{self.status}]"
+
+    @property
+    def is_open(self) -> bool:
+        """آیا این قسط هنوز قابل پرداخت است."""
+        return self.status in {
+            InstallmentStatus.SCHEDULED,
+            InstallmentStatus.REMINDED,
+            InstallmentStatus.FAILED,
+        }

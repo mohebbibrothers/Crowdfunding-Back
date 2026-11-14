@@ -14,6 +14,8 @@ class SmsPatternCode(models.TextChoices):
     RECEIPT_ISSUED = "receipt_issued", _("صدور رسید مشارکت موفق")
     DEDICATION_GIFT = "dedication_gift", _("کارت هدیهٔ معنوی و نیت‌نامه")
     IMPACT_PUBLISHED = "impact_published", _("انتشار گزارش پیشرفت میدانی حرکت")
+    PLEDGE_REMINDER = "pledge_reminder", _("یادآوری قسط تعهد کمک مستمر")
+    PLEDGE_EXPIRED = "pledge_expired", _("انقضای تعهد کمک مستمر پس از شکست‌های متوالی")
 
 
 class SmsDeliveryStatus(models.TextChoices):
@@ -34,3 +36,5 @@ class UserNotificationKind(models.TextChoices):
     DEDICATION_ISSUED = "dedication_issued", _("صدور گواهی نیت‌نامه")
     REFUND_INITIATED = "refund_initiated", _("آغاز فرآیند بازپرداخت وجه")
     REFUND_COMPLETED = "refund_completed", _("تکمیل بازپرداخت وجه")
+    PLEDGE_REMINDER = "pledge_reminder", _("یادآوری قسط تعهد کمک مستمر")
+    PLEDGE_EXPIRED = "pledge_expired", _("انقضای تعهد کمک مستمر")

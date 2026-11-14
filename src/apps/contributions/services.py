@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 import hashlib
 import hmac
+import logging
 import secrets
 import string
 from typing import Any
@@ -50,7 +51,9 @@ from apps.contributions.models import (
     PaymentEvent,
     PaymentRefund,
     PaymentRiskSignal,
+    PledgeInstallment,
 )
+from apps.contributions.recurring import settle_installment_payment
 from apps.core.cache import bump_epoch
 from apps.core.crypto import blind_index
 from apps.core.db.serial import serialize_on
@@ -88,6 +91,8 @@ from apps.ledger.services import (
 )
 from apps.notifications.choices import UserNotificationKind
 from apps.notifications.services import create_user_notification
+
+logger = logging.getLogger(__name__)
 
 _CODE_ALPHABET = string.ascii_lowercase + string.digits
 
@@ -225,6 +230,60 @@ def _resolve_ambassador_for_checkout(
     if jar_id and str(amb.charity_jar_id) == str(jar_id):
         return amb
     return None
+
+
+def checkout_pledge_installment(
+    *,
+    installment: Any,
+    pledge: Any,
+    user: User,
+    request: Any = None,
+) -> dict[str, Any]:
+    """پرداخت یک قسط تعهد مستمر از مسیر checkout موجود — بدون موتور پرداخت تازه.
+
+    این تابع همان ``initiate_contribution_checkout`` را صدا می‌زند که خیر در
+    کمک یک‌باره استفاده می‌کند. تفاوت فقط در دو کار پس از آن:
+
+      ۱. مشارکت به تعهد پیوند می‌خورد (``Contribution.pledge``).
+      ۲. قسط به مشارکت پیوند می‌خورد تا پس از تأیید درگاه تسویه شود.
+
+    قسط در این مرحله **پرداخت‌شده نمی‌شود**. ``PAID`` شدن فقط پس از تأیید
+    درگاه و در ``settle_pledge_installment_after_verify`` رخ می‌دهد. این
+    تفکیک، درس مستقیم فاز ۳ است: «کاربر به درگاه رفت» با «پول رسید» یکی نیست.
+    """
+    # عمداً هیچ ``@transaction.atomic`` روی این تابع نیست.
+    # دلیل: ``initiate_contribution_checkout`` خودش تراکنش خود را باز و می‌بندد.
+    # اگر این تابع هم atomic بود و فراخوان از قبل تراکنشی باز داشت (مثل تست
+    # همروندی)، قفل‌های ``select_for_update`` در لایهٔ بیرونی می‌شکنند و
+    # ``TransactionManagementError`` می‌دهند. عملیات اینجا دو نوشتن ساده است
+    # که هر کدام atomic مستقل خود را دارند.
+    from apps.contributions.recurring import link_installment_to_contribution
+
+    gateway = str(getattr(request, "data", {}).get("gateway_name") or "") if request else ""
+
+    contribution, payment = initiate_contribution_checkout(
+        user=user,
+        target_kind=str(pledge.target_kind),
+        campaign_id=str(pledge.campaign_id) if pledge.campaign_id else None,
+        charity_jar_id=str(pledge.charity_jar_id) if pledge.charity_jar_id else None,
+        shares_count=int(installment.shares_count) if installment.shares_count else 0,
+        amount_rial=int(installment.amount_rial),
+        gateway_name=gateway or None,
+        request=request,
+    )
+
+    link_installment_to_contribution(installment_id=installment.pk, contribution=contribution)
+
+    return {
+        "installment_id": str(installment.pk),
+        "contribution_id": str(contribution.pk),
+        "payment_id": str(payment.pk),
+        "amount_rial": int(installment.amount_rial),
+        # نام فیلد مدل ``redirect_url`` است. استفاده از نام اشتباه، لینک
+        # درگاه را خالی برمی‌گرداند و خیر روی صفحه‌ای بدون دکمه می‌ماند —
+        # خطای خاموشی که فقط در تست یکپارچگی گرفته می‌شود.
+        "redirect_url": str(getattr(payment, "redirect_url", "") or ""),
+    }
 
 
 @transaction.atomic
@@ -984,7 +1043,42 @@ def verify_payment_callback(
     transaction.on_commit(lambda: bump_epoch("campaigns"))
     transaction.on_commit(lambda: bump_epoch("benefactors"))
     transaction.on_commit(lambda: bump_epoch("jars"))
+
+    # ── تسویهٔ قسط تعهد مستمر، اگر این پرداخت از یک تعهد آمده باشد ───────────
+    # چرا اینجاست و نه در نمای callback؟
+    #   هر مسیری که پول را تأیید می‌کند باید قسط را هم تسویه کند — بازگشت
+    #   کاربر، داوری کرون، و خوددرمانی لایهٔ حقیقت. اگر در نما بود، دو مسیر
+    #   دیگر قسط را جا می‌گذاشتند و تعهد برای همیشه «پرداخت‌نشده» می‌ماند
+    #   در حالی که پول رسیده بود — همان مغایرتی که فاز ۳ برای کشفش ساخته شد.
+    #   ایمن است چون کاملاً idempotent است.
+    _settle_pledge_installment_if_any(contribution=contribution)
+
     return payment, receipt
+
+
+def _settle_pledge_installment_if_any(*, contribution: Contribution) -> None:
+    """اگر مشارکت به یک قسط تعهد وصل است، قسط را تسویه می‌کند.
+
+    خطا هرگز بی‌صدا رد نمی‌شود: پول رسیده و قسط تسویه نشده یعنی داده ناسازگار،
+    پس ثبت می‌شود تا کرون/پنل حقیقت آن را ببیند. اما استثنا **بالا نمی‌رود** —
+    پول تأییدشده نباید به‌خاطر یک نقص جانبی در قسط، بی‌اعتبار شود.
+    """
+    installment = (
+        PledgeInstallment.objects.filter(contribution=contribution)
+        .values_list("id", flat=True)
+        .first()
+    )
+    if installment is None:
+        return
+    try:
+        settle_installment_payment(installment_id=installment, contribution=contribution)
+    except Exception as exc:
+        logger.exception(
+            "تسویهٔ قسط تعهد مستمر شکست خورد: installment=%s contribution=%s",
+            installment,
+            contribution.pk,
+            exc_info=exc,
+        )
 
 
 def _release_failed_payment(

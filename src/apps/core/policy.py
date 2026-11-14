@@ -185,6 +185,55 @@ DEFAULT_POLICIES: tuple[PolicySpec, ...] = (
         5_000_000,
         "آستانهٔ اثر ریالی مغایرت‌های حل‌نشده که هشدار بحرانی تولید می‌کند",
     ),
+    # ── تعهد کمک مستمر (v1.4.0) ────────────────────────────────────────────
+    PolicySpec(
+        "pledge.engine_enabled",
+        PolicyValueType.BOOL,
+        True,
+        "کلید اصلی موتور تعهد مستمر؛ خاموش‌کردن، تولید قسط و یادآوری را متوقف می‌کند",
+    ),
+    PolicySpec(
+        "pledge.max_active_per_user",
+        PolicyValueType.INT,
+        5,
+        "سقف تعهدهای فعال هر خیر — محافظ در برابر فشار مالی و اسپم",
+    ),
+    PolicySpec(
+        "pledge.min_amount_rial",
+        PolicyValueType.INT,
+        50_000,
+        "حداقل مبلغ هر قسط (ریال)؛ پایین‌تر از این، هزینهٔ پیامک از خود قسط بیشتر است",
+    ),
+    PolicySpec(
+        "pledge.grace_days",
+        PolicyValueType.INT,
+        7,
+        "مهلت پرداخت پس از سررسید (روز) پیش از آنکه قسط «شکست‌خورده» شمرده شود",
+    ),
+    PolicySpec(
+        "pledge.max_reminders_per_installment",
+        PolicyValueType.INT,
+        2,
+        "حداکثر یادآوری برای هر قسط؛ بیشتر از این، مزاحمت است نه یادآوری",
+    ),
+    PolicySpec(
+        "pledge.reminder_window_start_hour",
+        PolicyValueType.INT,
+        9,
+        "آغاز پنجرهٔ مجاز ارسال یادآوری (ساعت تهران)",
+    ),
+    PolicySpec(
+        "pledge.reminder_window_end_hour",
+        PolicyValueType.INT,
+        21,
+        "پایان پنجرهٔ مجاز ارسال یادآوری (ساعت تهران، غیرشامل)",
+    ),
+    PolicySpec(
+        "pledge.max_consecutive_failures",
+        PolicyValueType.INT,
+        3,
+        "پس از این تعداد شکست متوالی، تعهد منقضی می‌شود و خیر اعلان می‌گیرد",
+    ),
     PolicySpec(
         "governance.maker_checker_disbursement",
         PolicyValueType.BOOL,

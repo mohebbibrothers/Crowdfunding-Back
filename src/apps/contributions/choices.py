@@ -160,3 +160,48 @@ class PaymentTruthState(models.TextChoices):
     STATEMENT_CONFIRMED = "statement_confirmed", _("صورتحساب مستقل آن را تأیید کرده است")
     STATEMENT_MISSING = "statement_missing", _("در سامانه تأیید شده ولی در صورتحساب نیست")
     CONFLICT = "conflict", _("دفتر ما و صورتحساب در تناقض‌اند")
+
+
+class PledgeFrequency(models.TextChoices):
+    """تناوب تعهد کمک مستمر (Recurring Pledge)."""
+
+    MONTHLY = "monthly", _("ماهانه")
+    QUARTERLY = "quarterly", _("سه‌ماهه")
+
+
+class PledgeStatus(models.TextChoices):
+    """چرخهٔ حیات یک تعهد کمک مستمر.
+
+    ``EXPIRED`` عمداً از ``CANCELLED`` جدا است: لغو تصمیم خودِ خیر است،
+    انقضا نتیجهٔ سه شکست متوالی است. یکی باید در آمار ریزش دیده شود، دیگری
+    نباید — و قاطی‌کردنشان آمار را دروغ می‌کند.
+    """
+
+    ACTIVE = "active", _("فعال — قسط بعدی ساخته می‌شود")
+    PAUSED = "paused", _("موقتاً متوقف به خواست خیر")
+    EXPIRED = "expired", _("منقضی پس از شکست‌های متوالی پرداخت")
+    CANCELLED = "cancelled", _("لغو‌شده به خواست خیر")
+    COMPLETED = "completed", _("به پایان رسیده (تعداد قسط تکمیل شد)")
+
+
+class InstallmentStatus(models.TextChoices):
+    """وضعیت یک قسط در چرخهٔ تعهد."""
+
+    SCHEDULED = "scheduled", _("زمان‌بندی‌شده و در انتظار سررسید")
+    REMINDED = "reminded", _("سررسید شد و یادآوری ارسال شده")
+    PAID = "paid", _("پرداخت‌شده")
+    FAILED = "failed", _("سررسید و مهلت گذشت بدون پرداخت")
+    SKIPPED = "skipped", _("از سوی خیر رد شد (این ماه پرداخت نمی‌کند)")
+    EXPIRED = "expired", _("منقضی بدون پرداخت پس از پایان تعهد")
+    VOIDED = "voided", _("باطل‌شده (تعهد لغو یا مبلغ اصلاح شد)")
+
+
+class PledgeCancelReason(models.TextChoices):
+    """دلیل لغو تعهد — برای تحلیل ریزش، نه برای نمایش به خیر."""
+
+    USER_REQUEST = "user_request", _("درخواست خود خیر")
+    TOO_EXPENSIVE = "too_expensive", _("مبلغ برای خیر سنگین بود")
+    NOT_NEEDED = "not_needed", _("دیگر تمایلی به ادامه ندارد")
+    CHARITY_REQUEST = "charity_request", _("درخواست خیریه")
+    ADMIN_ACTION = "admin_action", _("اقدام مدیریتی")
+    OTHER = "other", _("سایر")
