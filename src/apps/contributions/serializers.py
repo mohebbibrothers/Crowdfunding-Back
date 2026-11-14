@@ -546,6 +546,12 @@ class PledgeCreateInputSerializer(serializers.Serializer[Any]):
     )
     shares_count = serializers.IntegerField(min_value=0, default=0)
     start_day = serializers.IntegerField(min_value=1, max_value=31, required=False, allow_null=True)
+    # خالی یعنی «بی‌پایان تا لغو». سقف ۱۲۰ (۱۰ سال ماهانه) عمدی است: تعهد
+    # ۱۰۰ ساله یعنی دادهٔ آزمایشی، نه نیت واقعی — و پردازندهٔ کرون را بی‌دلیل
+    # درگیر می‌کند.
+    duration_months = serializers.IntegerField(
+        min_value=1, max_value=120, required=False, allow_null=True, default=None
+    )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         """اعتبارسنجی متقابل: مقصد باید با نوع هم‌خوان باشد و دقیقاً یکی باشد."""
@@ -623,6 +629,12 @@ class PledgeOutputSerializer(serializers.Serializer[Any]):
     total_paid_toman = serializers.IntegerField()
     installments_paid = serializers.IntegerField()
     installments_skipped = serializers.IntegerField()
+    # تعداد کل اقساط (null = بی‌پایان) و پیشرفت درصدی — تا فرانت نوار پیشرفت
+    # «۳ از ۱۲» را بدون محاسبهٔ سمت کلاینت بکشد. ``progress_percent`` عمداً
+    # صحیح است نه اعشاری: نمایش «۲۵٪» کافی است و اعشار فقط نویز است.
+    duration_months = serializers.IntegerField(allow_null=True)
+    installments_remaining = serializers.IntegerField(allow_null=True)
+    progress_percent = serializers.IntegerField(allow_null=True)
     consecutive_failures = serializers.IntegerField()
     pause_until = serializers.DateField(allow_null=True)
     created_at = serializers.DateTimeField()

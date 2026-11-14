@@ -63,6 +63,12 @@ dev = [
   "djangorestframework-stubs[compatible-mypy]>=3.15.2",
   "bandit[toml]>=1.8.0",
   "pip-audit>=2.8.0",
+  # jsonschema ابزارِ ساخت است، نه وابستگی زمان اجرا: scripts/compile_response_samples.py
+  # هر نمونهٔ پاسخ را با آن اعتبارسنجی می‌کند و test_frontend_contract.py هم
+  # همان کار را در CI تکرار می‌کند. بدون آن، `make samples` و ۳۶ تست قرارداد
+  # نمی‌توانند اجرا شوند — پیش از این نصب بود ولی اعلام نشده، یعنی روی یک
+  # ماشین تازه `uv sync` می‌شکست.
+  "jsonschema>=4.23.0",
 ]
 
 [project.optional-dependencies]

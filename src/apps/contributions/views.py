@@ -676,12 +676,35 @@ def _serialize_pledge(
         "total_paid_toman": rial_to_toman(int(pledge.total_paid_rial)),
         "installments_paid": int(pledge.installments_paid),
         "installments_skipped": int(pledge.installments_skipped),
+        "duration_months": pledge.duration_months,
+        "installments_remaining": _remaining(pledge),
+        "progress_percent": _progress_percent(pledge),
         "consecutive_failures": int(pledge.consecutive_failures),
         "pause_until": pledge.pause_until,
         "created_at": pledge.created_at,
         "open_installments": len(payable),
         "next_payable_installment_id": str(payable[0].pk) if payable else None,
     }
+
+
+def _remaining(pledge: RecurringPledge) -> int | None:
+    """چند قسط دیگر مانده؟ ``None`` برای تعهد بی‌پایان — نه صفر.
+
+    صفر یعنی «تمام شد» و null یعنی «پایانی ندارد». فرانت باید بتواند این دو
+    را از هم تفکیک کند، وگرنه نوار پیشرفت تعهد بی‌پایان را ۱۰۰٪ نشان می‌دهد.
+    """
+    if pledge.duration_months is None:
+        return None
+    return max(int(pledge.duration_months) - int(pledge.installments_paid), 0)
+
+
+def _progress_percent(pledge: RecurringPledge) -> int | None:
+    """درصد پیشرفت تعهد (۰ تا ۱۰۰)؛ ``None`` برای تعهد بی‌پایان."""
+    if not pledge.duration_months:
+        return None
+    paid = int(pledge.installments_paid)
+    total = int(pledge.duration_months)
+    return min(round(paid * 100 / total), 100)
 
 
 def _pledge_target_title(pledge: RecurringPledge) -> str:
@@ -760,6 +783,7 @@ class MePledgeListCreateView(APIView):
             charity_jar=charity_jar,
             shares_count=int(data.get("shares_count") or 0),
             start_day=data.get("start_day"),
+            duration_months=data.get("duration_months"),
         )
         pledge = RecurringPledge.objects.select_related("campaign", "charity_jar").get(
             pk=result.pledge.pk

@@ -964,6 +964,15 @@ class RecurringPledge(BaseModel):
         verbose_name=_("وضعیت تعهد"),
     )
     next_due_date = models.DateField(db_index=True, verbose_name=_("تاریخ سررسید قسط بعدی"))
+    duration_months = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text=_(
+            "تعداد کل اقساط؛ خالی یعنی تعهد بی‌پایان تا لغو به خواست خیر. "
+            "پس از پرداخت آخرین قسط، تعهد خودکار به «به پایان رسیده» می‌رود."
+        ),
+        verbose_name=_("مدت بر حسب تعداد قسط"),
+    )
     pause_until = models.DateField(null=True, blank=True, verbose_name=_("توقف تا تاریخ"))
 
     total_paid_rial = models.BigIntegerField(default=0, verbose_name=_("جمع پرداختی (ریال)"))

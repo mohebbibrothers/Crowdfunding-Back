@@ -8507,6 +8507,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -8528,6 +8531,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -8609,6 +8615,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -8717,6 +8726,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -8820,6 +8832,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -8914,6 +8929,9 @@ paths:
                     total_paid_toman: 150000
                     installments_paid: 7
                     installments_skipped: 7
+                    duration_months: null
+                    installments_remaining: null
+                    progress_percent: null
                     consecutive_failures: 2
                     pause_until: null
                     created_at: '2026-11-12T09:41:00+03:30'
@@ -13484,6 +13502,12 @@ components:
           - 'null'
           maximum: 31
           minimum: 1
+        duration_months:
+          type:
+          - integer
+          - 'null'
+          maximum: 120
+          minimum: 1
       required:
       - amount_rial
       - target_kind
@@ -13617,6 +13641,18 @@ components:
           type: integer
         installments_skipped:
           type: integer
+        duration_months:
+          type:
+          - integer
+          - 'null'
+        installments_remaining:
+          type:
+          - integer
+          - 'null'
+        progress_percent:
+          type:
+          - integer
+          - 'null'
         consecutive_failures:
           type: integer
         pause_until:
@@ -13640,16 +13676,19 @@ components:
       - anchor_day
       - consecutive_failures
       - created_at
+      - duration_months
       - frequency
       - frequency_display
       - id
       - installments_paid
+      - installments_remaining
       - installments_skipped
       - interval_months
       - next_due_date
       - next_payable_installment_id
       - open_installments
       - pause_until
+      - progress_percent
       - status
       - status_display
       - target_kind

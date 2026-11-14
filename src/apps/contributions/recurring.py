@@ -140,6 +140,7 @@ def create_recurring_pledge(
     charity_jar: Any = None,
     shares_count: int = 0,
     start_day: int | None = None,
+    duration_months: int | None = None,
 ) -> PledgeCreationResult:
     """ثبت یک تعهد کمک مستمر و ساختن نخستین قسط.
 
@@ -254,6 +255,7 @@ def create_recurring_pledge(
         frequency=frequency,
         interval_months=interval,
         anchor_day=anchor,
+        duration_months=duration_months,
         status=PledgeStatus.ACTIVE,
         next_due_date=first_due,
     )
@@ -646,15 +648,27 @@ def settle_installment_payment(
     pledge.installments_paid = int(pledge.installments_paid) + 1
     pledge.consecutive_failures = 0
     pledge.last_paid_at = now
-    pledge.save(
-        update_fields=[
-            "total_paid_rial",
-            "installments_paid",
-            "consecutive_failures",
-            "last_paid_at",
-            "updated_at",
-        ]
-    )
+
+    # بستن طبیعی تعهد: اگر خیر «تعداد اقساط» را تعیین کرده باشد و این آخرین
+    # قسط باشد، تعهد تمام است — نه منقضی، نه لغو‌شده. تفاوت برای فرانت مهم
+    # است: «به پایان رسیده» دستاورد است و باید جشن گرفته شود، «منقضی» شکست.
+    #
+    # پیش از این ``PledgeStatus.COMPLETED`` در enum و در قرارداد بود ولی هیچ
+    # مسیری به آن نمی‌رسید — یک حالت فانتوم در ماشین حالت فرانت. اکنون مسیر
+    # واقعی دارد و با تست پوشش داده شده است.
+    update_fields = [
+        "total_paid_rial",
+        "installments_paid",
+        "consecutive_failures",
+        "last_paid_at",
+        "updated_at",
+    ]
+    total = pledge.duration_months
+    if total is not None and int(pledge.installments_paid) >= int(total):
+        pledge.status = PledgeStatus.COMPLETED
+        update_fields.append("status")
+
+    pledge.save(update_fields=update_fields)
 
     # اقساط معوق دیگر این تعهد را ببند: خیر پرداخت کرد.
     PledgeInstallment.objects.filter(pledge=pledge, status=InstallmentStatus.FAILED).update(

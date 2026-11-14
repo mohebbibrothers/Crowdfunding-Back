@@ -54,6 +54,7 @@ from apps.contributions.scheduling import (
     next_occurrence,
     tehran_today,
 )
+from apps.contributions.views import _serialize_pledge
 from apps.core.errors import ConflictError, NotFoundError, ValidationError as DomainValidationError
 from apps.core.models import OutboxMessage
 from tests.test_capture_recovery import _admin, _campaign, _donor
@@ -1455,3 +1456,148 @@ def test_cycle_command_only_expire_does_not_create_installments(seeded_policies:
 
     assert PledgeInstallment.objects.filter(pledge=pledge).count() == before_count
     assert set(json.loads(buffer.getvalue())) == {"expiry"}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ۷) پایان طبیعی تعهد — حالتی که پیش از این دست‌نیافتنی بود
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def _pay(pledge: Any, sequence: int) -> Any:
+    """پرداخت قسط با شمارهٔ مشخص — با ساختن مشارکت تأییدشده."""
+    installment = PledgeInstallment.objects.get(pledge=pledge, sequence=sequence)
+    contribution = Contribution.objects.create(
+        user=pledge.user,
+        benefactor=pledge.campaign.benefactor,
+        target_kind=ContributionTargetKind.CAMPAIGN_SHARES,
+        campaign=pledge.campaign,
+        shares_count=1,
+        amount_rial=int(installment.amount_rial),
+        status=ContributionStatus.PAID,
+        hold_expires_at=timezone.now(),
+    )
+    return settle_installment_payment(installment_id=installment.pk, contribution=contribution)
+
+
+@pytest.mark.django_db
+def test_pledge_completes_after_its_final_installment(seeded_policies: None) -> None:
+    """تعهد ۳ قسطی پس از قسط سوم به «به پایان رسیده» می‌رود، نه «منقضی».
+
+    چرا این تست وجود دارد: ``PledgeStatus.COMPLETED`` در enum و در قرارداد
+    بود ولی **هیچ مسیری** به آن نمی‌رسید — یک حالت فانتوم در ماشین حالت
+    فرانت. اگر فرانت روی این وضعیت UI می‌ساخت، هرگز اجرا نمی‌شد؛ و اگر
+    نمی‌ساخت، تعهدی که تمام شده برای همیشه «فعال» می‌ماند و یادآوری
+    می‌فرستاد.
+    """
+    del seeded_policies
+    admin = _admin("90")
+    donor = _donor("90")
+    campaign = _campaign(admin, slug_suffix="p90")
+
+    result = create_recurring_pledge(
+        user=donor,
+        benefactor=campaign.benefactor,
+        target_kind=ContributionTargetKind.CAMPAIGN_SHARES,
+        amount_rial=1_000_000,
+        campaign=campaign,
+        duration_months=3,
+    )
+    pledge = result.pledge
+    assert pledge.duration_months == 3
+    assert pledge.status == PledgeStatus.ACTIVE
+
+    # قسط‌های ۲ و ۳ را می‌سازیم (کرون در واقعیت می‌سازد).
+    for sequence in (2, 3):
+        PledgeInstallment.objects.create(
+            pledge=pledge,
+            sequence=sequence,
+            due_date=pledge.next_due_date + timedelta(days=30 * (sequence - 1)),
+            grace_until=pledge.next_due_date + timedelta(days=30 * (sequence - 1) + 3),
+            amount_rial=pledge.amount_rial,
+            idempotency_key=f"pledge:{pledge.pk}:seq:{sequence}",
+            status=InstallmentStatus.SCHEDULED,
+        )
+
+    _pay(pledge, 1)
+    _pay(pledge, 2)
+    pledge.refresh_from_db()
+    assert pledge.status == PledgeStatus.ACTIVE, "دو قسط از سه — هنوز فعال است"
+
+    _pay(pledge, 3)
+    pledge.refresh_from_db()
+    assert pledge.status == PledgeStatus.COMPLETED
+    assert pledge.installments_paid == 3
+
+
+@pytest.mark.django_db
+def test_endless_pledge_never_completes(seeded_policies: None) -> None:
+    """تعهد بی‌پایان (duration_months=None) هرگز خودکار تمام نمی‌شود.
+
+    قفل رفتار: بستن ناخواستهٔ تعهد بی‌پایان یعنی قطع درآمد خیریه بدون
+    خواست خیر — بدترین باگ ممکن در این ماژول.
+    """
+    del seeded_policies
+    admin = _admin("91")
+    donor = _donor("91")
+    campaign = _campaign(admin, slug_suffix="p91")
+
+    pledge = _pledge(admin=admin, donor=donor, campaign=campaign).pledge
+    assert pledge.duration_months is None
+
+    _pay(pledge, 1)
+    pledge.refresh_from_db()
+    assert pledge.status == PledgeStatus.ACTIVE
+
+
+@pytest.mark.django_db
+def test_completed_pledge_payload_reports_progress(seeded_policies: None) -> None:
+    """نمای تعهد، «۳ از ۳» و ۱۰۰٪ را برمی‌گرداند — بدون محاسبهٔ سمت کلاینت."""
+    del seeded_policies
+    admin = _admin("92")
+    donor = _donor("92")
+    campaign = _campaign(admin, slug_suffix="p92")
+
+    result = create_recurring_pledge(
+        user=donor,
+        benefactor=campaign.benefactor,
+        target_kind=ContributionTargetKind.CAMPAIGN_SHARES,
+        amount_rial=1_000_000,
+        campaign=campaign,
+        duration_months=2,
+    )
+    PledgeInstallment.objects.create(
+        pledge=result.pledge,
+        sequence=2,
+        due_date=result.pledge.next_due_date + timedelta(days=30),
+        grace_until=result.pledge.next_due_date + timedelta(days=33),
+        amount_rial=result.pledge.amount_rial,
+        idempotency_key=f"pledge:{result.pledge.pk}:seq:2",
+        status=InstallmentStatus.SCHEDULED,
+    )
+    _pay(result.pledge, 1)
+    _pay(result.pledge, 2)
+    result.pledge.refresh_from_db()
+
+    payload = _serialize_pledge(result.pledge, [])
+    assert payload["duration_months"] == 2
+    assert payload["installments_remaining"] == 0
+    assert payload["progress_percent"] == 100
+    assert payload["status"] == PledgeStatus.COMPLETED
+
+
+@pytest.mark.django_db
+def test_endless_pledge_progress_is_null_not_zero(seeded_policies: None) -> None:
+    """تعهد بی‌پایان نباید ۰٪ نشان دهد — باید ``null`` باشد.
+
+    تفاوت مهم است: ۰٪ یعنی «شروع نکرده»، null یعنی «پایانی ندارد». اگر فرانت
+    این دو را یکی بگیرد، نوار پیشرفت تعهد دائمی همیشه روی صفر گیر می‌کند.
+    """
+    del seeded_policies
+    admin = _admin("93")
+    donor = _donor("93")
+    campaign = _campaign(admin, slug_suffix="p93")
+
+    pledge = _pledge(admin=admin, donor=donor, campaign=campaign).pledge
+    payload = _serialize_pledge(pledge, [])
+    assert payload["installments_remaining"] is None
+    assert payload["progress_percent"] is None

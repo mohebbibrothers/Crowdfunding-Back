@@ -436,7 +436,7 @@ export interface PlatformMeta { service: string; environment: string; api_versio
 export interface PledgeCancelInputRequest { reason?: string; }
 
 /** ورودی ساخت تعهد کمک مستمر. */
-export interface PledgeCreateInputRequest { target_kind: ContributionTargetKindEnum; campaign_id?: (string | null); charity_jar_id?: (string | null); amount_rial: number; frequency?: PledgeFrequencyEnum; shares_count?: number; start_day?: (number | null); }
+export interface PledgeCreateInputRequest { target_kind: ContributionTargetKindEnum; campaign_id?: (string | null); charity_jar_id?: (string | null); amount_rial: number; frequency?: PledgeFrequencyEnum; shares_count?: number; start_day?: (number | null); duration_months?: (number | null); }
 
 /** نتیجهٔ یک اجرای دستی چرخهٔ تعهد مستمر. */
 export interface PledgeCycleOutput { materialize: Record<string, unknown>; reminders: Record<string, unknown>; expiry: Record<string, unknown>; resumed: number; }
@@ -455,7 +455,7 @@ export type PledgeFrequencyEnum = "monthly" | "quarterly";
 export interface PledgeInstallmentOutput { id: string; sequence: number; due_date: string; grace_until: string; amount_rial: number; amount_toman: number; status: InstallmentStatusEnum; status_display: string; is_open: boolean; reminder_count: number; failure_reason: string; can_pay: boolean; can_skip: boolean; contribution_id: (string | null); }
 
 /** تعهد مستمر با خلاصهٔ اقساط و وضعیت قابل‌اقدام. */
-export interface PledgeOutput { id: string; status: PledgeStatusEnum; status_display: string; target_kind: ContributionTargetKindEnum; target_title: string; amount_rial: number; amount_toman: number; frequency: PledgeFrequencyEnum; frequency_display: string; interval_months: number; anchor_day: number; next_due_date: string; total_paid_rial: number; total_paid_toman: number; installments_paid: number; installments_skipped: number; consecutive_failures: number; pause_until: (string | null); created_at: string; open_installments: number; next_payable_installment_id: (string | null); }
+export interface PledgeOutput { id: string; status: PledgeStatusEnum; status_display: string; target_kind: ContributionTargetKindEnum; target_title: string; amount_rial: number; amount_toman: number; frequency: PledgeFrequencyEnum; frequency_display: string; interval_months: number; anchor_day: number; next_due_date: string; total_paid_rial: number; total_paid_toman: number; installments_paid: number; installments_skipped: number; duration_months: (number | null); installments_remaining: (number | null); progress_percent: (number | null); consecutive_failures: number; pause_until: (string | null); created_at: string; open_installments: number; next_payable_installment_id: (string | null); }
 
 /** ورودی آغاز پرداخت یک قسط. */
 export interface PledgePayInputRequest { installment_id: string; gateway_name?: string; }

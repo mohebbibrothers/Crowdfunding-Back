@@ -15,7 +15,7 @@
 | نمونهٔ پاسخ اعتبارسنجی‌شده | **۱۰۳** از ۱۰۳ پاسخ JSON | ✅ تازه در v1.5.0 |
 | نمونهٔ بدنهٔ درخواست | **۳۹** | ✅ تازه در v1.5.0 |
 | کدهای خطای RFC 9457 | **۳۸** با متن فارسی و راهکار UX | ✅ |
-| تست | **۲۱۹ passed** | ✅ |
+| تست | **۲۲۳ passed** | ✅ |
 | پوشش شاخه‌ای | **۸۵.۵۱٪** | ✅ |
 | کالکشن Postman | ۱۰۴ درخواست + **۱۰۲ پاسخ ذخیره‌شده** | ✅ تازه در v1.5.0 |
 
@@ -64,6 +64,7 @@ if (payment.status === "verified") { ... }
 | اسکیما | فیلد | مقادیر |
 |---|---|---|
 | `PledgeOutput` | `status` | `active` · `paused` · `expired` · `cancelled` · `completed` |
+| `PledgeOutput` | `installments_remaining` · `progress_percent` | عدد یا `null` (بی‌پایان) — آمادهٔ نوار پیشرفت |
 | `PledgeOutput` | `frequency` | `monthly` · `quarterly` |
 | `PledgeInstallmentOutput` | `status` | `scheduled` · `reminded` · `paid` · `failed` · `skipped` · `expired` · `voided` |
 | `AdminPayment` | `status` | `initiated` · `verified` · `failed` · `refunded` |
@@ -231,7 +232,7 @@ window.location.href = result.redirect_url;
 | **درگاه واقعی تست‌شده** | ⚠️ فقط `sandbox` | اعتبارنامهٔ زرین‌پال در دسترس نشد. قرارداد درگاه آماده است (`resolve_payment_gateway`). |
 | **پیامک واقعی** | ⚠️ الگوها تعریف‌شده | `SmsPatternCode` باید در پنل اپراتور ثبت شود. |
 | **بازپرداخت جزئی** | ❌ نیست | `PaymentRefund.payment` یکتاست (`OneToOne`). در `docs/GAP-ANALYSIS.md` ثبت شده. |
-| **تعیین مدت تعهد** | ❌ نیست | تعهد بی‌پایان است تا خیر لغو کند. `PledgeStatus.COMPLETED` تعریف شده ولی دست‌نیافتنی. |
+| **تعیین مدت تعهد** | ✅ اکنون هست | `duration_months` (۱ تا ۱۲۰) در بدنهٔ ساخت تعهد؛ خالی = بی‌پایان. پس از آخرین قسط، تعهد خودکار به `completed` می‌رود. |
 | **مسیر `me/refunds`** | ❌ نیست | خیر اعلان می‌گیرد ولی نمی‌تواند مستقل وضعیت پولش را بپرسد. |
 | **آکادمی/چندزبانه** | ❌ نیست | خارج از دامنهٔ این فاز. |
 
