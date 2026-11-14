@@ -47,7 +47,6 @@
 | `GET /api/v1/admin/reconciliations` | 200 | `[{"id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "gateway_name": "zarinpal", "period_start": "string", "period_end": "string", "gateway_reported_count": 12, "matched_count": 12, "discrepancy_count": 12, "gateway_total_…` |
 | `POST /api/v1/admin/reconciliations` | 201 | `{"id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "gateway_name": "zarinpal", "period_start": "string", "period_end": "string", "gateway_reported_count": 12, "matched_count": 12, "discrepancy_count": 12, "gateway_total_r…` |
 | `POST /api/v1/admin/refunds/dispatch` | 200 | `{"attempted": 2, "sent": 2, "manual": 2, "failed": 2, "skipped": 2, "over_cap": 2}` |
-| `GET /api/v1/admin/reports/excel` | 200 | `"string"` |
 | `GET /api/v1/admin/reports/exports-history` | 200 | `[{"id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "exported_by_id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "filters": null, "include_raw_phones": true, "reason": "توضیح کوتاه", "file_sha256": "e3b0c44298fc1c149afbf4c89…` |
 | `GET /api/v1/admin/settlements` | 200 | `[{"id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "gateway_name": "sandbox", "source_kind": "csv", "status": "received", "original_filename": "string", "period_start": "string", "period_end": "string", "row_count": 12, …` |
 | `POST /api/v1/admin/settlements` | 201 | `{"id": "0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70", "gateway_name": "sandbox", "source_kind": "csv", "status": "received", "original_filename": "string", "period_start": "string", "period_end": "string", "row_count": 12, "…` |

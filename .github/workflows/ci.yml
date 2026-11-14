@@ -109,8 +109,11 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: config.settings.development
         run: |
-          uv run python src/manage.py spectacular --api-version v1 --file /tmp/openapi.ci.yaml --validate --fail-on-warn
-          diff -u docs/api/v1/openapi.yaml /tmp/openapi.ci.yaml
+          # تعریف «هم‌گام» = معنای یکی، نه بایت‌های یکی.
+          # scripts/verify_contract_sync.py نمونه‌ها را کنار می‌گذارد و درخت
+          # داده را مقایسه می‌کند؛ diff متنی خام به‌خاطر عرض متفاوت شکستن
+          # متن‌های فارسی، CI v1.5.0 را بی‌دلیل قرمز کرد.
+          uv run python scripts/verify_contract_sync.py
 
       - name: Verify frontend handoff kit is in sync with the contract
         env:

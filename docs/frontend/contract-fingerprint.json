@@ -5,7 +5,7 @@
   "paths": 89,
   "problem_codes": 38,
   "schemas": 152,
-  "sha256": "26357fa1e5c30233a434e01c035f1201b23584a8fd422ab04535f8f5188ddbeb",
+  "sha256": "20ce2da05b83a5d3edc379696b19bd897c2449d1622c740ad728d03ccd58802d",
   "source": "docs/api/v1/openapi.yaml",
   "tags": 26
 }

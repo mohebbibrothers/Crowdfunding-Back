@@ -322,7 +322,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"name\": \"سارا محمدی\",\n  \"slug\": \"tamin-jahizieh\",\n  \"registration_number\": \"\",\n  \"national_identifier\": \"\",\n  \"province\": \"\",\n  \"city\": \"\",\n  \"short_bio\": \"\",\n  \"description\": \"\",\n  \"logo_url\": \"\",\n  \"cover_url\": \"\",\n  \"website_url\": \"\",\n  \"contact_phone\": \"\",\n  \"iban\": \"\",\n  \"bank_holder_name\": \"\",\n  \"is_verified\": true,\n  \"is_active\": true,\n  \"display_order\": 100\n}"
+              "raw": "{\n  \"name\": \"سارا محمدی\",\n  \"slug\": \"tamin-jahizieh\",\n  \"registration_number\": \"نمونه\",\n  \"national_identifier\": \"نمونه\",\n  \"province\": \"تهران\",\n  \"city\": \"تهران\",\n  \"short_bio\": \"توضیح کوتاه\",\n  \"description\": \"توضیح کوتاه\",\n  \"logo_url\": \"https://example.com/x\",\n  \"cover_url\": \"https://example.com/x\",\n  \"website_url\": \"https://example.com/x\",\n  \"contact_phone\": \"09121234567\",\n  \"iban\": \"IR0170000000009988776655\",\n  \"bank_holder_name\": \"سارا محمدی\",\n  \"is_verified\": true,\n  \"is_active\": true,\n  \"display_order\": 100\n}"
             },
             "description": "`v1_admin_benefactors_create` — ایجاد خیریه/نهاد نیکوکاری جدید\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -652,7 +652,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"name\": \"سارا محمدی\",\n  \"slug\": \"tamin-jahizieh\",\n  \"registration_number\": \"\",\n  \"national_identifier\": \"\",\n  \"province\": \"\",\n  \"city\": \"\",\n  \"short_bio\": \"\",\n  \"description\": \"\",\n  \"logo_url\": \"\",\n  \"cover_url\": \"\",\n  \"website_url\": \"\",\n  \"contact_phone\": \"\",\n  \"iban\": \"\",\n  \"bank_holder_name\": \"\",\n  \"is_verified\": true,\n  \"is_active\": true,\n  \"display_order\": 100\n}"
+              "raw": "{\n  \"name\": \"سارا محمدی\",\n  \"slug\": \"tamin-jahizieh\",\n  \"registration_number\": \"نمونه\",\n  \"national_identifier\": \"نمونه\",\n  \"province\": \"تهران\",\n  \"city\": \"تهران\",\n  \"short_bio\": \"توضیح کوتاه\",\n  \"description\": \"توضیح کوتاه\",\n  \"logo_url\": \"https://example.com/x\",\n  \"cover_url\": \"https://example.com/x\",\n  \"website_url\": \"https://example.com/x\",\n  \"contact_phone\": \"09121234567\",\n  \"iban\": \"IR0170000000009988776655\",\n  \"bank_holder_name\": \"سارا محمدی\",\n  \"is_verified\": true,\n  \"is_active\": true,\n  \"display_order\": 100\n}"
             },
             "description": "`v1_admin_benefactors_partial_update` — ویرایش جزئی مشخصات خیریه\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -861,7 +861,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"short_code\": \"\",\n  \"description\": \"\",\n  \"suggested_amounts_rial\": [\n    1500000,\n    1500007\n  ],\n  \"min_amount_rial\": 100000,\n  \"max_amount_rial\": 5000000000,\n  \"monthly_goal_rial\": 0,\n  \"is_active\": true\n}"
+              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"short_code\": \"cf-8k2m\",\n  \"description\": \"توضیح کوتاه\",\n  \"suggested_amounts_rial\": [\n    1500000,\n    1500007\n  ],\n  \"min_amount_rial\": 100000,\n  \"max_amount_rial\": 5000000000,\n  \"monthly_goal_rial\": 1500000,\n  \"is_active\": true\n}"
             },
             "description": "`v1_admin_jars_create` — ایجاد قلک عام جدید برای خیریه\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1100,7 +1100,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"icon_name\": \"\",\n  \"description\": \"\",\n  \"display_order\": 100,\n  \"is_active\": true\n}"
+              "raw": "{\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"icon_name\": \"icon-heart\",\n  \"description\": \"توضیح کوتاه\",\n  \"display_order\": 100,\n  \"is_active\": true\n}"
             },
             "description": "`v1_admin_campaign_categories_create` — ایجاد دسته‌بندی موضوعی حرکت\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1310,7 +1310,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"short_code\": \"\",\n  \"subtitle\": \"\",\n  \"why_and_what\": \"\",\n  \"cover_image_url\": \"\",\n  \"video_url\": \"\",\n  \"province\": \"\",\n  \"city\": \"\",\n  \"total_shares\": 12,\n  \"share_price_rial\": 1500000,\n  \"min_shares_per_order\": 1,\n  \"max_shares_per_order\": 0,\n  \"status\": \"draft\",\n  \"urgency_level\": \"normal\",\n  \"is_featured\": false,\n  \"allow_anonymous\": true,\n  \"allow_dedication\": true,\n  \"media_items\": [\n    {\n      \"kind\": \"image\",\n      \"url\": \"https://example.com/x\",\n      \"caption\": \"\",\n      \"display_order\": 100\n    },\n    {\n      \"kind\": \"image\",\n      \"url\": \"https://example.com/x\",\n      \"caption\": \"\",\n      \"display_order\": 100\n    }\n  ]\n}"
+              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"short_code\": \"cf-8k2m\",\n  \"subtitle\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"why_and_what\": \"نمونه\",\n  \"cover_image_url\": \"https://example.com/x\",\n  \"video_url\": \"https://example.com/x\",\n  \"province\": \"تهران\",\n  \"city\": \"تهران\",\n  \"total_shares\": 12,\n  \"share_price_rial\": 1500000,\n  \"min_shares_per_order\": 1,\n  \"max_shares_per_order\": 2,\n  \"status\": \"draft\",\n  \"urgency_level\": \"normal\",\n  \"is_featured\": true,\n  \"allow_anonymous\": true,\n  \"allow_dedication\": true,\n  \"media_items\": [\n    {\n      \"kind\": \"image\",\n      \"url\": \"https://example.com/x\",\n      \"caption\": \"نمونه\",\n      \"display_order\": 100\n    },\n    {\n      \"kind\": \"image\",\n      \"url\": \"https://example.com/x\",\n      \"caption\": \"نمونه\",\n      \"display_order\": 100\n    }\n  ]\n}"
             },
             "description": "`v1_admin_campaigns_create` — تعریف حرکت خیرخواهانهٔ سهم‌محور جدید\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1519,7 +1519,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"subtitle\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"why_and_what\": \"string\",\n  \"cover_image_url\": \"https://example.com/x\",\n  \"video_url\": \"https://example.com/x\",\n  \"province\": \"تهران\",\n  \"city\": \"تهران\",\n  \"total_shares\": 12,\n  \"share_price_rial\": 1500000,\n  \"min_shares_per_order\": 2,\n  \"max_shares_per_order\": 2,\n  \"status\": \"draft\",\n  \"urgency_level\": \"normal\",\n  \"is_featured\": true,\n  \"allow_anonymous\": true,\n  \"allow_dedication\": true,\n  \"reason\": \"توضیح کوتاه\"\n}"
+              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"slug\": \"tamin-jahizieh\",\n  \"subtitle\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"why_and_what\": \"نمونه\",\n  \"cover_image_url\": \"https://example.com/x\",\n  \"video_url\": \"https://example.com/x\",\n  \"province\": \"تهران\",\n  \"city\": \"تهران\",\n  \"total_shares\": 12,\n  \"share_price_rial\": 1500000,\n  \"min_shares_per_order\": 2,\n  \"max_shares_per_order\": 2,\n  \"status\": \"draft\",\n  \"urgency_level\": \"normal\",\n  \"is_featured\": true,\n  \"allow_anonymous\": true,\n  \"allow_dedication\": true,\n  \"reason\": \"توضیح کوتاه\"\n}"
             },
             "description": "`v1_admin_campaigns_partial_update` — ویرایش حرکت (محافظت از قیمت سهم و خیریه پس از اولین مشارکت)\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1642,7 +1642,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"milestone_type\": \"funding_complete\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"body\": \"string\",\n  \"progress_percent\": 84,\n  \"spent_amount_rial\": 0,\n  \"media_urls\": [\n    \"https://example.com/x\",\n    \"https://example.com/x\"\n  ],\n  \"is_published\": true\n}"
+              "raw": "{\n  \"milestone_type\": \"funding_complete\",\n  \"title\": \"تأمین جهیزیهٔ ۱۲ نوعروس\",\n  \"body\": \"نمونه\",\n  \"progress_percent\": 84,\n  \"spent_amount_rial\": 1500000,\n  \"media_urls\": [\n    \"https://example.com/x\",\n    \"https://example.com/x\"\n  ],\n  \"is_published\": true\n}"
             },
             "description": "`v1_admin_campaigns_impact_updates_create` — انتشار گزارش پیشرفت میدانی حرکت برای سهام‌داران\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1767,7 +1767,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"sponsor_name\": \"سارا محمدی\",\n  \"sponsor_logo_url\": \"\",\n  \"match_ratio\": 1,\n  \"total_pool_shares\": 12,\n  \"is_active\": true\n}"
+              "raw": "{\n  \"sponsor_name\": \"سارا محمدی\",\n  \"sponsor_logo_url\": \"https://example.com/x\",\n  \"match_ratio\": 1,\n  \"total_pool_shares\": 12,\n  \"is_active\": true\n}"
             },
             "description": "`v1_admin_campaigns_matching_grants_create` — ثبت تعهد حامی مضاعف‌کننده برای حرکت\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -1973,44 +1973,7 @@
               "variable": []
             }
           },
-          "response": [
-            {
-              "_postman_previewlanguage": "json",
-              "body": "\"string\"",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "name": "نمونهٔ 200",
-              "originalRequest": {
-                "header": [
-                  {
-                    "key": "Accept",
-                    "value": "application/json"
-                  }
-                ],
-                "method": "GET",
-                "url": {
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "admin",
-                    "reports",
-                    "excel"
-                  ],
-                  "raw": "{{baseUrl}}/api/v1/admin/reports/excel",
-                  "variable": []
-                }
-              },
-              "status": "OK"
-            }
-          ]
+          "response": []
         },
         {
           "name": "فهرست ممیزی و هش SHA-256 گزارش‌های اکسل صادرشده",
@@ -2436,7 +2399,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"status\": \"reviewed\",\n  \"note\": \"\"\n}"
+              "raw": "{\n  \"status\": \"reviewed\",\n  \"note\": \"توضیح کوتاه\"\n}"
             },
             "description": "`v1_admin_auth_risks_review` — بررسی و تعیین وضعیت سیگنال ریسک احراز هویت\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -3022,7 +2985,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"amount_rial\": 1500000,\n  \"request_note\": \"\"\n}"
+              "raw": "{\n  \"benefactor_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"amount_rial\": 1500000,\n  \"request_note\": \"توضیح کوتاه\"\n}"
             },
             "description": "`v1_admin_disbursements_create` — ثبت درخواست تسویه وجه با خیریه (گام Maker)\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -3133,7 +3096,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"approve\": true,\n  \"reason\": \"توضیح کوتاه\",\n  \"bank_reference_number\": \"\"\n}"
+              "raw": "{\n  \"approve\": true,\n  \"reason\": \"توضیح کوتاه\",\n  \"bank_reference_number\": \"نمونه\"\n}"
             },
             "description": "`v1_admin_disbursements_review` — تأیید یا رد چهارچشمی درخواست تسویه با خیریه (Checker + Step-Up MFA)\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -3631,7 +3594,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"gateway_name\": \"zarinpal\",\n  \"period_start\": \"string\",\n  \"period_end\": \"string\",\n  \"rows\": [\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"ref_id\": \"\",\n      \"amount_rial\": 1500000\n    },\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"ref_id\": \"\",\n      \"amount_rial\": 1500000\n    }\n  ]\n}"
+              "raw": "{\n  \"gateway_name\": \"zarinpal\",\n  \"period_start\": \"نمونه\",\n  \"period_end\": \"نمونه\",\n  \"rows\": [\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"amount_rial\": 1500000\n    },\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"amount_rial\": 1500000\n    }\n  ]\n}"
             },
             "description": "`v1_admin_reconciliations_create` — اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -3944,7 +3907,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"gateway_name\": \"sandbox\",\n  \"source_kind\": \"csv\",\n  \"period_start\": \"string\",\n  \"period_end\": \"string\",\n  \"original_filename\": \"string\",\n  \"rows\": [\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"amount_rial\": \"1500000\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"occurred_at\": \"2026-11-12T09:41:00+03:30\",\n      \"card_pan_masked\": \"string\",\n      \"description\": \"توضیح کوتاه\"\n    },\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"amount_rial\": \"1500000\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"occurred_at\": \"2026-11-12T09:41:00+03:30\",\n      \"card_pan_masked\": \"string\",\n      \"description\": \"توضیح کوتاه\"\n    }\n  ]\n}"
+              "raw": "{\n  \"gateway_name\": \"sandbox\",\n  \"source_kind\": \"csv\",\n  \"period_start\": \"نمونه\",\n  \"period_end\": \"نمونه\",\n  \"original_filename\": \"نمونه\",\n  \"rows\": [\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"amount_rial\": \"1500000\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"occurred_at\": \"2026-11-12T09:41:00+03:30\",\n      \"card_pan_masked\": \"نمونه\",\n      \"description\": \"توضیح کوتاه\"\n    },\n    {\n      \"authority\": \"A0000000000000000000000000000021799\",\n      \"amount_rial\": \"1500000\",\n      \"ref_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n      \"occurred_at\": \"2026-11-12T09:41:00+03:30\",\n      \"card_pan_masked\": \"نمونه\",\n      \"description\": \"توضیح کوتاه\"\n    }\n  ]\n}"
             },
             "description": "`v1_admin_settlements_create` — ورود یک صورت‌حساب تسویهٔ درگاه\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -4527,7 +4490,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"shares_count\": 12,\n  \"donor_display_name\": \"حامی مستقیم خیریه\",\n  \"reference_code\": \"cf-8k2m\",\n  \"note\": \"\"\n}"
+              "raw": "{\n  \"shares_count\": 12,\n  \"donor_display_name\": \"حامی مستقیم خیریه\",\n  \"reference_code\": \"cf-8k2m\",\n  \"note\": \"توضیح کوتاه\"\n}"
             },
             "description": "`v1_admin_campaigns_external_contributions_create` — ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -5264,7 +5227,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"batch_size\": 100,\n  \"dry_run\": false\n}"
+              "raw": "{\n  \"batch_size\": 100,\n  \"dry_run\": true\n}"
             },
             "description": "`v1_admin_late_captures_reconcile` — اجرای دستی داوری پرداخت‌های رهاشده با استعلام مستقیم از درگاه\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -5966,7 +5929,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"phone\": \"09121234567\",\n  \"password\": \"string\"\n}"
+              "raw": "{\n  \"phone\": \"09121234567\",\n  \"password\": \"نمونه\"\n}"
             },
             "description": "`v1_auth_staff_password_login` — ورود کارکنان با شماره موبایل و گذرواژه\nخطاها: application/problem+json | سیاست: optional",
             "header": [
@@ -7710,7 +7673,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"target_kind\": \"campaign_shares\",\n  \"amount_rial\": 1500000,\n  \"frequency\": \"monthly\",\n  \"shares_count\": 0\n}"
+              "raw": "{\n  \"target_kind\": \"campaign_shares\",\n  \"amount_rial\": 1500000,\n  \"frequency\": \"monthly\",\n  \"shares_count\": 12\n}"
             },
             "description": "`v1_me_pledges_create` — ساخت تعهد کمک مستمر (ماهانه یا سه‌ماهه)\nخطاها: application/problem+json | سیاست: required",
             "header": [
@@ -8393,7 +8356,7 @@
                   "language": "json"
                 }
               },
-              "raw": "{\n  \"installment_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"gateway_name\": \"\"\n}"
+              "raw": "{\n  \"installment_id\": \"0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70\",\n  \"gateway_name\": \"zarinpal\"\n}"
             },
             "description": "`v1_me_pledges_pay` — پرداخت قسط تعهد مستمر (هدایت به درگاه)\nخطاها: application/problem+json | سیاست: required",
             "header": [

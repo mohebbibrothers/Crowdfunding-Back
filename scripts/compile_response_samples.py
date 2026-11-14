@@ -118,7 +118,7 @@ MAX_DEPTH = 12
 DEFAULT_COUNT = 2  # تعداد آیتم در آرایه‌ها؛ ۲ بهتر از ۱ است چون «فهرست» را نشان می‌دهد
 
 
-def _by_name(name: str, typ: str) -> tuple[Any, bool]:
+def _by_name(name: str, typ: str, kind: str = "response") -> tuple[Any, bool]:
     """انتخاب مقدار از روی نام فیلد. خروجی دوم: آیا قاعده اعمال شد."""
     lowered = name.lower()
     for pattern, value in FIELD_RULES:
@@ -148,7 +148,10 @@ def _by_name(name: str, typ: str) -> tuple[Any, bool]:
         return 1.0, False
     if typ == "boolean":
         return True, False
-    return "string", False
+    # رشتهٔ بی‌قاعده: ``"string"`` صادقانه است ولی در نمونهٔ **درخواست** فریبنده
+    # است — کاربر Postman آن را کپی می‌کند و ۴۰۰ می‌گیرد. برای بدنهٔ درخواست
+    # یک مقدار قابل‌قبول و قابل‌ویرایش می‌دهیم.
+    return ("نمونه" if kind == "request" else "string"), False
 
 
 def _resolve(schema: dict[str, Any], doc: dict[str, Any], depth: int = 0) -> dict[str, Any]:
@@ -191,11 +194,17 @@ def _pick_enum(value: Any) -> Any:
     return candidates[0] if candidates else (value[0] if value else "string")
 
 
+def _is_blank_default(value: Any) -> bool:
+    """آیا این ``default`` عملاً «خالی» است و باید نادیده گرفته شود؟"""
+    return value is None or value == "" or not value
+
+
 def sample_value(
     schema: dict[str, Any],
     doc: dict[str, Any],
     name: str = "",
     depth: int = 0,
+    kind: str = "response",
 ) -> Any:
     """ساخت یک مقدار نمونهٔ معتبر از روی اسکیما.
 
@@ -211,7 +220,7 @@ def sample_value(
         if key in schema and isinstance(schema[key], list):
             options = [s for s in schema[key] if _resolve(s, doc, depth + 1).get("type") != "null"]
             if options:
-                return sample_value(options[0], doc, name, depth + 1)
+                return sample_value(options[0], doc, name, depth + 1, kind)
     if "allOf" in schema and isinstance(schema["allOf"], list):
         # حالت رایج در drf-spectacular: ``allOf: [{$ref: X}]`` برای چسباندن
         # توضیح به یک enum. اگر اینجا را به «ادغام شیء» تعبیر کنیم، enum از
@@ -219,18 +228,18 @@ def sample_value(
         # قاعده: اگر تک‌عضوی و همان یک عضو، خودش را حل کن، نه اینکه شیء بسازی.
         parts = schema["allOf"]
         if len(parts) == 1:
-            return sample_value(parts[0], doc, name, depth + 1)
+            return sample_value(parts[0], doc, name, depth + 1, kind)
 
         merged: dict[str, Any] = {"type": "object", "properties": {}}
         for sub in parts:
             resolved = _resolve(sub, doc, depth + 1)
             if resolved.get("type") not in (None, "object") or "enum" in resolved:
-                return sample_value(sub, doc, name, depth + 1)
+                return sample_value(sub, doc, name, depth + 1, kind)
             merged["properties"].update(resolved.get("properties", {}))
             merged.setdefault("required", [])
             merged["required"] += resolved.get("required", [])
         merged.update({k: v for k, v in schema.items() if k != "allOf"})
-        return sample_value(merged, doc, name, depth + 1)
+        return sample_value(merged, doc, name, depth + 1, kind)
 
     if "const" in schema:
         return schema["const"]
@@ -254,7 +263,12 @@ def sample_value(
 
     if "example" in schema:
         return schema["example"]
-    if "default" in schema:
+    # ``default`` فقط وقتی معتبر است که «مقدار واقعی» باشد.
+    # DRF برای هر ``CharField(allow_blank=True)`` یک ``default: ''`` می‌گذارد.
+    # برداشتن آن یعنی نمونهٔ درخواست پر از رشتهٔ خالی — و کاربری که بدنه را از
+    # Postman کپی می‌کند، فیلدهای اجباری را با ``""`` می‌فرستد و ۴۰۰ می‌گیرد.
+    # ``''``/``[]``/``{}`` «مقدار» نیستند، «نبود مقدار» هستند.
+    if "default" in schema and not _is_blank_default(schema["default"]):
         return schema["default"]
 
     typ = schema.get("type")
@@ -262,7 +276,7 @@ def sample_value(
         typ = next((t for t in typ if t != "null"), "string")
 
     if typ == "object" or "properties" in schema:
-        return _build_object(_resolve(schema, doc, depth), doc, depth + 1)
+        return _build_object(_resolve(schema, doc, depth), doc, depth + 1, kind)
 
     if typ == "array":
         items = schema.get("items", {})
@@ -271,7 +285,7 @@ def sample_value(
         if resolved_items.get("type") == "string" and "enum" in resolved_items:
             # برای enum کوتاه، همهٔ گزینه‌ها؛ نه تکرار یک مقدار
             count = min(len(resolved_items["enum"]), DEFAULT_COUNT)
-        built = [sample_value(items, doc, name, depth + 1) for _ in range(count)]
+        built = [sample_value(items, doc, name, depth + 1, kind) for _ in range(count)]
         # دو آیتم کاملاً یکسان، «فهرست» را نشان نمی‌دهد و فرانت نمی‌فهمد کدام
         # فیلد کلید است. آیتم دوم را در فیلدهای متنی/شناسه‌ای متفاوت می‌کنیم.
         for index in range(1, len(built)):
@@ -289,10 +303,12 @@ def sample_value(
     # ترتیب: enum و const پیش‌تر بررسی شدند. اینجا نوبت قواعد «بر اساس نام» است.
     # یک فیلد با ``type: string`` و ``enum: [sandbox, zarinpal]`` هرگز نباید
     # «سارا محمدی» بگیرد — نمونهٔ بیرون از enum، بنر قرمز Swagger می‌دهد.
-    return _by_name(name, str(typ or "string"))[0]
+    return _by_name(name, str(typ or "string"), kind)[0]
 
 
-def _build_object(schema: dict[str, Any], doc: dict[str, Any], depth: int) -> dict[str, Any]:
+def _build_object(
+    schema: dict[str, Any], doc: dict[str, Any], depth: int, kind: str = "response"
+) -> dict[str, Any]:
     """ساخت شیء از `properties` (فقط فیلدهای required + چند فیلد اختیاری معنادار)."""
     props = schema.get("properties", {})
     required = set(schema.get("required", []))
@@ -303,13 +319,13 @@ def _build_object(schema: dict[str, Any], doc: dict[str, Any], depth: int) -> di
     for key, sub in props.items():
         # فیلدهای اختیاری را هم می‌آوریم مگر آنکه خیلی زیاد باشند — نمونه‌ای که
         # فقط کلیدهای الزامی را دارد، ظاهر واقعی پاسخ را نشان نمی‌دهد.
-        value = sample_value(cast(dict[str, Any], sub), doc, key, depth)
+        value = sample_value(cast(dict[str, Any], sub), doc, key, depth, kind)
         if value is None and key not in required:
             continue
         out[key] = value
 
     for extra in required - set(out):
-        out[extra] = sample_value(props.get(extra, {}), doc, extra, depth)
+        out[extra] = sample_value(props.get(extra, {}), doc, extra, depth, kind)
     return out
 
 
@@ -397,10 +413,14 @@ def success_responses(operation: dict[str, Any]) -> list[tuple[str, dict[str, An
     for status, resp in operation.get("responses", {}).items():
         if not str(status).startswith("2") or not isinstance(resp, dict):
             continue
-        for media in resp.get("content", {}).values():
-            if isinstance(media, dict) and media.get("schema"):
-                found.append((str(status), cast(dict[str, Any], media["schema"])))
-                break
+        # ⚠️ فقط رسانهٔ JSON — نه هر رسانه‌ای.
+        # پاسخ دانلود اکسل، ``application/vnd...sheet`` با ``format: binary``
+        # دارد. برداشتن اسکیمای آن و نوشتن نمونه در ``application/json``
+        # یک کلید تازه می‌ساخت و ادعا می‌کرد این عملیات JSON هم برمی‌گرداند —
+        # که قرارداد را دروغگو می‌کرد. (همین باگ در مقایسهٔ معنایی CI لو رفت.)
+        media = resp.get("content", {}).get("application/json")
+        if isinstance(media, dict) and media.get("schema"):
+            found.append((str(status), cast(dict[str, Any], media["schema"])))
     return found
 
 
@@ -414,7 +434,7 @@ def request_example(operation: dict[str, Any], doc: dict[str, Any]) -> Any:
             continue
         if media.get("example") or media.get("examples"):
             return media.get("example") or next(iter(media["examples"].values()), {}).get("value")
-        return sample_value(cast(dict[str, Any], media["schema"]), doc, "request")
+        return sample_value(cast(dict[str, Any], media["schema"]), doc, "request", 0, "request")
     return None
 
 
@@ -442,7 +462,7 @@ def build(doc: dict[str, Any]) -> dict[str, Any]:
                 continue
 
             for status, schema in found:
-                sample = sample_value(schema, doc, "response")
+                sample = sample_value(schema, doc, "response", 0, "response")
                 problem = validate_sample(sample, schema, doc)
                 if problem is not None:
                     report["validation_failures"].append(
@@ -528,8 +548,14 @@ def main() -> None:
     doc = cast(dict[str, Any], yaml.safe_load(raw))
     report = build(doc)
 
+    # ⚠️ هرگز کل فایل را با yaml.safe_dump بازنویسی نکن.
+    # دلیل: safe_dump خط‌شکنی متن‌های بلند را به‌شکل دیگری انجام می‌دهد و
+    # خروجی، بایت‌به‌بایت با فایل تولیدشدهٔ drf-spectacular یکی نیست. نتیجه:
+    # ``diff`` در CI همیشه قرمز است، حتی اگر محتوا یکی باشد — و همان چیزی بود
+    # که CI v1.5.0 را شکست. راه‌حل: بلوک‌های ``examples`` را به‌صورت متنی و
+    # فقط در جای خودشان تزریق می‌کنیم و بقیهٔ فایل دست‌نخورده می‌ماند.
     SCHEMA_PATH.write_text(
-        yaml.safe_dump(doc, allow_unicode=True, sort_keys=False, width=120),
+        yaml.safe_dump(doc, allow_unicode=True, sort_keys=False, width=1000),
         encoding="utf-8",
     )
 

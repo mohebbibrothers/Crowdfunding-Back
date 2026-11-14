@@ -2,8 +2,7 @@ openapi: 3.1.0
 info:
   title: Crowdfunding-Back API — سامانه کرادفاندینگ خیرخواهانه سهم‌محور
   version: 1.1.0 (v1)
-  description: سرویس بک‌اند ماژولار، حسابداری دوطرفه ریالی، شفافیت رمزنگاری درخت مرکل، مشارکت سریع ۳۰ ثانیه‌ای، نیت‌نامه معنوی،
-    قلک عام، حامی مضاعف و گزارش اکسل ۸ کاربرگه.
+  description: سرویس بک‌اند ماژولار، حسابداری دوطرفه ریالی، شفافیت رمزنگاری درخت مرکل، مشارکت سریع ۳۰ ثانیه‌ای، نیت‌نامه معنوی، قلک عام، حامی مضاعف و گزارش اکسل ۸ کاربرگه.
 paths:
   /api/v1/admin/audit/logs:
     get:
@@ -36,8 +35,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -60,8 +58,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     results:
                     - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -146,8 +143,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     chain_valid: true
                     first_broken_sequence: null
@@ -183,8 +179,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -222,8 +217,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -246,8 +240,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     results:
                     - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -313,15 +306,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -339,7 +330,7 @@ paths:
               $ref: '#/components/schemas/AuthRiskReviewInputRequest'
             example:
               status: reviewed
-              note: ''
+              note: توضیح کوتاه
         required: true
       security:
       - bearerAuth: []
@@ -353,8 +344,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     signal_type: string
@@ -406,8 +396,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -432,8 +421,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -536,18 +524,18 @@ paths:
             example:
               name: سارا محمدی
               slug: tamin-jahizieh
-              registration_number: ''
-              national_identifier: ''
-              province: ''
-              city: ''
-              short_bio: ''
-              description: ''
-              logo_url: ''
-              cover_url: ''
-              website_url: ''
-              contact_phone: ''
-              iban: ''
-              bank_holder_name: ''
+              registration_number: نمونه
+              national_identifier: نمونه
+              province: تهران
+              city: تهران
+              short_bio: توضیح کوتاه
+              description: توضیح کوتاه
+              logo_url: https://example.com/x
+              cover_url: https://example.com/x
+              website_url: https://example.com/x
+              contact_phone: 09121234567
+              iban: IR0170000000009988776655
+              bank_holder_name: سارا محمدی
               is_verified: true
               is_active: true
               display_order: 100
@@ -564,8 +552,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -623,15 +610,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -660,8 +645,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -684,8 +668,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -758,15 +741,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -785,18 +766,18 @@ paths:
             example:
               name: سارا محمدی
               slug: tamin-jahizieh
-              registration_number: ''
-              national_identifier: ''
-              province: ''
-              city: ''
-              short_bio: ''
-              description: ''
-              logo_url: ''
-              cover_url: ''
-              website_url: ''
-              contact_phone: ''
-              iban: ''
-              bank_holder_name: ''
+              registration_number: نمونه
+              national_identifier: نمونه
+              province: تهران
+              city: تهران
+              short_bio: توضیح کوتاه
+              description: توضیح کوتاه
+              logo_url: https://example.com/x
+              cover_url: https://example.com/x
+              website_url: https://example.com/x
+              contact_phone: 09121234567
+              iban: IR0170000000009988776655
+              bank_holder_name: سارا محمدی
               is_verified: true
               is_active: true
               display_order: 100
@@ -812,8 +793,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -890,15 +870,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -928,8 +906,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     deleted: true
                     deactivated: true
@@ -978,8 +955,8 @@ paths:
             example:
               title: تأمین جهیزیهٔ ۱۲ نوعروس
               slug: tamin-jahizieh
-              icon_name: ''
-              description: ''
+              icon_name: icon-heart
+              description: توضیح کوتاه
               display_order: 100
               is_active: true
         required: true
@@ -995,8 +972,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -1031,15 +1007,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1071,8 +1045,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -1097,8 +1070,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -1274,30 +1246,30 @@ paths:
               benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
               title: تأمین جهیزیهٔ ۱۲ نوعروس
               slug: tamin-jahizieh
-              short_code: ''
-              subtitle: ''
-              why_and_what: ''
-              cover_image_url: ''
-              video_url: ''
-              province: ''
-              city: ''
+              short_code: cf-8k2m
+              subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
+              why_and_what: نمونه
+              cover_image_url: https://example.com/x
+              video_url: https://example.com/x
+              province: تهران
+              city: تهران
               total_shares: 12
               share_price_rial: 1500000
               min_shares_per_order: 1
-              max_shares_per_order: 0
+              max_shares_per_order: 2
               status: draft
               urgency_level: normal
-              is_featured: false
+              is_featured: true
               allow_anonymous: true
               allow_dedication: true
               media_items:
               - kind: image
                 url: https://example.com/x
-                caption: ''
+                caption: نمونه
                 display_order: 100
               - kind: image
                 url: https://example.com/x
-                caption: ''
+                caption: نمونه
                 display_order: 100
         required: true
       security:
@@ -1312,8 +1284,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -1407,15 +1378,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1444,8 +1413,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -1468,8 +1436,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -1578,15 +1545,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1607,7 +1572,7 @@ paths:
               title: تأمین جهیزیهٔ ۱۲ نوعروس
               slug: tamin-jahizieh
               subtitle: تأمین جهیزیهٔ ۱۲ نوعروس
-              why_and_what: string
+              why_and_what: نمونه
               cover_image_url: https://example.com/x
               video_url: https://example.com/x
               province: تهران
@@ -1634,8 +1599,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -1745,15 +1709,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1773,7 +1735,7 @@ paths:
               shares_count: 12
               donor_display_name: حامی مستقیم خیریه
               reference_code: cf-8k2m
-              note: ''
+              note: توضیح کوتاه
         required: true
       security:
       - bearerAuth: []
@@ -1787,8 +1749,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     campaign_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -1842,15 +1803,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1869,9 +1828,9 @@ paths:
             example:
               milestone_type: funding_complete
               title: تأمین جهیزیهٔ ۱۲ نوعروس
-              body: string
+              body: نمونه
               progress_percent: 84
-              spent_amount_rial: 0
+              spent_amount_rial: 1500000
               media_urls:
               - https://example.com/x
               - https://example.com/x
@@ -1889,8 +1848,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     milestone_type: string
@@ -1947,15 +1905,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -1973,7 +1929,7 @@ paths:
               $ref: '#/components/schemas/MatchingGrantWriteRequest'
             example:
               sponsor_name: سارا محمدی
-              sponsor_logo_url: ''
+              sponsor_logo_url: https://example.com/x
               match_ratio: 1
               total_pool_shares: 12
               is_active: true
@@ -1990,8 +1946,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     sponsor_name: سارا محمدی
@@ -2043,8 +1998,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -2069,8 +2023,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2149,7 +2102,7 @@ paths:
             example:
               benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
               amount_rial: 1500000
-              request_note: ''
+              request_note: توضیح کوتاه
         required: true
       security:
       - bearerAuth: []
@@ -2163,8 +2116,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2210,15 +2162,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -2247,15 +2197,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -2274,7 +2222,7 @@ paths:
             example:
               approve: true
               reason: توضیح کوتاه
-              bank_reference_number: ''
+              bank_reference_number: نمونه
         required: true
       security:
       - bearerAuth: []
@@ -2288,8 +2236,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2356,8 +2303,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     status: healthy
                     generated_at: '2026-11-12T09:41:00+03:30'
@@ -2422,8 +2368,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -2459,8 +2404,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2539,8 +2483,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -2570,14 +2513,14 @@ paths:
               benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
               title: تأمین جهیزیهٔ ۱۲ نوعروس
               slug: tamin-jahizieh
-              short_code: ''
-              description: ''
+              short_code: cf-8k2m
+              description: توضیح کوتاه
               suggested_amounts_rial:
               - 1500000
               - 1500007
               min_amount_rial: 100000
               max_amount_rial: 5000000000
-              monthly_goal_rial: 0
+              monthly_goal_rial: 1500000
               is_active: true
         required: true
       security:
@@ -2592,8 +2535,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2647,15 +2589,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -2684,15 +2624,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -2730,8 +2668,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -2801,7 +2738,7 @@ paths:
               $ref: '#/components/schemas/LateCaptureReconcileInputRequest'
             example:
               batch_size: 100
-              dry_run: false
+              dry_run: true
       security:
       - bearerAuth: []
       - cookieAuth: []
@@ -2814,8 +2751,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     scanned: 2
                     not_captured: 2
@@ -2854,15 +2790,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -2898,8 +2832,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     code: cf-8k2m
@@ -2946,8 +2879,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -2981,8 +2913,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     total_debits_rial: 1500000
@@ -3020,15 +2951,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -3056,8 +2985,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3082,8 +3010,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     reference_key: string
@@ -3153,8 +3080,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     verified_but_unconfirmed: 2
                     statement_confirmed: 2
@@ -3193,8 +3119,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3222,8 +3147,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3248,8 +3172,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     contribution_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -3322,15 +3245,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -3365,8 +3286,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     refund_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     amount_rial: 1500000
@@ -3417,8 +3337,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3443,8 +3362,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     user_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -3522,8 +3440,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     materialize: {}
                     reminders: {}
@@ -3556,15 +3473,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -3592,8 +3507,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3616,8 +3530,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     active_pledges: 2
                     paused_pledges: 2
@@ -3686,8 +3599,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - key: string
                     value_type: string
@@ -3728,8 +3640,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3758,15 +3669,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -3798,8 +3707,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     key: string
                     value_type: string
@@ -3857,8 +3765,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: zarinpal
@@ -3933,8 +3840,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -3962,14 +3868,14 @@ paths:
               $ref: '#/components/schemas/ReconciliationRunInputRequest'
             example:
               gateway_name: zarinpal
-              period_start: string
-              period_end: string
+              period_start: نمونه
+              period_end: نمونه
               rows:
               - authority: A0000000000000000000000000000021799
-                ref_id: ''
+                ref_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                 amount_rial: 1500000
               - authority: A0000000000000000000000000000021799
-                ref_id: ''
+                ref_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                 amount_rial: 1500000
         required: true
       security:
@@ -3984,8 +3890,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: zarinpal
@@ -4037,15 +3942,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -4079,8 +3982,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     attempted: 2
                     sent: 2
@@ -4115,15 +4017,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -4175,8 +4075,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -4197,13 +4096,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            application/json:
-              examples:
-                realistic:
-                  summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
-                  value: string
           description: ''
         '400':
           $ref: '#/components/responses/Problem400'
@@ -4254,8 +4146,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     exported_by_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -4302,8 +4193,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -4347,8 +4237,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -4373,8 +4262,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: sandbox
@@ -4435,8 +4323,7 @@ paths:
         paginated: false
     post:
       operationId: v1_admin_settlements_create
-      description: 'ورود idempotent است: اگر همان محتوا برای همان درگاه و همان بازه قبلاً وارد شده باشد، همان سند برگردانده
-        می‌شود و ردیف تکراری ساخته نمی‌شود. این نقطهٔ پایانی فقط ثبت می‌کند؛ تطبیق در گام جداگانه انجام می‌شود.'
+      description: 'ورود idempotent است: اگر همان محتوا برای همان درگاه و همان بازه قبلاً وارد شده باشد، همان سند برگردانده می‌شود و ردیف تکراری ساخته نمی‌شود. این نقطهٔ پایانی فقط ثبت می‌کند؛ تطبیق در گام جداگانه انجام می‌شود.'
       summary: ورود یک صورت‌حساب تسویهٔ درگاه
       tags:
       - Admin - Money Truth
@@ -4448,21 +4335,21 @@ paths:
             example:
               gateway_name: sandbox
               source_kind: csv
-              period_start: string
-              period_end: string
-              original_filename: string
+              period_start: نمونه
+              period_end: نمونه
+              original_filename: نمونه
               rows:
               - authority: A0000000000000000000000000000021799
                 amount_rial: '1500000'
                 ref_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                 occurred_at: '2026-11-12T09:41:00+03:30'
-                card_pan_masked: string
+                card_pan_masked: نمونه
                 description: توضیح کوتاه
               - authority: A0000000000000000000000000000021799
                 amount_rial: '1500000'
                 ref_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                 occurred_at: '2026-11-12T09:41:00+03:30'
-                card_pan_masked: string
+                card_pan_masked: نمونه
                 description: توضیح کوتاه
         required: true
       security:
@@ -4477,8 +4364,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: sandbox
@@ -4503,8 +4389,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: sandbox
@@ -4547,15 +4432,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -4585,8 +4468,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -4609,8 +4491,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     gateway_name: sandbox
@@ -4658,8 +4539,7 @@ paths:
   /api/v1/admin/settlements/{settlement_id}/reconcile:
     post:
       operationId: v1_admin_settlements_reconcile
-      description: 'پیش‌فرض `dry_run=true` است: هیچ رکوردی نوشته نمی‌شود و فقط آمار برمی‌گردد. برای اجرای واقعی باید صریحاً
-        `dry_run=false` بفرستید.'
+      description: 'پیش‌فرض `dry_run=true` است: هیچ رکوردی نوشته نمی‌شود و فقط آمار برمی‌گردد. برای اجرای واقعی باید صریحاً `dry_run=false` بفرستید.'
       summary: تطبیق صورت‌حساب تسویه با پرداخت‌های داخلی
       parameters:
       - in: path
@@ -4671,15 +4551,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -4709,8 +4587,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     matched: 2
                     amount_mismatch: 1500000
@@ -4751,8 +4628,7 @@ paths:
   /api/v1/admin/settlements/{settlement_id}/remediate:
     post:
       operationId: v1_admin_settlements_remediate
-      description: 'تنها یک حالت خودکار حل می‌شود: پرداختی که صورت‌حساب می‌گوید درگاه پولش را گرفته ولی داخلی تأیید نشده —
-        و آن هم با همان موتور داوری موجود، نه منطق موازی. پول بی‌مالک، اختلاف مبلغ و پرداخت غایب در فایل هرگز خودکار حل نمی‌شوند.'
+      description: 'تنها یک حالت خودکار حل می‌شود: پرداختی که صورت‌حساب می‌گوید درگاه پولش را گرفته ولی داخلی تأیید نشده — و آن هم با همان موتور داوری موجود، نه منطق موازی. پول بی‌مالک، اختلاف مبلغ و پرداخت غایب در فایل هرگز خودکار حل نمی‌شوند.'
       summary: اجرای اقدام خودکار مجاز روی مغایرت‌های صورت‌حساب
       parameters:
       - in: path
@@ -4764,15 +4640,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -4802,8 +4676,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     statement_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     auto_healed: 2
@@ -4871,8 +4744,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -4897,8 +4769,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     row_number: 2
@@ -4978,8 +4849,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -5002,8 +4872,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     results:
                     - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -5073,15 +4942,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5117,8 +4984,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     phone: 09121234567
           description: ''
@@ -5164,15 +5030,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5204,8 +5068,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     masked_phone: 09121234567
@@ -5276,8 +5139,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     csrf_token: A0000000000000000000000000000021799
           description: ''
@@ -5307,8 +5169,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -5362,15 +5223,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5409,8 +5268,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     revoked_count: 12
           description: ''
@@ -5440,15 +5298,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5482,8 +5338,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     enrolled: true
                     session_verified: true
@@ -5516,8 +5371,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -5559,8 +5413,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     enrolled: true
                     recovery_codes:
@@ -5593,15 +5446,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5635,8 +5486,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     secret: string
                     otpauth_uri: https://example.com/x
@@ -5668,15 +5518,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5718,8 +5566,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     enrolled: true
                     session_verified: true
@@ -5752,15 +5599,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5806,8 +5651,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     status: string
                     ttl_seconds: 2
@@ -5839,15 +5683,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5894,8 +5736,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     access_token: A0000000000000000000000000000021799
                     refresh_token: A0000000000000000000000000000021799
@@ -5942,15 +5783,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -5979,7 +5818,7 @@ paths:
               $ref: '#/components/schemas/StaffPasswordLoginInputRequest'
             example:
               phone: 09121234567
-              password: string
+              password: نمونه
         required: true
       security:
       - bearerAuth: []
@@ -5994,8 +5833,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     access_token: A0000000000000000000000000000021799
                     refresh_token: A0000000000000000000000000000021799
@@ -6042,15 +5880,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -6096,8 +5932,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     access_token: A0000000000000000000000000000021799
                     refresh_token: A0000000000000000000000000000021799
@@ -6144,15 +5979,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -6184,8 +6017,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6208,8 +6040,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -6296,8 +6127,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6318,8 +6148,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     name: سارا محمدی
@@ -6390,8 +6219,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -6432,8 +6260,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6489,8 +6316,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6513,8 +6339,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -6631,8 +6456,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6653,8 +6477,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     title: تأمین جهیزیهٔ ۱۲ نوعروس
@@ -6764,8 +6587,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6788,8 +6610,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - supporter_name: سارا محمدی
                     shares_count: 12
@@ -6848,8 +6669,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -6870,8 +6690,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     campaign_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     campaign_slug: tamin-jahizieh
@@ -6977,8 +6796,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     contribution_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     payment_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -7016,15 +6834,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -7065,8 +6881,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     contribution_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     payment_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -7104,15 +6919,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -7158,8 +6971,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     intent_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     expires_in: 2
@@ -7194,15 +7006,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -7231,8 +7041,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7253,8 +7062,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     public_token: A0000000000000000000000000000021799
                     dedication_type: string
@@ -7318,8 +7126,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     status: healthy
                     checks: {}
@@ -7354,8 +7161,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7390,8 +7196,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     status: healthy
                     checks: {}
@@ -7422,8 +7227,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7458,8 +7262,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     status: healthy
                     checks: {}
@@ -7494,8 +7297,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7523,8 +7325,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7547,8 +7348,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -7643,8 +7443,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7665,8 +7464,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     benefactor_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -7741,8 +7539,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     phone: 09121234567
@@ -7784,8 +7581,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -7829,8 +7625,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     phone: 09121234567
@@ -7872,15 +7667,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -7916,8 +7709,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     code: cf-8k2m
@@ -7970,8 +7762,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8014,8 +7805,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     code: cf-8k2m
@@ -8056,15 +7846,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -8098,8 +7886,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8122,8 +7909,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     results:
                     - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -8204,8 +7990,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8228,8 +8013,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     contribution_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     campaign_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -8290,8 +8074,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     user:
                       id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -8395,8 +8178,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8435,8 +8217,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8459,8 +8240,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     results:
                     - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -8531,15 +8311,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -8562,8 +8340,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     kind: string
@@ -8623,8 +8400,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     marked_count: 12
           description: ''
@@ -8654,15 +8430,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -8690,8 +8464,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8716,8 +8489,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     status: active
@@ -8805,7 +8577,7 @@ paths:
               target_kind: campaign_shares
               amount_rial: 1500000
               frequency: monthly
-              shares_count: 0
+              shares_count: 12
         required: true
       security:
       - bearerAuth: []
@@ -8819,8 +8591,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     status: active
@@ -8870,15 +8641,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -8907,8 +8676,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -8931,8 +8699,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     status: active
@@ -8997,15 +8764,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9037,8 +8802,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     status: active
@@ -9103,15 +8867,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9134,8 +8896,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     status: active
@@ -9201,8 +8962,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -9227,8 +8987,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     sequence: 2
@@ -9306,15 +9065,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9344,8 +9101,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     sequence: 2
@@ -9404,15 +9160,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9430,7 +9184,7 @@ paths:
               $ref: '#/components/schemas/PledgePayInputRequest'
             example:
               installment_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
-              gateway_name: ''
+              gateway_name: zarinpal
         required: true
       security:
       - bearerAuth: []
@@ -9444,8 +9198,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     installment_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     contribution_id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
@@ -9503,8 +9256,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                   - id: 0b5f3f1e-8c9a-4d2b-9e7f-2a1c4d5e6f70
                     device: string
@@ -9547,8 +9299,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -9577,15 +9328,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9650,8 +9399,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     service: string
                     environment: string
@@ -9704,8 +9452,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -9740,8 +9487,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -9762,8 +9508,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     verified: true
                     payment_status: string
@@ -9830,8 +9575,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     verified: true
                     payment_status: string
@@ -9871,15 +9615,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -9908,8 +9650,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -9930,8 +9671,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     authority: A0000000000000000000000000000021799
                     amount_rial: 1500000
@@ -9980,8 +9720,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -10002,8 +9741,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     valid: true
                     status: string
@@ -10063,8 +9801,7 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
@@ -10085,8 +9822,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     kind: string
                     short_code: cf-8k2m
@@ -10154,8 +9890,7 @@ paths:
               examples:
                 realistic:
                   summary: نمونهٔ واقعیِ تولیدشده از همین اسکیما
-                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس
-                    معنای نام فیلد انتخاب شده‌اند.
+                  description: این مقدار از روی اسکیمای همین پاسخ ساخته و با jsonschema اعتبارسنجی شده است؛ مقادیر بر اساس معنای نام فیلد انتخاب شده‌اند.
                   value:
                     valid: true
           description: ''
@@ -10185,15 +9920,13 @@ paths:
       - in: header
         name: X-Request-ID
         required: false
-        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ
-          و فیلد trace_id خطاها برمیگرداند.
+        description: شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.
         schema:
           type: string
       - in: header
         name: Idempotency-Key
         required: false
-        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر
-          X-Idempotent-Replayed: true).'
+        description: 'UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).'
         schema:
           type: string
       - in: header
@@ -15168,13 +14901,11 @@ tags:
 - name: Admin - Executive Excel Reports
   description: کتابچهٔ ۸ کاربرگهٔ اکسل راست‌به‌چپ و تاریخچهٔ خروجی‌ها.
 - name: Donor - Recurring Pledges
-  description: 'تعهد کمک مستمر: ساخت تعهد ماهانه/سه‌ماهه، مشاهده و پرداخت اقساط، رد قسط، توقف موقت و لغو — بدون ذخیرهٔ کارت
-    و بدون موتور پرداخت موازی.'
+  description: 'تعهد کمک مستمر: ساخت تعهد ماهانه/سه‌ماهه، مشاهده و پرداخت اقساط، رد قسط، توقف موقت و لغو — بدون ذخیرهٔ کارت و بدون موتور پرداخت موازی.'
 - name: Admin - Recurring Pledges
   description: 'مدیریت تعهدهای مستمر: فهرست، آمار MRR و نرخ وصول، ریزش و اجرای دستی چرخهٔ تولید قسط و یادآوری.'
 - name: Admin - Money Truth
-  description: 'لایهٔ حقیقت وجه: ورود صورت‌حساب تسویهٔ درگاه، تطبیق سه‌طرفه با دفتر داخلی، خوددرمانی مجاز و پنل «آیا تأیید
-    ما با بانک می‌خواند؟».'
+  description: 'لایهٔ حقیقت وجه: ورود صورت‌حساب تسویهٔ درگاه، تطبیق سه‌طرفه با دفتر داخلی، خوددرمانی مجاز و پنل «آیا تأیید ما با بانک می‌خواند؟».'
 externalDocs:
   description: راهنمای یکپارچه‌سازی فرانت‌اند، کدهای خطا و کلاینت تایپ‌شده
   url: https://github.com/mohebbibrothers/Crowdfunding-Back/tree/main/docs/frontend
