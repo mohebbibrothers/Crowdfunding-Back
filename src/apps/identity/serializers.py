@@ -165,7 +165,7 @@ class AuthRiskSignalOutputSerializer(serializers.Serializer[Any]):
 
     id = serializers.UUIDField()
     signal_type = serializers.CharField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=RiskReviewStatus.choices)
     ip_address = serializers.CharField(allow_null=True)
     phone_masked = serializers.CharField()
     metadata = serializers.JSONField()

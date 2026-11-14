@@ -415,6 +415,37 @@ SPECTACULAR_SETTINGS = {
         "SettlementRowMatchStatusEnum": "apps.contributions.choices.SettlementRowMatchStatus.choices",
         "SettlementRemediationEnum": "apps.contributions.choices.SettlementRemediation.choices",
         "PaymentTruthStateEnum": "apps.contributions.choices.PaymentTruthState.choices",
+        # ── مجموعه‌های وضعیتِ خروجی (v1.5.0) ──────────────────────────────
+        # بدون این‌ها drf-spectacular برای هر ``status`` یک نام خودکار می‌سازد
+        # («Status505Enum») که نه خوانا است و نه پایدار — و با هر تغییر در
+        # ترتیب تگ‌ها عوض می‌شود، یعنی تایپ‌های فرانت بی‌دلیل می‌شکنند.
+        "InstallmentStatusEnum": "apps.contributions.choices.InstallmentStatus.choices",
+        "PledgeStatusEnum": "apps.contributions.choices.PledgeStatus.choices",
+        "PledgeFrequencyEnum": "apps.contributions.choices.PledgeFrequency.choices",
+        "ContributionTargetKindEnum": "apps.contributions.choices.ContributionTargetKind.choices",
+        "CampaignUrgencyEnum": "apps.campaigns.choices.CampaignUrgency.choices",
+        "HealthStatusEnum": [
+            ("healthy", "سالم"),
+            ("degraded", "تضعیف‌شده"),
+            ("unhealthy", "ناسالم"),
+        ],
+        "FinancialHealthStatusEnum": [
+            ("healthy", "سالم"),
+            ("attention_required", "نیازمند توجه"),
+        ],
+        "SettlementGatewayEnum": [
+            ("sandbox", "درگاه آزمایشی"),
+            ("zarinpal", "زرین‌پال"),
+            ("idpay", "آیدی‌پی"),
+            ("nextpay", "نکست‌پی"),
+            ("manual", "دستی"),
+        ],
+        "SettlementSourceKindInputEnum": [
+            ("csv", "فایل CSV"),
+            ("xlsx", "کارپوشهٔ اکسل"),
+            ("api", "دریافت از API"),
+            ("manual", "ورود دستی"),
+        ],
     },
 }
 

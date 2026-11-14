@@ -8,6 +8,7 @@ from rest_framework import serializers
 
 from apps.core.jalali import format_jalali_datetime
 from apps.core.money import rial_to_toman
+from apps.ledger.choices import DisbursementStatus, ReconciliationItemStatus
 from apps.ledger.models import (
     DisbursementRequest,
     JournalEntry,
@@ -63,7 +64,7 @@ class DisbursementRequestSerializer(serializers.Serializer[Any]):
     amount_rial = serializers.IntegerField()
     amount_toman = serializers.SerializerMethodField()
     destination_iban = serializers.CharField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=DisbursementStatus.choices)
     requested_by_id = serializers.UUIDField()
     request_note = serializers.CharField()
     reviewed_by_id = serializers.UUIDField(allow_null=True)
@@ -126,7 +127,7 @@ class ReconciliationItemSerializer(serializers.Serializer[Any]):
     ref_id = serializers.CharField()
     gateway_amount_rial = serializers.IntegerField()
     internal_amount_rial = serializers.IntegerField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=ReconciliationItemStatus.choices)
     note = serializers.CharField()
 
 

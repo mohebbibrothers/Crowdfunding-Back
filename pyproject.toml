@@ -9,7 +9,7 @@
 
 [project]
 name = "crowdfunding-back"
-version = "1.4.0"
+version = "1.5.0"
 description = "سکوی هوشمند کرادفاندینگ خیریه و حرکت‌های سهم‌محور — دفتر کل دوطرفهٔ تغییرناپذیر، شفافیت درخت مرکل و معماری آمادهٔ Nitro cPanel"
 readme = "README.md"
 requires-python = ">=3.12"

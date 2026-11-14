@@ -4,6 +4,79 @@
 
 ---
 
+## [1.5.0] - 2026-11-12 — قرارداد قابل‌اعتماد (Contract Trust Layer)
+
+> این نسخه فیچر تازه ندارد. **کیفیت تحویل** را بالا می‌برد — و دقیقاً به همان
+> دلیلی ساخته شد که پروژه‌های واقعی شکست می‌خورند: قرارداد کامل بود ولی
+> **هیچ نمونه‌ای نداشت**.
+>
+> تصور کنید ۱۰۴ عملیات با اسکیمای تایپ‌شده و ۱۴۰ کامپوننت — و تیم فرانت باید
+> حدس بزند تاریخ شمسی است یا ISO، مبلغ ریال است یا تومان، فیلد خالی `null`
+> می‌شود یا حذف. سه حدس، سه باگ. حدس زدن در قرارداد، بدهی فنی است که بهره‌اش
+> را فرانت می‌پردازد.
+
+### افزوده‌شده (Added)
+- **مولد نمونهٔ پاسخ** (`scripts/compile_response_samples.py`): برای هر یک از
+  **۱۰۳** پاسخ JSON، نمونه‌ای از روی اسکیمای خودش می‌سازد، با `jsonschema`
+  اعتبارسنجی می‌کند، و در سه جا می‌نویسد — قرارداد OpenAPI، کالکشن Postman
+  (به‌عنوان saved response)، و `docs/frontend/SAMPLES.md`.
+  مقادیر **بر اساس معنای نام فیلد** انتخاب می‌شوند: `amount_rial` عدد
+  چندهزار است نه ۴۲؛ `gateway_name` نام درگاه است نه نام آدم؛ فیلد
+  `nullable` مقدار `null` می‌گیرد تا فرانت نداند وجود ندارد.
+- **`DELIVERY.md`** — سند تحویل برای تیم فرانت: آمار واقعی، هفت قرارداد
+  سراسری (احراز هویت، پول، تاریخ، صفحه‌بندی، خطا، idempotency، CSRF)،
+  مسیر ادغام ۵ گامی، و فهرست صادقانهٔ آنچه هنوز نیست.
+- **`SAMPLES.md`** — جدول خوانای ۱۰۳ نمونه.
+- **`make samples`** — گام تازه در زنجیرهٔ `schema → samples → handoff`.
+
+### تغییر یافته (Changed) — تایپ‌شدن ۱۹ اسکیما
+فیلدهای `status` که `{"type": "string"}` بودند اکنون `ChoiceField` با enum
+واقعی‌اند. یعنی تایپ TypeScript تولیدی از `status: string` به
+`status: "active" | "paused" | ...` تبدیل شد و IDE هر رشتهٔ اشتباه را قبل از
+اجرا قرمز می‌کند:
+
+| اسکیما | فیلدهای تازه‌تایپ‌شده |
+|---|---|
+| `PledgeOutput` | `status`، `frequency`، `target_kind` |
+| `PledgeInstallmentOutput` | `status` |
+| `AdminPledge` | `status`، `frequency`، `target_kind` |
+| `AdminPayment` | `status` |
+| `ContributionUser` | `status` |
+| `CampaignSummary` / `CampaignDetail` | `status`، `urgency_level` |
+| `DisbursementRequest` | `status` |
+| `SettlementRow` | `match_status` |
+| `SettlementStatement` | `gateway_name`، `source_kind`، `status` |
+| `AuthRiskSignalOutput` | `status` |
+| `HealthStatus` / `FinancialHealth` | `status` |
+
+- **۹ ورودی `ENUM_NAME_OVERRIDES`** تازه تا نام enumها در قرارداد خوانا و
+  پایدار بماند (`Status505Enum` → `PledgeStatusEnum`).
+
+### اصلاح‌شده (Fixed) — باگ‌های ابزار تولید
+- **`$ref` بی‌صدا به `{}` تبدیل می‌شد**: مسیر `#/components/schemas/X` سه بخش
+  دارد و پرش از `components` باعث می‌شد هر آرایهٔ `$ref` به `[null, null]`
+  تبدیل شود. نمونهٔ خراب بدتر از نبودن نمونه است. اکنون ارجاع شکسته استثنا
+  می‌دهد.
+- **`allOf: [{$ref: X}]`** (الگوی drf-spectacular برای چسباندن توضیح به enum)
+  به «ادغام شیء» تعبیر می‌شد و enum از دست می‌رفت.
+- **فقط اولین پاسخ موفق نمونه می‌گرفت**: `POST /admin/settlements` دو حالت
+  موفق دارد (۲۰۱ تازه، ۲۰۰ تکراری) و حالت دوم بی‌نمونه می‌ماند.
+- **`installments_paid` مبلغ تلقی می‌شد** (۱٬۵۰۰٬۰۰۰ قسط!) چون قاعدهٔ `_paid`
+  با «پول» تطبیق می‌خورد. شمارنده‌ها اکنون پیش از پول بررسی می‌شوند.
+- **`percent` با `ratio` قاطی می‌شد**: `physical_progress_percent` عدد صحیح
+  ۰-۱۰۰ است، نه نسبت اعشاری — نمونهٔ ۰٫۸۴ اعتبارسنجی را می‌شکست.
+
+### آزمون‌ها
+- **۵ تست تازه** در `test_frontend_contract.py`:
+  `test_every_success_response_carries_a_validated_example` (۱۰۳ نمونه با
+  jsonschema)، `test_postman_collection_ships_saved_responses`،
+  `test_contract_status_enums_match_model_choices` (قفل واگرایی enum).
+- **۵ تست تازه** برای `run_pledge_cycle` که پوشش ۰٪ → **۱۰۰٪** رسید — تنها
+  کدی که هر شب بی‌ناظر اجرا می‌شود.
+- مجموعه: **۲۱۹ تست** · پوشش شاخه‌ای **۸۵.۵۱٪**.
+
+---
+
 ## [1.4.0] - 2026-11-12 — موتور تعهد کمک مستمر (Recurring Pledge Engine)
 
 > این نسخه یک **محدودیت بیرونی** را به یک قابلیت تبدیل می‌کند، بدون دروغ گفتن.

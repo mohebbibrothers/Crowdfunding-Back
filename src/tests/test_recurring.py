@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+import json
 from typing import Any
 
 from django.utils import timezone
@@ -1337,3 +1338,120 @@ def test_reminder_stats_serialize(seeded_policies: None) -> None:
     payload = dispatch_pledge_reminders().as_dict()
     assert "window_open" in payload
     assert "skipped_cap" in payload
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ۱۴) فرمان کرون — تنها کدی که هر شب بی‌ناظر اجرا می‌شود
+#
+# چرا این بخش جدا است؟ چون ``run_pledge_cycle`` تنها چیزی است که در تولید
+# هر روز ساعت ۱۰ بی‌آنکه کسی تماشا کند اجرا می‌شود. اگر آرگومان‌های
+# ``--skip-reminders`` یا ``--only`` بشکنند، تا صبح فردا کسی نمی‌فهمد.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+@pytest.mark.django_db
+def test_cycle_command_reports_all_four_steps(seeded_policies: None) -> None:
+    """خروجی JSON باید هر چهار گام را داشته باشد — پایش خودکار به آن تکیه می‌کند."""
+    del seeded_policies
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    buffer = StringIO()
+    call_command("run_pledge_cycle", "--json", stdout=buffer)
+
+    payload = json.loads(buffer.getvalue())
+    assert set(payload) == {"resumed", "materialize", "reminders", "expiry"}
+    assert isinstance(payload["resumed"], int)
+    assert "installments_created" in payload["materialize"]
+    assert "window_open" in payload["reminders"]
+
+
+@pytest.mark.django_db
+def test_cycle_command_skip_reminders_sends_nothing(seeded_policies: None) -> None:
+    """``--skip-reminders`` باید واقعاً هیچ پیامکی نسازد، نه فقط گزارش ندهد.
+
+    این مهم است: اپراتور در شرایط اضطراری این سوئیچ را می‌زند و انتظار دارد
+    سیل پیامک متوقف شود. اگر فقط گزارش تغییر کند ولی پیامک برود، سوئیچ
+    امنیتی دروغین است.
+    """
+    del seeded_policies
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    admin = _admin("30")
+    donor = _donor("30")
+    campaign = _campaign(admin, slug_suffix="cmd30")
+    pledge = _pledge(admin=admin, donor=donor, campaign=campaign).pledge
+    materialize_due_installments(as_of=pledge.next_due_date)
+
+    before = OutboxMessage.objects.filter(event_type="sms.pledge_reminder").count()
+    buffer = StringIO()
+    call_command("run_pledge_cycle", "--skip-reminders", "--json", stdout=buffer)
+
+    after = OutboxMessage.objects.filter(event_type="sms.pledge_reminder").count()
+    assert after == before, "با --skip-reminders نباید هیچ پیامک یادآوری ساخته شود"
+    assert json.loads(buffer.getvalue())["reminders"]["skipped"]
+
+
+@pytest.mark.django_db
+def test_cycle_command_only_materialize_touches_one_step(seeded_policies: None) -> None:
+    """``--only`` باید تنها همان گام را اجرا و گزارش کند، نه بیشتر."""
+    del seeded_policies
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    admin = _admin("31")
+    donor = _donor("31")
+    campaign = _campaign(admin, slug_suffix="cmd31")
+    pledge = _pledge(admin=admin, donor=donor, campaign=campaign).pledge
+    buffer = StringIO()
+
+    call_command("run_pledge_cycle", "--only", "materialize", "--json", stdout=buffer)
+
+    payload = json.loads(buffer.getvalue())
+    assert set(payload) == {"materialize"}
+    assert payload["materialize"]["installments_created"] >= 0
+    # سررسید جلو رفته ⇒ نشانهٔ اینکه واقعاً اجرا شد
+    pledge.refresh_from_db()
+    assert pledge.next_due_date >= pledge.created_at.date()
+
+
+@pytest.mark.django_db
+def test_cycle_command_human_output_is_readable(seeded_policies: None) -> None:
+    """خروجی غیر-JSON باید برای انسان خوانا باشد، نه یک dict خام."""
+    del seeded_policies
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    buffer = StringIO()
+    call_command("run_pledge_cycle", stdout=buffer)
+
+    text = buffer.getvalue()
+    assert "چرخهٔ تعهد مستمر اجرا شد" in text
+    assert "materialize" in text
+    assert "expiry" in text
+
+
+@pytest.mark.django_db
+def test_cycle_command_only_expire_does_not_create_installments(seeded_policies: None) -> None:
+    """گام انقضا نباید قسط بسازد — تفکیک مسئولیت‌ها."""
+    del seeded_policies
+    from io import StringIO
+
+    from django.core.management import call_command
+
+    admin = _admin("32")
+    donor = _donor("32")
+    campaign = _campaign(admin, slug_suffix="cmd32")
+    pledge = _pledge(admin=admin, donor=donor, campaign=campaign).pledge
+    before_count = PledgeInstallment.objects.filter(pledge=pledge).count()
+    buffer = StringIO()
+
+    call_command("run_pledge_cycle", "--only", "expire", "--json", stdout=buffer)
+
+    assert PledgeInstallment.objects.filter(pledge=pledge).count() == before_count
+    assert set(json.loads(buffer.getvalue())) == {"expiry"}

@@ -11,8 +11,9 @@
 
 | اولویت | لینک | چه چیزی می‌دهد |
 | --- | --- | --- |
-| ۱ | **[`docs/frontend/index.html`](docs/frontend/index.html)** | پورتال بصری آفلاین: کاوشگر ۸۳ عملیات، آمار زنده، همه‌چیز در یک صفحه |
+| ۱ | **[`docs/frontend/index.html`](docs/frontend/index.html)** | پورتال بصری آفلاین: کاوشگر ۱۰۴ عملیات، آمار زنده، همه‌چیز در یک صفحه |
 | ۲ | **[`docs/frontend/HANDOFF.md`](docs/frontend/HANDOFF.md)** | راهنمای جامع: قراردادها، جریان OTP، CSRF، Step-Up، پرداخت، صفحه‌بندی، پول و تقویم |
+| ۳ | **[`docs/frontend/DELIVERY.md`](docs/frontend/DELIVERY.md)** | تأییدیهٔ تحویل بک‌اند: آمار واقعی، هفت قرارداد، مسیر ادغام ۵ گامی، فهرست صادقانهٔ کمبودها |
 | ۳ | **[`docs/frontend/ACCEPTANCE.md`](docs/frontend/ACCEPTANCE.md)** | تأییدیهٔ نهایی: چه چیزی تحویل شده، چه چیزی رفع شده، چه چیزی مانده |
 
 > 📖 اگر فقط یک فایل می‌خوانید، `HANDOFF.md` را بخوانید (۳۷۹ خط، ۱۵ دقیقه).

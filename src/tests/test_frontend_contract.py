@@ -11,7 +11,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-from typing import Any
+from typing import Any, cast
 
 from django.conf import settings
 from django.test import RequestFactory, override_settings
@@ -820,3 +820,169 @@ def test_feature_flags_are_typed_not_free_form_map() -> None:
     for name in expected:
         assert f"{name}: boolean;" in block, f"{name} must be a required boolean in api-types.d.ts"
         assert f"{name}?: boolean" not in block, f"{name} must not be optional"
+
+
+# ─── گیت‌های نمونهٔ پاسخ و هم‌گامی enumهای وضعیت (v1.5.0) ───────────────────
+
+
+def test_every_success_response_carries_a_validated_example() -> None:
+    """هر پاسخ موفق باید نمونه داشته باشد و نمونه با jsonschema معتبر باشد.
+
+    چرا این تست حیاتی است؟ بدون نمونه، تیم فرانت شکل واقعی JSON را حدس می‌زند
+    و سه چیز را اشتباه می‌فهمد: تاریخ (شمسی یا ISO؟)، مبلغ (ریال یا تومان؟) و
+    فیلد خالی (null یا حذف یا رشتهٔ خالی؟). اولی و دومی باگ مالی می‌سازند.
+    """
+    import jsonschema
+
+    doc = _schema()
+    offenders: list[str] = []
+    checked = 0
+    for path, item in cast(dict[str, Any], doc["paths"]).items():
+        for method, spec in item.items():
+            if method not in HTTP_METHODS:
+                continue
+            operations = cast(dict[str, Any], spec)
+            success = [
+                (status, cast(dict[str, Any], resp))
+                for status, resp in cast(dict[str, Any], operations.get("responses", {})).items()
+                if str(status).startswith("2") and isinstance(resp, dict)
+            ]
+            for status, resp in success:
+                media = cast(dict[str, Any], resp.get("content", {})).get("application/json")
+                if not isinstance(media, dict):
+                    continue  # پاسخ دودویی (اکسل) اسکیمای JSON ندارد
+                examples = cast(dict[str, Any], media.get("examples", {}))
+                if not examples:
+                    offenders.append(f"{method.upper()} {path} [{status}] بدون نمونه")
+                    continue
+                value = next(iter(cast(dict[str, Any], examples).values())).get("value")
+                schema = cast(dict[str, Any], media.get("schema", {}))
+                try:
+                    validator = _to_json_schema(schema, doc)
+                    jsonschema.validate(instance=value, schema=validator)
+                except jsonschema.ValidationError as exc:
+                    offenders.append(
+                        f"{method.upper()} {path} [{status}] نمونه نامعتبر: {exc.message[:80]}"
+                    )
+                except jsonschema.SchemaError as exc:
+                    offenders.append(
+                        f"{method.upper()} {path} [{status}] اسکیمای معیوب: {exc.message[:80]}"
+                    )
+                checked += 1
+    assert checked >= 100, f"فقط {checked} نمونه بررسی شد — مولد نمونه اجرا نشده است"
+    assert not offenders, "نمونهٔ پاسخ ناقص یا نامعتبر:\n" + "\n".join(offenders[:15])
+
+
+def _to_json_schema(schema: dict[str, Any], doc: dict[str, Any], depth: int = 0) -> dict[str, Any]:
+    """تبدیل اسکیمای OpenAPI 3.1 به اسکیمای قابل‌اعتبارسنجی با jsonschema."""
+    assert depth < 12
+    ref = schema.get("$ref")
+    if isinstance(ref, str) and ref.startswith("#/"):
+        node: Any = doc
+        for part in ref.removeprefix("#/").split("/"):
+            node = node[part]
+        return _to_json_schema(cast(dict[str, Any], node), doc, depth + 1)
+
+    out: dict[str, Any] = {}
+    for key, value in schema.items():
+        if key in {"nullable", "example", "examples", "deprecated", "readOnly", "writeOnly"}:
+            continue
+        if key == "properties" and isinstance(value, dict):
+            out["properties"] = {
+                k: _to_json_schema(cast(dict[str, Any], v), doc, depth + 1)
+                for k, v in value.items()
+            }
+        elif key == "items":
+            out["items"] = _to_json_schema(cast(dict[str, Any], value), doc, depth + 1)
+        elif key in {"oneOf", "anyOf", "allOf"} and isinstance(value, list):
+            out[key] = [_to_json_schema(cast(dict[str, Any], v), doc, depth + 1) for v in value]
+        elif key == "additionalProperties" and isinstance(value, dict):
+            out[key] = _to_json_schema(cast(dict[str, Any], value), doc, depth + 1)
+        else:
+            out[key] = value
+    if schema.get("nullable") and "type" in out and isinstance(out["type"], str):
+        out["type"] = [out["type"], "null"]
+    return out
+
+
+def test_postman_collection_ships_saved_responses() -> None:
+    """Postman باید پاسخ نمونه داشته باشد — نه فقط درخواست خالی.
+
+    تیم فرانت کالکشن را import می‌کند و انتظار دارد بدون اجرای هیچ درخواستی
+    شکل پاسخ را ببیند. صفر نمونه یعنی کالکشن فقط یک فهرست آدرس است.
+    """
+    collection = json.loads((FRONTEND_DIR / "postman_collection.json").read_text(encoding="utf-8"))
+    requests: list[dict[str, Any]] = []
+
+    def walk(nodes: list[dict[str, Any]]) -> None:
+        for node in nodes:
+            if "item" in node:
+                walk(cast(list[dict[str, Any]], node["item"]))
+            elif "request" in node:
+                requests.append(node)
+
+    walk(cast(list[dict[str, Any]], collection["item"]))
+    with_examples = [r for r in requests if r.get("response")]
+    assert len(requests) >= 100, f"کالکشن فقط {len(requests)} درخواست دارد"
+    assert len(with_examples) >= 100, (
+        f"تنها {len(with_examples)} از {len(requests)} درخواست نمونهٔ پاسخ دارند"
+    )
+    for row in with_examples:
+        body = row["response"][0]["body"]
+        assert json.loads(body) is not None, "بدنهٔ ذخیره‌شدهٔ Postman جیسون معتبر نیست"
+
+
+def test_contract_status_enums_match_model_choices() -> None:
+    """enumهای وضعیت در قرارداد باید دقیقاً با enumهای مدل یکی باشند.
+
+    چرا این تست؟ چون ``core`` نمی‌تواند از ``contributions`` ایمپورت کند
+    (گیت AST)، پس فهرست در ``ChoiceField`` به‌صورت literal نوشته می‌شود. آن
+    فهرست دست‌نویس با تغییر enum ساکت می‌ماند و فرانت ``switch`` ناقص می‌سازد.
+    این تست همان شکاف را می‌بندد: اگر enum عوض شود و literal نه، CI قرمز است.
+    """
+    from apps.contributions.choices import (
+        InstallmentStatus,
+        PaymentStatus,
+        PledgeFrequency,
+        PledgeStatus,
+        SettlementRowMatchStatus,
+    )
+    from apps.identity.choices import RiskReviewStatus
+    from apps.ledger.choices import DisbursementStatus
+
+    doc = _schema()
+    schemas = cast(dict[str, Any], cast(dict[str, Any], doc["components"])["schemas"])
+
+    def declared(name: str) -> list[str]:
+        node = cast(dict[str, Any], schemas[name])
+        values = node.get("enum")
+        if values is None:
+            # drf-spectacular ممکن است enum را در allOf بگذارد
+            for part in node.get("allOf", []):
+                ref = str(part.get("$ref", "")).removeprefix("#/components/schemas/")
+                if ref and ref in schemas:
+                    nested = cast(dict[str, Any], schemas[ref]).get("enum")
+                    if nested:
+                        return cast(list[str], nested)
+        return cast(list[str], values or [])
+
+    pairs = [
+        ("PledgeStatusEnum", PledgeStatus.values),
+        ("InstallmentStatusEnum", InstallmentStatus.values),
+        ("PledgeFrequencyEnum", PledgeFrequency.values),
+        ("PaymentStatusEnum", PaymentStatus.values),
+        ("DisbursementStatusEnum", DisbursementStatus.values),
+        ("RiskReviewStatusEnum", RiskReviewStatus.values),
+    ]
+    mismatches: list[str] = []
+    for enum_name, expected in pairs:
+        actual = declared(enum_name)
+        if sorted(actual) != sorted(expected):
+            mismatches.append(f"{enum_name}: قرارداد={actual} مدل={list(expected)}")
+    assert not mismatches, "واگرایی enum قرارداد و مدل:\n" + "\n".join(mismatches)
+
+    # match_status با literal در core نوشته شده؛ باید با enum واقعی بخواند
+    row_schema = cast(dict[str, Any], schemas.get("SettlementRow", {}).get("properties", {}))
+    match_field = str(row_schema.get("match_status", {}))
+    for value in SettlementRowMatchStatus.values:
+        assert value in match_field, f"مقدار «{value}» در قرارداد match_status غایب است"

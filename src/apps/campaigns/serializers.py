@@ -100,8 +100,10 @@ class CampaignSummarySerializer(serializers.Serializer[Any]):
     cover_image_url = serializers.CharField()
     province = serializers.CharField()
     city = serializers.CharField()
-    status = serializers.CharField()
-    urgency_level = serializers.CharField()
+    # ChoiceField نه CharField: فرانت باید union type دقیق داشته باشد،
+    # نه «هر رشته‌ای ممکن است» — که ماشین حالت را بی‌معنا می‌کند.
+    status = serializers.ChoiceField(choices=CampaignStatus.choices)
+    urgency_level = serializers.ChoiceField(choices=CampaignUrgency.choices)
     is_featured = serializers.BooleanField()
     benefactor = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()

@@ -280,6 +280,35 @@ def build_operations_ts(ops: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _postman_saved_response(row: dict[str, Any]) -> list[dict[str, Any]]:
+    """پاسخ ذخیره‌شدهٔ Postman از نمونهٔ قرارداد — اجرای درخواست لازم نیست."""
+    responses = row.get("responses") or {}
+    for status, resp in sorted(responses.items()):
+        if not str(status).startswith("2") or not isinstance(resp, dict):
+            continue
+        media = resp.get("content", {}).get("application/json", {})
+        examples = media.get("examples", {})
+        value = (examples.get("realistic") or examples.get("default") or {}).get("value")
+        if value is None:
+            continue
+        return [
+            {
+                "name": f"نمونهٔ {status}",
+                "originalRequest": {
+                    "method": row["method"],
+                    "header": [{"key": "Accept", "value": "application/json"}],
+                    "url": postman_url(row["path"]),
+                },
+                "status": "OK",
+                "code": int(status),
+                "_postman_previewlanguage": "json",
+                "header": [{"key": "Content-Type", "value": "application/json"}],
+                "body": json.dumps(value, ensure_ascii=False, indent=2),
+            }
+        ]
+    return []
+
+
 def build_postman(doc: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, Any]:
     """تولید کالکشن Postman v2.1 دستهبندیشده بر پایهٔ تگها."""
     folders: dict[str, list[dict[str, Any]]] = {}
@@ -315,13 +344,11 @@ def build_postman(doc: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, A
         body: dict[str, Any] = {}
         rb = row["requestBody"]
         if isinstance(rb, dict):
-            example = (
-                rb.get("content", {})
-                .get("application/json", {})
-                .get("examples", {})
-                .get("default", {})
-                .get("value")
-            )
+            json_media = rb.get("content", {}).get("application/json", {})
+            examples = json_media.get("examples", {}) or {}
+            example = (examples.get("default") or examples.get("realistic") or {}).get("value")
+            if example is None:
+                example = json_media.get("example")
             raw_value = json.dumps(
                 example if example is not None else {}, ensure_ascii=False, indent=2
             )
@@ -352,7 +379,10 @@ def build_postman(doc: dict[str, Any], ops: list[dict[str, Any]]) -> dict[str, A
                     f"خطاها: application/problem+json | سیاست: {row['policy'].get('auth')}"
                 ),
             },
-            "response": [],
+            # نمونهٔ پاسخ تولیدشده (اگر مولد نمونه‌ها اجرا شده باشد). بدون این،
+            # تیم فرانت در Postman دکمهٔ «Example Response» را خالی می‌بیند و
+            # باید حدس بزند JSON واقعی چه شکلی است.
+            "response": _postman_saved_response(row),
         }
         if body:
             item["request"]["body"] = body

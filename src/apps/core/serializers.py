@@ -44,9 +44,14 @@ class PlatformMetaSerializer(serializers.Serializer[dict[str, Any]]):
 
 
 class HealthStatusSerializer(serializers.Serializer[dict[str, Any]]):
-    """پاسخ بررسی سلامت سامانه."""
+    """پاسخ بررسی سلامت سامانه.
 
-    status = serializers.CharField()
+    ``status`` به‌جای رشتهٔ آزاد، مجموعهٔ بستهٔ سه‌حالته است: پایش‌گر
+    (Kubernetes probe، لودبالانسر، داشبورد) باید بتواند روی مقدار مقایسه
+    کند؛ رشتهٔ آزاد یعنی «شاید فردا چیز دیگری باشد».
+    """
+
+    status = serializers.ChoiceField(choices=["healthy", "degraded", "unhealthy"])
     checks = serializers.DictField(required=False)
 
 
@@ -125,7 +130,7 @@ class ReconcileInputSerializer(serializers.Serializer[dict[str, Any]]):
 class FinancialHealthSerializer(serializers.Serializer[dict[str, Any]]):
     """گزارش کامل سلامت حلقهٔ وجه برای پنل عملیات."""
 
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=["healthy", "attention_required"])
     generated_at = serializers.DateTimeField()
     money_loop = MoneyLoopStatsSerializer()
     recovery_ledger = serializers.DictField(child=serializers.IntegerField())
@@ -246,9 +251,13 @@ class SettlementStatementSerializer(serializers.Serializer[dict[str, Any]]):
     """نمای یک سند صورت‌حساب تسویه."""
 
     id = serializers.UUIDField()
-    gateway_name = serializers.CharField()
-    source_kind = serializers.CharField()
-    status = serializers.CharField()
+    gateway_name = serializers.ChoiceField(
+        choices=["sandbox", "zarinpal", "idpay", "nextpay", "manual"]
+    )
+    source_kind = serializers.ChoiceField(choices=["csv", "xlsx", "api", "manual"])
+    status = serializers.ChoiceField(
+        choices=["received", "parsed", "reconciling", "reconciled", "failed"]
+    )
     original_filename = serializers.CharField()
     period_start = serializers.DateTimeField()
     period_end = serializers.DateTimeField()
@@ -274,7 +283,24 @@ class SettlementRowSerializer(serializers.Serializer[dict[str, Any]]):
     ref_id = serializers.CharField()
     amount_rial = serializers.IntegerField()
     occurred_at = serializers.DateTimeField(allow_null=True)
-    match_status = serializers.CharField(help_text="نتیجهٔ تطبیق این ردیف با دفتر داخلی.")
+    # چرا literal و نه ``SettlementRowMatchStatus.choices``؟
+    #   چون ``core`` بر اساس گیت AST پروژه هرگز نباید از ``contributions``
+    #   ایمپورت کند (``contributions`` به ``core`` وابسته است، نه برعکس).
+    #   همان الگویی که برای ``gateway_name`` در v1.3.0 پذیرفته شد: فهرست
+    #   صریح + یک تست قرارداد که همگامی با enum واقعی را قفل می‌کند
+    #   (``test_contract_status_enums_match_model_choices``).
+    match_status = serializers.ChoiceField(
+        choices=[
+            "pending",
+            "matched",
+            "duplicate_in_file",
+            "missing_internal",
+            "amount_mismatch",
+            "internal_not_verified",
+            "missing_gateway",
+        ],
+        help_text="نتیجهٔ تطبیق این ردیف با دفتر داخلی.",
+    )
     match_note = serializers.CharField(
         help_text="توضیح فارسی نتیجه — برای نمایش مستقیم به اپراتور."
     )

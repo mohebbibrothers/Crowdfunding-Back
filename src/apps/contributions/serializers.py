@@ -10,6 +10,10 @@ from apps.contributions.choices import (
     ContributionTargetKind,
     DedicationType,
     GatewayName,
+    InstallmentStatus,
+    PaymentStatus,
+    PledgeFrequency,
+    PledgeStatus,
 )
 from apps.contributions.models import AmbassadorLink, Contribution, ExternalContribution, Payment
 from apps.core.crypto import mask_phone
@@ -255,7 +259,7 @@ class AdminPaymentSerializer(serializers.Serializer[Any]):
     gateway_name = serializers.CharField()
     authority = serializers.CharField()
     ref_id = serializers.CharField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=PaymentStatus.choices)
     amount_rial = serializers.IntegerField()
     amount_toman = serializers.SerializerMethodField()
     donor_phone_masked = serializers.SerializerMethodField()
@@ -538,7 +542,7 @@ class PledgeCreateInputSerializer(serializers.Serializer[Any]):
     charity_jar_id = serializers.UUIDField(required=False, allow_null=True)
     amount_rial = serializers.IntegerField(min_value=1)
     frequency = serializers.ChoiceField(
-        choices=[("monthly", "ماهانه"), ("quarterly", "سه‌ماهه")], default="monthly"
+        choices=PledgeFrequency.choices, default=PledgeFrequency.MONTHLY
     )
     shares_count = serializers.IntegerField(min_value=0, default=0)
     start_day = serializers.IntegerField(min_value=1, max_value=31, required=False, allow_null=True)
@@ -575,7 +579,14 @@ class PledgeUpdateInputSerializer(serializers.Serializer[Any]):
 
 
 class PledgeInstallmentOutputSerializer(serializers.Serializer[Any]):
-    """یک قسط تعهد مستمر — با وضعیت خوانا و مبلغ به تومان."""
+    """یک قسط تعهد مستمر — با وضعیت خوانا و مبلغ به تومان.
+
+    ``status`` و ``frequency`` به‌جای ``CharField`` آزاد، ``ChoiceField``
+    تایپ‌شده‌اند. چرا؟ چون فرانت باید بتواند به‌جای مقایسهٔ رشته‌ای شکننده
+    (``if (s.status === "paid")``) از union type تولیدشده استفاده کند، و
+    مستندات Swagger باید فهرست دقیق مقادیر مجاز را نشان دهد. رشتهٔ آزاد در
+    قرارداد یعنی «هر چیزی ممکن است» — که برای ماشین حالت فرانت بی‌فایده است.
+    """
 
     id = serializers.UUIDField()
     sequence = serializers.IntegerField()
@@ -583,7 +594,7 @@ class PledgeInstallmentOutputSerializer(serializers.Serializer[Any]):
     grace_until = serializers.DateField()
     amount_rial = serializers.IntegerField()
     amount_toman = serializers.IntegerField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=InstallmentStatus.choices)
     status_display = serializers.CharField()
     is_open = serializers.BooleanField()
     reminder_count = serializers.IntegerField()
@@ -597,13 +608,13 @@ class PledgeOutputSerializer(serializers.Serializer[Any]):
     """تعهد مستمر با خلاصهٔ اقساط و وضعیت قابل‌اقدام."""
 
     id = serializers.UUIDField()
-    status = serializers.CharField()
+    status = serializers.ChoiceField(choices=PledgeStatus.choices)
     status_display = serializers.CharField()
-    target_kind = serializers.CharField()
+    target_kind = serializers.ChoiceField(choices=ContributionTargetKind.choices)
     target_title = serializers.CharField(allow_blank=True)
     amount_rial = serializers.IntegerField()
     amount_toman = serializers.IntegerField()
-    frequency = serializers.CharField()
+    frequency = serializers.ChoiceField(choices=PledgeFrequency.choices)
     frequency_display = serializers.CharField()
     interval_months = serializers.IntegerField()
     anchor_day = serializers.IntegerField()
@@ -649,12 +660,12 @@ class AdminPledgeSerializer(serializers.Serializer[Any]):
     id = serializers.UUIDField()
     user_id = serializers.UUIDField()
     user_phone_masked = serializers.CharField()
-    status = serializers.CharField()
-    target_kind = serializers.CharField()
+    status = serializers.ChoiceField(choices=PledgeStatus.choices)
+    target_kind = serializers.ChoiceField(choices=ContributionTargetKind.choices)
     target_title = serializers.CharField(allow_blank=True)
     amount_rial = serializers.IntegerField()
     amount_toman = serializers.IntegerField()
-    frequency = serializers.CharField()
+    frequency = serializers.ChoiceField(choices=PledgeFrequency.choices)
     next_due_date = serializers.DateField()
     total_paid_rial = serializers.IntegerField()
     installments_paid = serializers.IntegerField()

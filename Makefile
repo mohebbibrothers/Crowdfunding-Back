@@ -1,7 +1,7 @@
 # ==============================================================================
 # Crowdfunding-Back — میانبرهای توسعه، کنترل کیفیت، طرحواره و اجرای محلی
 # ==============================================================================
-.PHONY: help install format lint typecheck tscheck security schema handoff verify-handoff migrate seed run test check
+.PHONY: help install format lint typecheck tscheck security schema samples handoff verify-handoff migrate seed run test check
 
 PYTHON_ENV := PYTHONPATH=src
 
@@ -32,10 +32,14 @@ security: ## اسکن امنیتی کد (Bandit) و ممیزی آسیب‌پذی
 schema: ## تولید و اعتبارسنجی بدون هشدار قرارداد OpenAPI 3.1.0
 	DJANGO_SETTINGS_MODULE=config.settings.development $(PYTHON_ENV) uv run python src/manage.py spectacular --api-version v1 --file docs/api/v1/openapi.yaml --validate --fail-on-warn
 
-handoff: schema ## بازتولید بستهٔ کامل تحویل فرانتاند از روی قرارداد OpenAPI
+samples: schema ## تزریق نمونه‌های اعتبارسنجی‌شدهٔ پاسخ در قرارداد OpenAPI
+	$(PYTHON_ENV) uv run python scripts/compile_response_samples.py
+
+handoff: samples ## بازتولید بستهٔ کامل تحویل فرانت‌اند از روی قرارداد
 	$(PYTHON_ENV) uv run python scripts/build_frontend_kit.py
 
 verify-handoff: ## راستیآزمایی همگامی بستهٔ فرانتاند با قرارداد (بدون ایجاد تغییر)
+	@$(PYTHON_ENV) uv run python scripts/compile_response_samples.py >/dev/null
 	@$(PYTHON_ENV) uv run python scripts/build_frontend_kit.py >/dev/null
 	@git diff --exit-code -- docs/frontend docs/api/v1/openapi.yaml \
 		|| (echo "❌ بستهٔ فرانتاند با قرارداد همگام نیست: make handoff را اجرا و commit کنید."; exit 1)
