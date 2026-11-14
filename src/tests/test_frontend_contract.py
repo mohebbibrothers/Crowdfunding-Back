@@ -996,3 +996,33 @@ def test_contract_status_enums_match_model_choices() -> None:
     match_field = str(row_schema.get("match_status", {}))
     for value in SettlementRowMatchStatus.values:
         assert value in match_field, f"مقدار «{value}» در قرارداد match_status غایب است"
+
+
+def test_whole_frontend_kit_type_checks() -> None:
+    """کل بستهٔ فرانت باید با ``tsc --noEmit -p tsconfig.json`` پاس شود.
+
+    این همان فرمانی است که CI اجرا می‌کند، ولی اینجا زودتر و با پیام فارسی
+    اجرا می‌شود. تفاوت مهم با ``test_start_here_typescript_snippet_compiles``:
+    آن فقط اسنیپت راهنما را می‌سنجد؛ این **همهٔ** فایل‌های بسته را — از جمله
+    ``type-tests.ts`` که یک فایل اجرایی برای قفل تایپ‌هاست.
+
+    چرا لازم شد: در v1.5.1 اسکیمای ``v1_campaigns_list`` از آرایه به پوشه
+    تغییر کرد (اصلاح یک دروغ قراردادی). ``type-tests.ts`` هنوز ``.length``
+    روی پاسخ می‌زد و CI قرمز شد — یعنی خودِ قفل تایپ‌ها کهنه شده بود. این
+    تست همان را در محیط توسعه می‌گیرد، نه ۵ دقیقه بعد در GitHub Actions.
+    """
+    npx = shutil.which("npx")
+    if npx is None:
+        pytest.skip("npx در دسترس نیست")
+
+    result = subprocess.run(  # noqa: S603 — argv ثابت، بدون shell
+        [npx, "--yes", "--package", "typescript@5.9.3", "tsc", "--noEmit", "-p", "tsconfig.json"],
+        cwd=FRONTEND_DIR,
+        capture_output=True,
+        text=True,
+        timeout=300,
+        check=False,
+    )
+    assert result.returncode == 0, (
+        "بستهٔ فرانت type-check نشد:\n" + (result.stdout or result.stderr)[:2000]
+    )

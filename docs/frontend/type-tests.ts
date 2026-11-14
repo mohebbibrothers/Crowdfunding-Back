@@ -9,7 +9,7 @@
  */
 
 import { ApiClientError, createApiClient } from "./api-client";
-import type { ApiOperation, ProblemCode } from "./api-types";
+import type { ApiOperation, CampaignSummary, ProblemCode } from "./api-types";
 
 const client = createApiClient({
   baseUrl: "https://api.charity.example.org",
@@ -24,10 +24,18 @@ async function integrationSmoke(): Promise<void> {
   const holdMinutes: number = meta.share_hold_ttl_minutes;
   void holdMinutes;
 
-  // ۲) فهرست عمومی + query؛ خروجی آرایهٔ CampaignSummary است، نه any.
-  const campaigns: ApiOperation<"v1_campaigns_list">["response"] =
-    await client.request("v1_campaigns_list", { query: { order: "fair", status: "active" } });
+  // ۲) فهرست عمومی + query.
+  //    ⚠️ خروجی **پوشه** است، نه آرایه: { ordering, count, results }.
+  //    اگر روزی به آرایه برگردد، همین دو خط خطا می‌دهند و ما می‌فهمیم —
+  //    دقیقاً همان کاری که این فایل باید بکند.
+  const campaignList: ApiOperation<"v1_campaigns_list">["response"] = await client.request(
+    "v1_campaigns_list",
+    { query: { order: "fair", status: "active" } },
+  );
+  const campaigns: Array<CampaignSummary> = campaignList.results;
+  const appliedOrdering: string = campaignList.ordering;
   void campaigns.length;
+  void appliedOrdering;
 
   // ۳) بدنهٔ نوشتنی دقیقاً با اسکیمای CheckoutInitiateInputRequest چک میشود.
   const checkout = await client.request("v1_contributions_checkout_create", {
