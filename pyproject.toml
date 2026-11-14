@@ -9,7 +9,7 @@
 
 [project]
 name = "crowdfunding-back"
-version = "1.0.0"
+version = "1.1.0"
 description = "سکوی هوشمند کرادفاندینگ خیریه و حرکت‌های سهم‌محور — دفتر کل دوطرفهٔ تغییرناپذیر، شفافیت درخت مرکل و معماری آمادهٔ Nitro cPanel"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,7 +19,7 @@ authors = [{ name = "Crowdfunding Platform Engineering" }]
 keywords = ["crowdfunding", "charity", "double-entry-ledger", "merkle-tree", "django", "iran"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "Framework :: Django :: 6.0",
+  "Framework :: Django :: 6.1",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Natural Language :: Persian",

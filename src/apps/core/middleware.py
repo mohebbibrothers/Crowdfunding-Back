@@ -25,7 +25,19 @@ from apps.core.uuid7 import uuid7_hex
 logger = logging.getLogger(__name__)
 
 _SAFE_REQ_ID_RE = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
-_PERSONAL_PREFIXES = ("/api/v1/me", "/api/v1/auth", "/api/v1/admin", "/django-admin")
+_PERSONAL_PREFIXES = ("/api/v1/me", "/api/v1/auth", "/api/v1/admin")
+_DOCS_PREFIXES = ("/api/v1/docs", "/api/v1/redoc", "/api/v1/schema")
+# Swagger UI / ReDoc از CDN مجاز drf-spectacular بارگذاری میشوند؛ CSP سختگیرانهٔ
+# پیشفرض آنها را مسدود میکرد و صفحهٔ مستندات خالی رندر میشد.
+_DOCS_CSP = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+    "img-src 'self' data: https://cdn.jsdelivr.net; "
+    "font-src 'self' data: https://fonts.gstatic.com; "
+    "connect-src 'self' https://cdn.jsdelivr.net; "
+    "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+)
 _ADMIN_GUARD_SALT: Final[str] = "crowdfunding.admin_login_guard"
 _KEY_CEILING_SECONDS: Final[int] = 86_400
 
@@ -126,8 +138,10 @@ class SecurityAndCacheHeadersMiddleware:
         response = self._get_response(request)
 
         nonce = getattr(request, "csp_nonce", "")
-        is_docs = request.path.startswith("/api/docs") or request.path.startswith("/api/redoc")
-        if not is_docs and "Content-Security-Policy" not in response:
+        is_docs = request.path.startswith(_DOCS_PREFIXES)
+        if is_docs:
+            response["Content-Security-Policy"] = _DOCS_CSP
+        elif "Content-Security-Policy" not in response:
             script_src = f"'self' 'nonce-{nonce}'" if nonce else "'self'"
             response["Content-Security-Policy"] = (
                 f"default-src 'self'; script-src {script_src}; "
@@ -142,7 +156,8 @@ class SecurityAndCacheHeadersMiddleware:
             "camera=(), microphone=(), geolocation=(), payment=()",
         )
 
-        is_personal = any(request.path.startswith(prefix) for prefix in _PERSONAL_PREFIXES)
+        admin_prefix = f"/{str(settings.ADMIN_URL_PATH).strip('/')}"
+        is_personal = request.path.startswith((*_PERSONAL_PREFIXES, admin_prefix))
         if response.status_code >= 400 or is_personal:
             response["Cache-Control"] = "private, no-store"
         return response

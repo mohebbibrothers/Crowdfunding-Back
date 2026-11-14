@@ -30,7 +30,7 @@ def env_list(name: str, default: list[str]) -> list[str]:
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
-APP_VERSION = os.environ.get("APP_VERSION", "1.0.0")
+APP_VERSION = os.environ.get("APP_VERSION", "1.1.0")
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "dev-only-insecure-secret-key-change-in-production-immediately-9876543210",
@@ -171,9 +171,11 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 
 # تنظیمات نشست دوگانه (HttpOnly Cookie + SessionAwareJWT)
 AUTH_SESSION_COOKIE_NAME = os.environ.get("AUTH_SESSION_COOKIE_NAME", "cf_session")
+SESSION_COOKIE_NAME = AUTH_SESSION_COOKIE_NAME
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
+# ``None`` تنها زمانی مجاز است که SESSION_COOKIE_SECURE=true و کلاینت روی دامنهٔ متفاوت باشد.
+SESSION_COOKIE_SAMESITE = os.environ.get("DJANGO_SESSION_COOKIE_SAMESITE", "Lax")
+CSRF_COOKIE_SAMESITE = SESSION_COOKIE_SAMESITE
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 X_FRAME_OPTIONS = "DENY"
@@ -187,6 +189,19 @@ CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
     ["http://localhost:3000", "http://127.0.0.1:3000"],
 )
+
+# نشانی پایدار و قابل استناد برای فیلد ``type`` در خطاهای RFC 9457.
+# هر کد خطا یک لنگر (anchor) واقعی در فهرست کدهای خطای فرانت‌اند دارد.
+PROBLEM_TYPE_URI_TEMPLATE = os.environ.get(
+    "PROBLEM_TYPE_URI_TEMPLATE",
+    "https://github.com/mohebbibrothers/Crowdfunding-Back/blob/main/docs/frontend/ERRORS.md#error-{code}",
+)
+
+# محافظت از مستندات تعاملی در محیط تولید (DEBUG=False) پشت نشست کارکنان.
+API_DOCS_ALLOW_ANONYMOUS = env_bool("API_DOCS_ALLOW_ANONYMOUS", False)
+
+# تعداد پراکسی‌های معتمد پیش از برنامه (cPanel / پروکسی معکوس) برای استخراج امن IP کلاینت.
+TRUSTED_PROXY_COUNT = int(os.environ.get("TRUSTED_PROXY_COUNT", "0"))
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.environ.get("JWT_ACCESS_MINUTES", "15"))),
@@ -241,7 +256,12 @@ REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "apps.identity.throttles.StandardIpThrottle",
+    ],
     "DEFAULT_THROTTLE_RATES": {
+        "anon_public": os.environ.get("THROTTLE_ANON_PUBLIC", "120/min"),
+        "checkout": os.environ.get("THROTTLE_CHECKOUT", "30/min"),
         "otp_request": os.environ.get("THROTTLE_OTP_REQUEST", "10/min"),
         "otp_verify": os.environ.get("THROTTLE_OTP_VERIFY", "15/min"),
         "mfa_verify": os.environ.get("THROTTLE_MFA_VERIFY", "10/min"),
@@ -255,10 +275,111 @@ SPECTACULAR_SETTINGS = {
         "سرویس بک‌اند ماژولار، حسابداری دوطرفه ریالی، شفافیت رمزنگاری درخت مرکل، "
         "مشارکت سریع ۳۰ ثانیه‌ای، نیت‌نامه معنوی، قلک عام، حامی مضاعف و گزارش اکسل ۸ کاربرگه."
     ),
-    "VERSION": "1.0.0",
+    "VERSION": APP_VERSION,
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+    "SERVERS": [
+        {
+            "url": os.environ.get("PUBLIC_API_BASE_URL", "https://api.charity.example.org"),
+            "description": "سرور عملیاتی (جایگزین شود با آدرس واقعی استقرار)",
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "سرور توسعهٔ محلی",
+        },
+    ],
+    "EXTERNAL_DOCS": {
+        "description": "راهنمای یکپارچه‌سازی فرانت‌اند، کدهای خطا و کلاینت تایپ‌شده",
+        "url": ("https://github.com/mohebbibrothers/Crowdfunding-Back/tree/main/docs/frontend"),
+    },
+    "TAGS": [
+        {"name": "System", "description": "متادیتای بوت‌استرپ، CSRF و پروب‌های سلامت سرویس."},
+        {"name": "Auth", "description": "ورود OTP، ورود کارکنان، چرخش توکن و خروج از نشست."},
+        {"name": "Auth - Staff MFA", "description": "راه‌اندازی و تأیید دومرحله‌ای TOTP کارکنان."},
+        {"name": "Donor - Profile & Sessions", "description": "پروفایل خیر و مدیریت نشست‌های فعال."},
+        {"name": "Donor - Notifications", "description": "صندوق اعلان‌های درون‌برنامه‌ای خیر."},
+        {
+            "name": "Donor - Contributions & Checkout",
+            "description": "رزرو اتمیک سهم، قلک عام و آغاز پرداخت.",
+        },
+        {
+            "name": "Donor - Motivation Dashboard",
+            "description": "کارنامهٔ معنوی خیر، تاریخچهٔ مشارکت‌ها و اثبات مرکل شخصی.",
+        },
+        {
+            "name": "Public - Benefactors & Jars",
+            "description": "کاتالوگ عمومی خیریه‌ها (مددکاران) و قلک‌های عام.",
+        },
+        {
+            "name": "Public - Campaigns",
+            "description": "حرکت‌های سهم‌محور، دسته‌ها، رتبه‌بندی منصفانه و دیوار همراهان.",
+        },
+        {
+            "name": "Public - Express 30s Checkout",
+            "description": "مشارکت سریع مهمان در ۳۰ ثانیه بدون ثبت‌نام قبلی.",
+        },
+        {
+            "name": "Public - Payments & Receipts",
+            "description": "بازگشت درگاه، شبیه‌ساز Sandbox و استعلام اصالت رسید.",
+        },
+        {
+            "name": "Public - Cryptographic Transparency",
+            "description": "دیوار شفافیت مالی و اثبات شمول درخت مرکل RFC 6962.",
+        },
+        {
+            "name": "Public - Dedication Certificates",
+            "description": "گواهی نیت‌نامه و کارت هدیهٔ معنوی قابل اشتراک.",
+        },
+        {
+            "name": "Public - Short-Links & Ambassadors",
+            "description": "حل پیوندک و کارنامهٔ لینک‌های سفیر اجتماعی.",
+        },
+        {"name": "Admin - System", "description": "سلامت تفصیلی ویژهٔ تیم عملیات."},
+        {
+            "name": "Admin - Governance",
+            "description": "سیاست‌های زمان اجرا و پرچم‌های ویژگی (Feature Flags).",
+        },
+        {"name": "Admin - Audit", "description": "زنجیرهٔ هش تغییرناپذیر ممیزی و راستی‌آزمایی."},
+        {"name": "Admin - Identity", "description": "مدیریت کاربران، نقش‌ها و سیگنال‌های ریسک."},
+        {
+            "name": "Admin - Benefactors & Jars",
+            "description": "مدیریت خیریه‌ها، مددکاران و قلک‌های عام.",
+        },
+        {
+            "name": "Admin - Campaigns",
+            "description": "تعریف حرکت‌ها، حامی مضاعف و گزارش پیشرفت میدانی.",
+        },
+        {
+            "name": "Admin - Ledger & Disbursements",
+            "description": "دفتر کل دوطرفه، تسویهٔ چهارچشمی و مغایرت‌گیری بانکی.",
+        },
+        {
+            "name": "Admin - Payments & Refunds",
+            "description": "پایش پرداخت‌ها، استرداد وجه و کمک‌های خارج از درگاه.",
+        },
+        {
+            "name": "Admin - Executive Excel Reports",
+            "description": "کتابچهٔ ۸ کاربرگهٔ اکسل راست‌به‌چپ و تاریخچهٔ خروجی‌ها.",
+        },
+    ],
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "apps.core.schema.enrich_contract_schema",
+    ],
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "csrfToken": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-CSRFToken",
+                "description": (
+                    "توکن CSRF دریافت‌شده از GET /api/v1/auth/csrf؛ "
+                    "برای تمام درخواست‌های نوشتنی مبتنی بر کوکی الزامی است."
+                ),
+            },
+        },
+    },
     "ENUM_NAME_OVERRIDES": {
         "CampaignStatusEnum": "apps.campaigns.choices.CampaignStatus.choices",
         "ContributionStatusEnum": "apps.contributions.choices.ContributionStatus.choices",

@@ -58,6 +58,7 @@ class PlatformMetaView(APIView):
             "service": "crowdfunding-back",
             "environment": getattr(settings, "ENVIRONMENT", "development"),
             "api_version": "v1",
+            "app_version": str(settings.APP_VERSION),
             "supported_versions": ["v1"],
             "currency_base": "IRR",
             "currency_display_units": ["IRR", "TOMAN"],
@@ -259,7 +260,7 @@ def docs_protected_wrapper(view_func: Any) -> Any:
         user = getattr(request, "user", None)
         if user is not None and user.is_authenticated and getattr(user, "is_staff_member", False):
             return view_func(request, *args, **kwargs)  # type: ignore[no-any-return]
-        admin_prefix = str(getattr(settings, "DJANGO_ADMIN_URL_PREFIX", "django-admin")).strip("/")
+        admin_prefix = str(settings.ADMIN_URL_PATH).strip("/")
         resp = HttpResponse(status=302)
         resp["Location"] = f"/{admin_prefix}/login/?next={request.path}"
         return resp

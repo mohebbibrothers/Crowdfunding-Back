@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -63,6 +63,7 @@ class AdminJournalEntryListView(APIView):
     @extend_schema(
         operation_id="v1_admin_ledger_entries_list",
         summary="فهرست اسناد روزنامهٔ حسابداری",
+        parameters=[OpenApiParameter(name="kind", type=str, required=False)],
         responses={200: JournalEntrySerializer(many=True)},
         tags=["Admin - Ledger & Disbursements"],
     )
@@ -80,6 +81,7 @@ class AdminDisbursementListCreateView(APIView):
     @extend_schema(
         operation_id="v1_admin_disbursements_list",
         summary="فهرست درخواست‌های تسویه با خیریه‌ها",
+        parameters=[OpenApiParameter(name="status", type=str, required=False)],
         responses={200: DisbursementRequestSerializer(many=True)},
         tags=["Admin - Ledger & Disbursements"],
     )

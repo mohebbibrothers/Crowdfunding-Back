@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بستهٔ تحویل فرانتاند — Crowdfunding-Back v1.1.0</title>
+<style>
+  :root{
+    --bg:#0a1120; --bg2:#111c33; --card:#152341; --card2:#1b2c50;
+    --line:#2a3d64; --text:#eef4ff; --muted:#9db0d4; --emerald:#3ddc97;
+    --amber:#ffc86b; --rose:#ff7d94; --sky:#6db8ff; --violet:#b79cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 15% -10%,#1b3a5c 0%,transparent 60%),
+       radial-gradient(900px 600px at 95% 5%,#2b2350 0%,transparent 55%),var(--bg);
+       color:var(--text);font-family:"Vazirmatn","Tahoma",system-ui,sans-serif;line-height:1.85}
+  a{color:var(--sky);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+  header{padding:34px 0 18px}
+  .kicker{display:inline-flex;gap:8px;align-items:center;background:rgba(61,220,151,.1);
+    border:1px solid rgba(61,220,151,.35);color:var(--emerald);border-radius:999px;
+    padding:5px 14px;font-size:13px;font-weight:700;letter-spacing:.2px}
+  h1{font-size:clamp(28px,5vw,48px);line-height:1.3;margin:18px 0 10px;font-weight:800}
+  h1 span{background:linear-gradient(90deg,var(--emerald),var(--sky),var(--violet));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);max-width:780px;font-size:16px;margin:0}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:28px 0}
+  .stat{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:16px;padding:18px 16px;text-align:center}
+  .stat b{display:block;font-size:30px;line-height:1.2;color:var(--emerald);font-variant-numeric:tabular-nums}
+  .stat small{color:var(--muted);font-size:12.5px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+  .card{background:linear-gradient(155deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:18px;padding:20px;transition:.2s;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-3px);border-color:#3d5c94;box-shadow:0 14px 40px rgba(0,0,0,.3)}
+  .card .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+    background:rgba(109,184,255,.12);font-size:20px;margin-bottom:12px}
+  .card h3{margin:0 0 8px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:13.5px}
+  .card code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:6px;font-size:12px}
+  h2{font-size:23px;margin:44px 0 8px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:5px;height:24px;border-radius:4px;background:linear-gradient(var(--emerald),var(--sky))}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .panel{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);
+    border-radius:18px;padding:20px;overflow:auto}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input[type=search],select{background:#0d1930;border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:9px 13px;font-family:inherit;font-size:14px;outline:none}
+  input[type=search]{flex:1;min-width:200px}
+  input[type=search]:focus,select:focus{border-color:var(--emerald)}
+  .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;
+    font-family:ui-monospace,monospace;letter-spacing:.3px}
+  .mGET{background:rgba(109,184,255,.15);color:var(--sky)}
+  .mPOST{background:rgba(61,220,151,.15);color:var(--emerald)}
+  .mPATCH{background:rgba(255,200,107,.15);color:var(--amber)}
+  .mDELETE{background:rgba(255,125,148,.15);color:var(--rose)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-align:right;vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;position:sticky;top:0;background:#111d35}
+  td.path{font-family:ui-monospace,monospace;direction:ltr;text-align:left;color:#dce9ff;white-space:nowrap}
+  tr:hover td{background:rgba(109,184,255,.05)}
+  .tag{font-size:11px;color:var(--violet);border:1px solid rgba(183,156,255,.3);
+    border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .count{color:var(--muted);font-size:13px;margin-top:10px}
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px}
+  .step{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13px}
+  .step b{display:block;color:var(--amber);font-size:12px;margin-bottom:5px}
+  .step code{font-size:11.5px;color:var(--sky);word-break:break-all}
+  .note{border-right:3px solid var(--emerald);background:rgba(61,220,151,.06);
+    padding:12px 16px;border-radius:0 10px 10px 0;color:#d8f5e8;font-size:13.5px;margin:16px 0}
+  .warn{border-right-color:var(--rose);background:rgba(255,125,148,.06);color:#ffe3e9}
+  .footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  .pill{display:inline-block;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;margin:3px;font-size:12px}
+  svg{display:block;margin:0 auto;max-width:100%;height:auto}
+  @media(max-width:640px){.wrap{padding:18px 12px 60px}td.path{white-space:normal}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">✓ نسخهٔ نهایی تحویل · قفلشده با قرارداد · CI سبز</div>
+  <h1>بستهٔ تحویل <span>بکاند به فرانتاند</span><br>Crowdfunding-Back v1.1.0</h1>
+  <p class="lead">همهچیزی که برای شروع کار بدون یک سؤال اضافه لازم است: قرارداد ماشینی، تایپهای TypeScript،
+  کلاینت HTTP آماده، کاتالوگ خطاها، کالکشن Postman و راهنمای جریانها — همگی از یک منبع حقیقت واحد تولید شدهاند.</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><b id="stat-paths">72</b><small>مسیر API</small></div>
+  <div class="stat"><b id="stat-ops">83</b><small>عملیات مستندشده</small></div>
+  <div class="stat"><b id="stat-schemas">112</b><small>اسکیمای تایپشده</small></div>
+  <div class="stat"><b id="stat-codes">36</b><small>کد خطای RFC 9457</small></div>
+  <div class="stat"><b>54/54</b><small>تست عبورکرده (گزارش نسخهٔ ۱٫۱٫۰)</small></div>
+  <div class="stat"><b>85.82%</b><small>پوشش شاخهای (گزارش نسخهٔ ۱٫۱٫۰)</small></div>
+</div>
+
+<h2>۱ · داراییهای تحویلی</h2>
+<p class="sub">فایلهای ستاره 🟢 خودکار تولید میشوند؛ دستکاری آنها توسط CI رد میشود.</p>
+<div class="grid">
+  <div class="card"><div class="ico">📘</div><h3>راهنمای جامع یکپارچهسازی</h3>
+    <p>قراردادها، جریان OTP، CSRF، Step-Up MFA، پرداخت، صفحهبندی، پول و تقویم شمسی.<br>
+    <a href="./HANDOFF.md">HANDOFF.md ←</a></p></div>
+  <div class="card"><div class="ico">🧩</div><h3>قرارداد OpenAPI 3.1.0 🟢</h3>
+    <p>ماتریس کامل، خطاهای استاندارد، نمونهها، سرورها و ۲۳ تگ.<br>
+    <a href="../api/v1/openapi.yaml">openapi.yaml ←</a></p></div>
+  <div class="card"><div class="ico">🟦</div><h3>تایپهای TypeScript 🟢</h3>
+    <p><code>api-types.d.ts</code> + نگاشت <code>operations.ts</code>؛
+    تایپ درخواست/پاسخ هر <code>operationId</code>.<br>
+    <a href="./api-types.d.ts">مشاهده ←</a></p></div>
+  <div class="card"><div class="ico">⚡</div><h3>کلاینت HTTP آماده</h3>
+    <p><code>api-client.ts</code>: CSRF، چرخش تکپروازهٔ JWT، خطای تایپشده،
+    Idempotency، ETag، retry و pagination.<br><a href="./api-client.ts">مشاهده ←</a></p></div>
+  <div class="card"><div class="ico">🚨</div><h3>کاتالوگ خطاها 🟢</h3>
+    <p>۳۶ کد پایدار با اقدام UX مشخص برای هرکدام؛ لنگرهای واقعیِ فیلد <code>type</code>.<br>
+    <a href="./ERRORS.md">ERRORS.md ←</a></p></div>
+  <div class="card"><div class="ico">📮</div><h3>کالکشن Postman 🟢</h3>
+    <p>۸۳ درخواست در ۲۳ پوشه، همراه بدنهٔ نمونه، متغیرهای <code>baseUrl</code> و توکنها.<br>
+    <a href="./postman_collection.json">دانلود ←</a></p></div>
+  <div class="card"><div class="ico">📋</div><h3>ماتریس نقاط پایانی 🟢</h3>
+    <p>جدول متد / مسیر / operationId / سطح دسترسی و پارامترهای پرکاربرد.<br>
+    <a href="./ENDPOINTS.md">ENDPOINTS.md ←</a></p></div>
+  <div class="card"><div class="ico">✅</div><h3>چکلیست پذیرش</h3>
+    <p>Definition of Done پیش از استقرار؛ شامل تست انتهابهانتها روی Sandbox.<br>
+    <a href="./CHECKLIST.md">CHECKLIST.md ←</a></p></div>
+</div>
+
+<h2>۲ · نقشهٔ معماری ۹ ماژول مستقل</h2>
+<p class="sub">گراف بدون دور (DAG) — هر ماژول فقط به لایههای پایینتر وابسته است؛ توسط تست AST قفل شده.</p>
+<div class="panel">
+<svg viewBox="0 0 980 300" role="img" aria-label="نمودار معماری ماژولها">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#3ddc97"/><stop offset="1" stop-color="#6db8ff"/></linearGradient>
+    <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#b79cff"/><stop offset="1" stop-color="#ffc86b"/></linearGradient>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#5b78a8"/>
+    </marker>
+  </defs>
+  <g font-family="Vazirmatn,Tahoma,sans-serif" font-size="12" text-anchor="middle">
+    <g fill="#162a4c" stroke="url(#g1)" stroke-width="1.4">
+      <rect x="30" y="120" width="130" height="56" rx="12"/>
+      <rect x="185" y="40" width="130" height="56" rx="12"/>
+      <rect x="185" y="200" width="130" height="56" rx="12"/>
+      <rect x="340" y="40" width="130" height="56" rx="12"/>
+      <rect x="340" y="200" width="130" height="56" rx="12"/>
+    </g>
+    <g fill="#1e2148" stroke="url(#g2)" stroke-width="1.4">
+      <rect x="495" y="40" width="130" height="56" rx="12"/>
+      <rect x="495" y="200" width="130" height="56" rx="12"/>
+      <rect x="650" y="120" width="140" height="56" rx="12"/>
+      <rect x="815" y="120" width="140" height="56" rx="12"/>
+    </g>
+    <g fill="#eef4ff" font-weight="700">
+      <text x="95" y="144">core</text><text x="95" y="162" font-size="10" fill="#9db0d4">هسته و زیرساخت</text>
+      <text x="250" y="64">audit</text><text x="250" y="82" font-size="10" fill="#9db0d4">زنجیرهٔ هش</text>
+      <text x="250" y="224">identity</text><text x="250" y="242" font-size="10" fill="#9db0d4">هویت / MFA</text>
+      <text x="405" y="64">notifications</text><text x="405" y="82" font-size="10" fill="#9db0d4">اعلان و پیامک</text>
+      <text x="405" y="224">benefactors</text><text x="405" y="242" font-size="10" fill="#9db0d4">خیریه و قلک</text>
+      <text x="560" y="64">campaigns</text><text x="560" y="82" font-size="10" fill="#9db0d4">حرکتهای سهمی</text>
+      <text x="560" y="224">ledger</text><text x="560" y="242" font-size="10" fill="#9db0d4">دفتر کل ریالی</text>
+      <text x="720" y="144">contributions</text><text x="720" y="162" font-size="10" fill="#9db0d4">پرداخت / مرکل</text>
+      <text x="885" y="144">reporting</text><text x="885" y="162" font-size="10" fill="#9db0d4">اکسل ۸ کاربرگه</text>
+    </g>
+    <g stroke="#5b78a8" stroke-width="1.3" fill="none" marker-end="url(#ar)" opacity=".8">
+      <path d="M160 136 C172 100 175 75 185 68"/>
+      <path d="M160 152 C172 190 175 220 185 228"/>
+      <path d="M315 68 H340"/><path d="M315 228 H340"/>
+      <path d="M470 68 H495"/><path d="M470 228 H495"/>
+      <path d="M625 68 C640 90 640 120 650 136"/>
+      <path d="M625 228 C640 205 640 165 650 152"/>
+      <path d="M790 148 H815"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<h2>۳ · پنج گام تا اولین فراخوانی موفق</h2>
+<div class="flow">
+  <div class="step"><b>گام ۱ · بوت</b><code>GET /api/v1/meta</code><br>پرچمها، نسخه، واحد پول، تاریخ شمسی امروز</div>
+  <div class="step"><b>گام ۲ · CSRF (فقط کوکی)</b><code>GET /api/v1/auth/csrf</code><br>توکن را در هدر نوشتنیها بفرستید</div>
+  <div class="step"><b>گام ۳ · ورود</b><code>POST /api/v1/auth/otp/request</code><br><code>POST /api/v1/auth/otp/verify</code></div>
+  <div class="step"><b>گام ۴ · کشف محتوا</b><code>GET /api/v1/campaigns?order=fair</code><br>ETag و رتبهبندی منصفانه</div>
+  <div class="step"><b>گام ۵ · مشارکت</b><code>POST /api/v1/contributions/checkout</code><br>رزرو ۱۵ دقیقهای + Idempotency-Key</div>
+</div>
+<div class="note">💡 تمام مبالغ ورودی <b>ریال صحیح</b>اند؛ پاسخها جفت <code>*_rial</code> / <code>*_toman</code>
+دارند و تاریخها فیلد آمادهٔ <code>*_jalali</code> دارند. هرگز خودتان تبدیل نکنید.</div>
+<div class="note warn">⚠️ پاسخ <code>403</code> با <code>code=mfa_required</code> یا <code>step_up_required</code>
+یعنی مودال TOTP، سپس <b>همان درخواست با همان Idempotency-Key</b> — نه درخواست تازه.</div>
+
+<h2>۴ · کاوشگر نقاط پایانی</h2>
+<p class="sub">جستجو بر اساس مسیر، خلاصه، تگ یا operationId؛ کلیک روی مسیر برای کپی.</p>
+<div class="panel">
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="مثلاً: transparency، پرداخت، admin/users، v1_me_…" aria-label="جستجو">
+    <select id="tag" aria-label="فیلتر تگ"><option value="">همهٔ تگها</option></select>
+    <select id="method" aria-label="فیلتر متد">
+      <option value="">همهٔ متدها</option><option>GET</option><option>POST</option>
+      <option>PATCH</option><option>DELETE</option>
+    </select>
+  </div>
+  <div style="max-height:430px;overflow:auto">
+    <table><thead><tr><th>متد</th><th>مسیر</th><th>خلاصه</th><th>تگ</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+  </div>
+  <div class="count" id="count"></div>
+</div>
+
+<h2>۵ · استانداردهایی که رعایت شدهاند</h2>
+<div>
+  <span class="pill">OpenAPI 3.1.0 · صفر هشدار</span>
+  <span class="pill">RFC 9457 Problem Details</span>
+  <span class="pill">RFC 6962 Merkle Proofs</span>
+  <span class="pill">UUIDv7</span>
+  <span class="pill">ETag / If-None-Match</span>
+  <span class="pill">Cursor Pagination</span>
+  <span class="pill">Idempotency-Key</span>
+  <span class="pill">TOTP Step-Up MFA</span>
+  <span class="pill">Double-Entry Rial Ledger</span>
+  <span class="pill">OWASP ASVS</span>
+  <span class="pill">Ruff + Mypy strict + Bandit + pip-audit</span>
+  <span class="pill">Pytest on MariaDB 11 · 85.82% branch</span>
+</div>
+
+<div class="footer">
+  ساختهشده از <a href="../api/v1/openapi.yaml">openapi.yaml</a> توسط
+  <code>scripts/build_frontend_kit.py</code> · اثر انگشت قرارداد در
+  <a href="./contract-fingerprint.json">contract-fingerprint.json</a> ·
+  مخزن: <a href="https://github.com/mohebbibrothers/Crowdfunding-Back">GitHub</a>
+  <br>تمام لینکها و داراییها بهصورت محلی و آفلاین کار میکنند؛ هیچ CDN یا فونت خارجی بارگذاری نمیشود.
+</div>
+
+</div>
+
+<script id="endpoint-data" type="application/json">
+/* DATA_START */
+[{"method":"GET","path":"/api/v1/admin/audit/logs","id":"v1_admin_audit_logs_list","summary":"فهرست رکوردهای زنجیرهٔ حسابرسی با فیلتر کنش و هدف","tag":"Admin - Audit"},{"method":"GET","path":"/api/v1/admin/audit/verify","id":"v1_admin_audit_verify","summary":"بررسی سلامت زنجیرهٔ هش حسابرسی و لنگرهای امضاشده","tag":"Admin - Audit"},{"method":"GET","path":"/api/v1/admin/benefactors","id":"v1_admin_benefactors_list","summary":"فهرست مدیریتی تمام خیریه‌ها","tag":"Admin - Benefactors & Jars"},{"method":"POST","path":"/api/v1/admin/benefactors","id":"v1_admin_benefactors_create","summary":"ایجاد خیریه/نهاد نیکوکاری جدید","tag":"Admin - Benefactors & Jars"},{"method":"DELETE","path":"/api/v1/admin/benefactors/{benefactor_id}","id":"v1_admin_benefactors_destroy","summary":"حذف خیریهٔ بدون سابقه یا غیرفعال‌سازی ایمن آن","tag":"Admin - Benefactors & Jars"},{"method":"GET","path":"/api/v1/admin/benefactors/{benefactor_id}","id":"v1_admin_benefactors_retrieve","summary":"دریافت مشخصات کامل مدیریتی خیریه","tag":"Admin - Benefactors & Jars"},{"method":"PATCH","path":"/api/v1/admin/benefactors/{benefactor_id}","id":"v1_admin_benefactors_partial_update","summary":"ویرایش جزئی مشخصات خیریه","tag":"Admin - Benefactors & Jars"},{"method":"GET","path":"/api/v1/admin/jars","id":"v1_admin_jars_list","summary":"فهرست مدیریتی قلک‌های عام خیریه‌ها","tag":"Admin - Benefactors & Jars"},{"method":"POST","path":"/api/v1/admin/jars","id":"v1_admin_jars_create","summary":"ایجاد قلک عام جدید برای خیریه","tag":"Admin - Benefactors & Jars"},{"method":"PATCH","path":"/api/v1/admin/jars/{jar_id}","id":"v1_admin_jars_partial_update","summary":"ویرایش تنظیمات قلک عام خیریه","tag":"Admin - Benefactors & Jars"},{"method":"POST","path":"/api/v1/admin/campaign-categories","id":"v1_admin_campaign_categories_create","summary":"ایجاد دسته‌بندی موضوعی حرکت","tag":"Admin - Campaigns"},{"method":"GET","path":"/api/v1/admin/campaigns","id":"v1_admin_campaigns_list","summary":"فهرست مدیریتی همهٔ حرکت‌ها","tag":"Admin - Campaigns"},{"method":"POST","path":"/api/v1/admin/campaigns","id":"v1_admin_campaigns_create","summary":"تعریف حرکت خیرخواهانهٔ سهم‌محور جدید","tag":"Admin - Campaigns"},{"method":"GET","path":"/api/v1/admin/campaigns/{campaign_id}","id":"v1_admin_campaigns_retrieve","summary":"دریافت جزئیات مدیریتی یک حرکت","tag":"Admin - Campaigns"},{"method":"PATCH","path":"/api/v1/admin/campaigns/{campaign_id}","id":"v1_admin_campaigns_partial_update","summary":"ویرایش حرکت (محافظت از قیمت سهم و خیریه پس از اولین مشارکت)","tag":"Admin - Campaigns"},{"method":"POST","path":"/api/v1/admin/campaigns/{campaign_id}/impact-updates","id":"v1_admin_campaigns_impact_updates_create","summary":"انتشار گزارش پیشرفت میدانی حرکت برای سهام‌داران","tag":"Admin - Campaigns"},{"method":"POST","path":"/api/v1/admin/campaigns/{campaign_id}/matching-grants","id":"v1_admin_campaigns_matching_grants_create","summary":"ثبت تعهد حامی مضاعف‌کننده برای حرکت","tag":"Admin - Campaigns"},{"method":"GET","path":"/api/v1/admin/reports/excel","id":"v1_admin_reports_excel_export","summary":"دانلود گزارش اکسل ۸ کاربرگهٔ اجرایی، مالی و مغایرت‌گیری (مهرشده با SHA-256)","tag":"Admin - Executive Excel Reports"},{"method":"GET","path":"/api/v1/admin/reports/exports-history","id":"v1_admin_reports_export_history_list","summary":"فهرست ممیزی و هش SHA-256 گزارش‌های اکسل صادرشده","tag":"Admin - Executive Excel Reports"},{"method":"GET","path":"/api/v1/admin/policies","id":"v1_admin_policies_list","summary":"مشاهدهٔ فهرست سیاست‌های زمان اجرا و وضعیت کلیدهای قابلیت‌ها","tag":"Admin - Governance"},{"method":"POST","path":"/api/v1/admin/policies/{policy_key}","id":"v1_admin_policies_update","summary":"تغییر نسخه‌دار یک سیاست سامانه با الزام دلیل و Step-Up MFA","tag":"Admin - Governance"},{"method":"GET","path":"/api/v1/admin/auth/risk-signals","id":"v1_admin_auth_risks_list","summary":"فهرست سیگنال‌های ریسک امنیتی ورود و توکن‌ها","tag":"Admin - Identity"},{"method":"POST","path":"/api/v1/admin/auth/risk-signals/{signal_id}/review","id":"v1_admin_auth_risks_review","summary":"بررسی و تعیین وضعیت سیگنال ریسک احراز هویت","tag":"Admin - Identity"},{"method":"GET","path":"/api/v1/admin/users","id":"v1_admin_users_list","summary":"فهرست کاربران سامانه (با تلفن پوشانده در حالت عادی)","tag":"Admin - Identity"},{"method":"POST","path":"/api/v1/admin/users/{user_id}/reveal-phone","id":"v1_admin_users_reveal_phone","summary":"مشاهدهٔ شماره موبایل کامل خیر با ثبت هدف ممیزی و Step-Up MFA","tag":"Admin - Identity"},{"method":"POST","path":"/api/v1/admin/users/{user_id}/role","id":"v1_admin_users_role_update","summary":"تغییر نقش کاربر با الزام Step-Up MFA و ثبت دلیل","tag":"Admin - Identity"},{"method":"GET","path":"/api/v1/admin/disbursements","id":"v1_admin_disbursements_list","summary":"فهرست درخواست‌های تسویه با خیریه‌ها","tag":"Admin - Ledger & Disbursements"},{"method":"POST","path":"/api/v1/admin/disbursements","id":"v1_admin_disbursements_create","summary":"ثبت درخواست تسویه وجه با خیریه (گام Maker)","tag":"Admin - Ledger & Disbursements"},{"method":"POST","path":"/api/v1/admin/disbursements/{disbursement_id}/review","id":"v1_admin_disbursements_review","summary":"تأیید یا رد چهارچشمی درخواست تسویه با خیریه (Checker + Step-Up MFA)","tag":"Admin - Ledger & Disbursements"},{"method":"GET","path":"/api/v1/admin/ledger/accounts","id":"v1_admin_ledger_accounts_list","summary":"مشاهدهٔ تراز سرفصل‌های دفترکل حسابداری دوطرفه","tag":"Admin - Ledger & Disbursements"},{"method":"POST","path":"/api/v1/admin/ledger/control-snapshot","id":"v1_admin_ledger_control_snapshot_create","summary":"محاسبه و ثبت اسنپ‌شات کنترل تراز دفترکل و انطباق شمارنده‌ها","tag":"Admin - Ledger & Disbursements"},{"method":"GET","path":"/api/v1/admin/ledger/entries","id":"v1_admin_ledger_entries_list","summary":"فهرست اسناد روزنامهٔ حسابداری","tag":"Admin - Ledger & Disbursements"},{"method":"GET","path":"/api/v1/admin/reconciliations","id":"v1_admin_reconciliations_list","summary":"فهرست دسته‌های مغایرت‌گیری درگاه پرداخت","tag":"Admin - Ledger & Disbursements"},{"method":"POST","path":"/api/v1/admin/reconciliations","id":"v1_admin_reconciliations_create","summary":"اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی","tag":"Admin - Ledger & Disbursements"},{"method":"POST","path":"/api/v1/admin/campaigns/{campaign_id}/external-contributions","id":"v1_admin_campaigns_external_contributions_create","summary":"ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا","tag":"Admin - Payments & Refunds"},{"method":"GET","path":"/api/v1/admin/payments","id":"v1_admin_payments_list","summary":"فهرست مدیریتی تراکنش‌های درگاه پرداخت","tag":"Admin - Payments & Refunds"},{"method":"POST","path":"/api/v1/admin/payments/{payment_id}/refund","id":"v1_admin_payments_refund","summary":"ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA)","tag":"Admin - Payments & Refunds"},{"method":"GET","path":"/api/v1/health/detailed","id":"v1_health_detailed","summary":"بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی","tag":"Admin - System"},{"method":"POST","path":"/api/v1/auth/logout","id":"v1_auth_logout","summary":"خروج از نشست جاری","tag":"Auth"},{"method":"POST","path":"/api/v1/auth/logout-others","id":"v1_auth_logout_others","summary":"ابطال تمام نشست‌های دیگر به‌جز دستگاه فعلی","tag":"Auth"},{"method":"POST","path":"/api/v1/auth/otp/request","id":"v1_auth_otp_request","summary":"درخواست کد یک‌بارمصرف پیامکی (ورود / ثبت‌نام)","tag":"Auth"},{"method":"POST","path":"/api/v1/auth/otp/verify","id":"v1_auth_otp_verify","summary":"تأیید کد پیامکی و دریافت نشست (Cookie + JWT)","tag":"Auth"},{"method":"POST","path":"/api/v1/auth/staff/password-login","id":"v1_auth_staff_password_login","summary":"ورود کارکنان با شماره موبایل و گذرواژه","tag":"Auth"},{"method":"POST","path":"/api/v1/auth/token/refresh","id":"v1_auth_token_refresh","summary":"نوسازی چرخشی توکن JWT با تشخیص سرقت توکن","tag":"Auth"},{"method":"GET","path":"/api/v1/auth/mfa/status","id":"v1_auth_mfa_status","summary":"مشاهدهٔ وضعیت تأیید دومرحله‌ای کارمند","tag":"Auth - Staff MFA"},{"method":"POST","path":"/api/v1/auth/mfa/totp/confirm","id":"v1_auth_mfa_totp_confirm","summary":"تأیید نهایی دستگاه TOTP و دریافت کدهای بازیابی","tag":"Auth - Staff MFA"},{"method":"POST","path":"/api/v1/auth/mfa/totp/setup","id":"v1_auth_mfa_totp_setup","summary":"شروع راه‌اندازی TOTP کارمند و دریافت QR SVG","tag":"Auth - Staff MFA"},{"method":"POST","path":"/api/v1/auth/mfa/verify","id":"v1_auth_mfa_verify","summary":"تأیید کد دومرحله‌ای روی نشست فعال یا ارتقای Step-Up","tag":"Auth - Staff MFA"},{"method":"POST","path":"/api/v1/contributions/checkout","id":"v1_contributions_checkout_create","summary":"رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز به قلک و دریافت لینک درگاه پرداخت","tag":"Donor - Contributions & Checkout"},{"method":"GET","path":"/api/v1/me/contributions","id":"v1_me_contributions_list","summary":"تاریخچهٔ تمام مشارکت‌های من در حرکت‌ها و قلک‌ها","tag":"Donor - Motivation Dashboard"},{"method":"GET","path":"/api/v1/me/dashboard","id":"v1_me_dashboard_retrieve","summary":"داشبورد جامع و انگیزه‌بخش خیر (کارنامهٔ معنوی، مالی، سفیران و مژده‌های میدانی)","tag":"Donor - Motivation Dashboard"},{"method":"GET","path":"/api/v1/me/notifications","id":"v1_me_notifications_list","summary":"مشاهدهٔ فهرست اعلان‌ها و مژده‌های حرکت‌های همراهی‌شده","tag":"Donor - Notifications"},{"method":"POST","path":"/api/v1/me/notifications/read-all","id":"v1_me_notifications_read_all","summary":"علامت‌گذاری تمام اعلان‌های من به‌عنوان خوانده‌شده","tag":"Donor - Notifications"},{"method":"POST","path":"/api/v1/me/notifications/{notification_id}/read","id":"v1_me_notifications_read","summary":"ثبت مطالعهٔ یک اعلان","tag":"Donor - Notifications"},{"method":"GET","path":"/api/v1/me","id":"v1_me_profile_retrieve","summary":"مشاهدهٔ اطلاعات حساب و پروفایل کاربر جاری","tag":"Donor - Profile & Sessions"},{"method":"PATCH","path":"/api/v1/me","id":"v1_me_profile_update","summary":"تکمیل یا ویرایش پروفایل خیر (نام، استان، شهر، کد ملی رمزشده)","tag":"Donor - Profile & Sessions"},{"method":"GET","path":"/api/v1/me/sessions","id":"v1_me_sessions_list","summary":"مشاهدهٔ فهرست دستگاه‌ها و نشست‌های فعال من","tag":"Donor - Profile & Sessions"},{"method":"POST","path":"/api/v1/me/sessions/{session_id}/revoke","id":"v1_me_sessions_revoke","summary":"ابطال یک نشست مشخص از راه دور","tag":"Donor - Profile & Sessions"},{"method":"GET","path":"/api/v1/benefactors","id":"v1_benefactors_list","summary":"فهرست خیریه‌ها و نهادهای نیکوکاری فعال","tag":"Public - Benefactors & Jars"},{"method":"GET","path":"/api/v1/benefactors/{slug}","id":"v1_benefactors_retrieve","summary":"دریافت جزئیات خیریه و قلک‌های عام آن","tag":"Public - Benefactors & Jars"},{"method":"GET","path":"/api/v1/jars","id":"v1_jars_list","summary":"فهرست قلک‌های عام فعال خیریه‌ها","tag":"Public - Benefactors & Jars"},{"method":"GET","path":"/api/v1/jars/{identifier}","id":"v1_jars_retrieve","summary":"جزئیات قلک عام خیریه از روی نامک یا کد پیوندک","tag":"Public - Benefactors & Jars"},{"method":"GET","path":"/api/v1/campaign-categories","id":"v1_campaign_categories_list","summary":"فهرست دسته‌بندی‌های موضوعی حرکت‌ها","tag":"Public - Campaigns"},{"method":"GET","path":"/api/v1/campaigns","id":"v1_campaigns_list","summary":"فهرست حرکت‌های خیرخواهانه با رتبه‌بندی توزیع منصفانه","tag":"Public - Campaigns"},{"method":"GET","path":"/api/v1/campaigns/{identifier}","id":"v1_campaigns_retrieve","summary":"مشاهدهٔ جزئیات حرکت خیرخواهانه، سهم‌های آزاد و گزارش‌های میدانی","tag":"Public - Campaigns"},{"method":"GET","path":"/api/v1/campaigns/{identifier}/supporters","id":"v1_campaigns_supporters_list","summary":"فهرست همراهان حرکت خیرخواهانه (با حفظ گمنامی خیرین ناشناس)","tag":"Public - Campaigns"},{"method":"GET","path":"/api/v1/campaigns/{identifier}/transparency","id":"v1_campaigns_transparency_retrieve","summary":"گزارش شفافیت مالی، تفکیک منابع آنلاین/آفلاین و ریشه درخت مرکل حرکت","tag":"Public - Cryptographic Transparency"},{"method":"GET","path":"/api/v1/me/contributions/{contribution_id}/merkle-proof","id":"v1_me_contributions_merkle_proof_retrieve","summary":"دریافت گواهی اثبات شمول مرکل (Merkle Inclusion Proof) برای مشارکت من","tag":"Public - Cryptographic Transparency"},{"method":"POST","path":"/api/v1/transparency/verify-proof","id":"v1_transparency_verify_merkle_proof","summary":"راستی‌آزمایی ریاضی اثبات شمول مرکل (Merkle Inclusion Proof)","tag":"Public - Cryptographic Transparency"},{"method":"GET","path":"/api/v1/dedications/{public_token}","id":"v1_dedications_retrieve","summary":"مشاهدهٔ گواهی نیت‌نامه و کارت هدیه معنوی با توکن عمومی","tag":"Public - Dedication Certificates"},{"method":"POST","path":"/api/v1/contributions/express/confirm","id":"v1_contributions_express_confirm","summary":"مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۲ (تایید OTP، ورود خودکار و دریافت لینک درگاه)","tag":"Public - Express 30s Checkout"},{"method":"POST","path":"/api/v1/contributions/express/start","id":"v1_contributions_express_start","summary":"مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۱ (ثبت نیت خرید و ارسال OTP)","tag":"Public - Express 30s Checkout"},{"method":"GET","path":"/api/v1/payments/callback","id":"v1_payments_callback_get","summary":"بازگشت GET از درگاه پرداخت اینترنتی (Authority & Status)","tag":"Public - Payments & Receipts"},{"method":"POST","path":"/api/v1/payments/callback","id":"v1_payments_verify_post","summary":"تأیید تراکنش درگاه پرداخت از طریق فرانت‌اند (POST)","tag":"Public - Payments & Receipts"},{"method":"GET","path":"/api/v1/payments/sandbox/{authority}","id":"v1_payments_sandbox_retrieve","summary":"اطلاعات تراکنش درگاه تعاملی Sandbox","tag":"Public - Payments & Receipts"},{"method":"GET","path":"/api/v1/receipts/verify/{verification_code}","id":"v1_receipts_verify_retrieve","summary":"استعلام اصالت رسید رسمی مشارکت با کد رهگیری","tag":"Public - Payments & Receipts"},{"method":"GET","path":"/api/v1/me/ambassador-links","id":"v1_me_ambassador_links_list","summary":"فهرست لینک‌های سفیر اجتماعی من و آمار اثرگذاری هرکدام","tag":"Public - Short-Links & Ambassadors"},{"method":"POST","path":"/api/v1/me/ambassador-links","id":"v1_me_ambassador_links_create","summary":"ساخت لینک اختصاصی سفیر اجتماعی برای دعوت به حرکت یا قلک","tag":"Public - Short-Links & Ambassadors"},{"method":"GET","path":"/api/v1/short-links/{short_code}","id":"v1_short_links_resolve","summary":"حل نشانی پیوندک کوتاه (حرکت، قلک عام یا لینک سفیر اجتماعی)","tag":"Public - Short-Links & Ambassadors"},{"method":"GET","path":"/api/v1/auth/csrf","id":"v1_csrf_bootstrap","summary":"دریافت و کاشت توکن CSRF برای نشست‌های کوکی‌محور","tag":"System"},{"method":"GET","path":"/api/v1/health/live","id":"v1_health_live","summary":"بررسی زنده بودن فرآیند برنامه (Liveness)","tag":"System"},{"method":"GET","path":"/api/v1/health/ready","id":"v1_health_ready","summary":"بررسی آمادگی دیتابیس و کش (Readiness)","tag":"System"},{"method":"GET","path":"/api/v1/meta","id":"v1_meta_retrieve","summary":"دریافت متادیتای نسخهٔ API و قابلیت‌های فعال سامانه","tag":"System"}]
+/* DATA_END */
+</script>
+<script>
+(function(){
+  const raw = document.getElementById('endpoint-data').textContent
+    .replace('/* DATA_START */','').replace('/* DATA_END */','').trim();
+  let ops = [];
+  try { ops = JSON.parse(raw); } catch (e) { ops = []; }
+  const q = document.getElementById('q'), tagSel = document.getElementById('tag'),
+        methodSel = document.getElementById('method'), rows = document.getElementById('rows'),
+        count = document.getElementById('count');
+  /* META_START */ const META = {"paths":72,"operations":83,"schemas":112,"problem_codes":36}; /* META_END */
+  const setStat = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
+  setStat('stat-paths', META.paths); setStat('stat-ops', META.operations);
+  setStat('stat-schemas', META.schemas); setStat('stat-codes', META.problem_codes);
+  const tags = [...new Set(ops.map(o => o.tag))].sort();
+  tags.forEach(t => { const el=document.createElement('option'); el.value=t; el.textContent=t; tagSel.appendChild(el); });
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function render(){
+    const needle = q.value.trim().toLowerCase(), tag = tagSel.value, method = methodSel.value;
+    const list = ops.filter(o =>
+      (!tag || o.tag === tag) && (!method || o.method === method) &&
+      (!needle || (o.path+' '+o.summary+' '+o.id+' '+o.tag).toLowerCase().includes(needle)));
+    rows.innerHTML = list.map(o =>
+      `<tr><td><span class="badge m${o.method}">${o.method}</span></td>`+
+      `<td class="path" title="کپی مسیر" style="cursor:pointer" onclick="navigator.clipboard&&navigator.clipboard.writeText('${esc(o.path)}')">${esc(o.path)}</td>`+
+      `<td>${esc(o.summary)}<br><small style="color:#7f93ba;font-family:monospace">${esc(o.id)}</small></td>`+
+      `<td><span class="tag">${esc(o.tag)}</span></td></tr>`).join('');
+    count.textContent = `نمایش ${list.length} از ${ops.length} عملیات`;
+  }
+  [q,tagSel,methodSel].forEach(el => el.addEventListener('input', render));
+  render();
+})();
+</script>
+</body>
+</html>

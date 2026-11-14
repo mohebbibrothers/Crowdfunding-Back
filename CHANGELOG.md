@@ -4,6 +4,56 @@
 
 ---
 
+## [1.1.0] - 2026-11-12 (۱۴۰۵/۰۸/۲۱) — نسخهٔ تحویل فرانتاند
+
+### افزوده‌شده (Added)
+- **🎯 بستهٔ رسمی تحویل فرانتاند (`docs/frontend/`)**: پورتال بصری آفلاین `index.html` با کاوشگر ۸۳ عملیات،
+  راهنمای جامع `HANDOFF.md` (جریانها، نمودارهای Mermaid، ماشین حالت پرداخت، نگاشت صفحه ← API)،
+  تایپهای `api-types.d.ts` + `operations.ts`، کلاینت `api-client.ts` بدون وابستگی،
+  کاتالوگ `ERRORS.md` (۳۶ کد)، ماتریس `ENDPOINTS.md`، کالکشن `postman_collection.json`،
+  چکلیست پذیرش `CHECKLIST.md` و قفل `contract-fingerprint.json`.
+- **کامپایلر قرارداد (`scripts/build_frontend_kit.py`)**: تولید تعیینی تمام داراییهای فرانتاند
+  مستقیماً از `openapi.yaml`؛ هدف `make handoff` و گیت `make verify-handoff` در CI.
+- **لایهٔ تقویت قرارداد (`apps/core/schema.py`)**: `servers`، ۲۳ `tags` توضیحدار، `externalDocs`،
+  اسکیمای `Problem` (RFC 9457)، ۱۱ پاسخ خطای قابل بازاستفاده، هدرهای `X-Request-ID` /
+  `Idempotency-Key` / `X-CSRFToken` / `If-None-Match`، نمونههای بدنه و سیاست `x-frontend-policy`
+  (`auth` / `retry` / `paginated`) برای تمام ۸۳ عملیات.
+- **اسکیمای خروجی تایپشده**: ۱۲ سریالایزر خروجی تازه برای شفافیت مرکل، رسید، نیتنامه،
+  درگاه Sandbox، استرداد، دیوار همراهان و داشبورد خیر؛ **صفر پاسخ `(object)` بدون اسکیمای** باقی ماند.
+- **صفحهبندی صادقانه**: پوشش `{results, meta}` + پارامترهای `cursor` / `page_size` برای
+  پنج نقطهٔ پایانی مکاننمایی؛ مستندسازی فیلترهای query دهها نقطهٔ پایانی دیگر.
+- **مسیر `/api/v1/redoc`** و محافظت از Swagger/ReDoc/Schema در محیط تولید پشت نشست کارکنان.
+- **فیلد `app_version` در `GET /api/v1/meta`**: نسخهٔ دقیق بکاند مستقرشده برای پنل «درباره» و گزارش خطا.
+- **گیت `make tscheck` (TypeScript 5.9 `strict`)**: کامپایل `api-client.ts`، `operations.ts`،
+  `api-types.d.ts` و `type-tests.ts` در CI با Node 20؛ هیچ `any` پنهان و هیچ نمونهٔ نامعتبری عبور نمیکند.
+- **گیتهای تازهٔ قرارداد (`src/tests/test_frontend_contract.py`)**: ۲۳ آزمون برای جلوگیری از
+  درفت مستندات، ناهمسازی تایپها/کالکشن/پورتال، خطاهای اعلامنشده، پاسخهای بدون اسکیمای تایپشده،
+  طرحهای امنیتی، نرخهای throttle و مسیرهای زندهٔ مستندات.
+- **متغیرهای محیطی تازه**: `PUBLIC_API_BASE_URL`، `DJANGO_SESSION_COOKIE_SAMESITE`،
+  `TRUSTED_PROXY_COUNT`، `PROBLEM_TYPE_URI_TEMPLATE`، `API_DOCS_ALLOW_ANONYMOUS`،
+  `THROTTLE_ANON_PUBLIC` و `THROTTLE_CHECKOUT`.
+
+### اصلاحشده (Fixed)
+- **کوکی نشست عملاً `cf_session` نبود**: متغیر `AUTH_SESSION_COOKIE_NAME` تعریف شده ولی به
+  `SESSION_COOKIE_NAME` متصل نبود؛ اکنون نام کوکی، طرح `cookieAuth` در OpenAPI و مستندات یکیاند.
+- **مستندات منسوخ**: ۶ مسیر/متد نادرست در `docs/api/v1/README.md` و نمونهٔ خطای قدیمی در
+  `docs/api/README.md` (`request_id` ← `trace_id`، نشانی `type` ← لنگر واقعی `ERRORS.md`) اصلاح شد.
+- **صفحات مستندات خالی در تولید**: CSP سختگیرانه، بارگذاری CDN مجاز drf-spectacular را مسدود
+  میکرد و پیشوند پنل ادمین در `docs_protected_wrapper` نادرست بود؛ هر دو اصلاح شدند.
+- **پوشش صفحهبندی نادرست در قرارداد**: پنج نقطهٔ پایانی `{results, meta}` برمیگرداندند ولی
+  در OpenAPI «آرایه» اعلام شده بودند (عامل خطای تولید کلاینتهای خودکار).
+- **نرخهای محدودسازی بلااستفاده**: `anon_public` / `checkout` / `mfa_verify` فقط در تنظیمات تست
+  تعریف شده بودند؛ اکنون `StandardIpThrottle` بهعنوان پیشفرض سراسری و `CheckoutThrottle` /
+  `MfaVerifyThrottle` به نقاط حساس متصلاند.
+- **نشانی `type` خطاها** به دامنهای غیرواقعی اشاره میکرد؛ اکنون لنگر پایدار و قابل استناد
+  در کاتالوگ `docs/frontend/ERRORS.md` است.
+
+### ارتقا یافته
+- مجموعهٔ آزمونها از **۳۱ به ۵۴** و پوشش شاخهای از **۸۵٫۲۸٪ به ۸۵٫۸۲٪** افزایش یافت؛
+  اسکیمای OpenAPI از **۸۲ به ۱۱۲** کامپوننت و از **۰ به ۱۱** پاسخ خطای استاندارد رسید.
+
+---
+
 ## [1.0.0] - 2026-11-12 (۱۴۰۵/۰۸/۲۱)
 
 ### افزوده‌شده (Added)

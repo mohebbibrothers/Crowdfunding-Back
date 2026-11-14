@@ -33,6 +33,7 @@ class PlatformMetaSerializer(serializers.Serializer[dict[str, Any]]):
     service = serializers.CharField()
     environment = serializers.CharField()
     api_version = serializers.CharField()
+    app_version = serializers.CharField()
     supported_versions = serializers.ListField(child=serializers.CharField())
     currency_base = serializers.CharField()
     currency_display_units = serializers.ListField(child=serializers.CharField())

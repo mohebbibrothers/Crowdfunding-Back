@@ -17,8 +17,12 @@
 4. **به‌روزرسانی قرارداد OpenAPI 3.1**:
    پس از هر تغییر در سریالایزرها یا مسیرهای API، طرحواره را بازتولید و بدون هشدار اعتبارسنجی کنید:
    ```bash
-   make schema
+   make handoff   # بازتولید طرحواره + تایپها/کالکشن/مستندات فرانتاند
    ```
+   ⚠️ فایلهای `docs/frontend/` با علامت 🟢 **تولیدشدهٔ خودکار** هستند؛ هرگز دستکاری نشوند.
+   گیت `make verify-handoff` و CI هرگونه درفت بین قرارداد و بستهٔ فرانتاند را رد میکنند.
+   خطاهای تازه حتماً در `PROBLEM_CODES` (`apps/core/schema.py`) ثبت شوند تا همزمان در
+   OpenAPI و `ERRORS.md` منعکس گردند.
 
 ---
 
@@ -32,12 +36,14 @@ make test
 ```
 
 این دستورات به ترتیب موارد زیر را اجرا می‌کنند:
-- `uv run ruff format --check src` و `uv run ruff check src`
+- `uv run ruff format --check src scripts` و `uv run ruff check src scripts`
 - `uv run mypy` (حالت `--strict`)
+- `make tscheck` (بررسی تایپهای TypeScript بستهٔ فرانتاند با `strict: true`)
 - `uv run bandit -c pyproject.toml -r src`
 - `uv run pip-audit`
 - `manage.py makemigrations --check --dry-run`
 - `manage.py spectacular --validate --fail-on-warn`
+- `make handoff` و گیت همگامی بستهٔ فرانتاند (`git diff --exit-code`)
 - `uv run pytest --cov=apps --cov-branch --cov-fail-under=85`
 
 ---

@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Any, cast
 
+from django.conf import settings
 from django.utils import timezone
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from rest_framework.authentication import SessionAuthentication
@@ -112,6 +113,9 @@ class SessionAwareCookieScheme(OpenApiAuthenticationExtension):  # type: ignore[
         return {
             "type": "apiKey",
             "in": "cookie",
-            "name": "sessionid",
-            "description": "نشست کوکی HttpOnly هم‌مبدأ همراه با هدر X-CSRFToken در درخواست‌های نوشتنی.",
+            "name": str(settings.SESSION_COOKIE_NAME),
+            "description": (
+                "نشست کوکی HttpOnly هم‌مبدأ؛ در درخواست‌های نوشتنی "
+                "هدر X-CSRFToken (طرح امنیتی csrfToken) نیز الزامی است."
+            ),
         }

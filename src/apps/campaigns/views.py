@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -78,6 +78,16 @@ class PublicCampaignListView(APIView):
     @extend_schema(
         operation_id="v1_campaigns_list",
         summary="فهرست حرکت‌های خیرخواهانه با رتبه‌بندی توزیع منصفانه",
+        parameters=[
+            OpenApiParameter(name="category", type=str, required=False),
+            OpenApiParameter(name="benefactor", type=str, required=False),
+            OpenApiParameter(name="province", type=str, required=False),
+            OpenApiParameter(name="status", type=str, required=False),
+            OpenApiParameter(name="urgency", type=str, required=False),
+            OpenApiParameter(name="has_matching", type=bool, required=False),
+            OpenApiParameter(name="q", type=str, required=False),
+            OpenApiParameter(name="order", type=str, required=False),
+        ],
         responses={200: CampaignSummarySerializer(many=True)},
         tags=["Public - Campaigns"],
     )
@@ -203,6 +213,10 @@ class AdminCampaignListCreateView(APIView):
     @extend_schema(
         operation_id="v1_admin_campaigns_list",
         summary="فهرست مدیریتی همهٔ حرکت‌ها",
+        parameters=[
+            OpenApiParameter(name="status", type=str, required=False),
+            OpenApiParameter(name="benefactor_id", type=str, required=False),
+        ],
         responses={200: CampaignDetailSerializer(many=True)},
         tags=["Admin - Campaigns"],
     )

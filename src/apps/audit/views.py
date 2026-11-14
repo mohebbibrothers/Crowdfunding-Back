@@ -12,6 +12,7 @@ from apps.audit.selectors import list_audit_records
 from apps.audit.serializers import AuditChainVerificationSerializer, AuditRecordSerializer
 from apps.audit.services import verify_anchors, verify_chain
 from apps.core.pagination import StaffTableCursorPagination
+from apps.core.schema import CURSOR_PAGINATION_PARAMETERS, paginated_response
 from apps.identity.permissions import IsFinanceOrSuperAdmin
 
 
@@ -27,8 +28,9 @@ class AdminAuditRecordListView(APIView):
             OpenApiParameter(name="action", type=str, required=False),
             OpenApiParameter(name="target_type", type=str, required=False),
             OpenApiParameter(name="target_id", type=str, required=False),
+            *CURSOR_PAGINATION_PARAMETERS,
         ],
-        responses={200: AuditRecordSerializer(many=True)},
+        responses={200: paginated_response(AuditRecordSerializer, name="PaginatedAuditRecord")},
         tags=["Admin - Audit"],
     )
     def get(self, request: Request) -> Response:

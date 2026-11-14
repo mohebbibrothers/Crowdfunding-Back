@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.pagination import UserListCursorPagination
+from apps.core.schema import CURSOR_PAGINATION_PARAMETERS, paginated_response
 from apps.identity.permissions import authenticated_user
 from apps.notifications.selectors import list_user_notifications
 from apps.notifications.serializers import (
@@ -26,7 +27,23 @@ class MeNotificationListView(APIView):
     @extend_schema(
         operation_id="v1_me_notifications_list",
         summary="مشاهدهٔ فهرست اعلان‌ها و مژده‌های حرکت‌های همراهی‌شده",
-        responses={200: UserNotificationSerializer(many=True)},
+        parameters=[
+            OpenApiParameter(
+                name="unread",
+                type=bool,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="اگر true باشد فقط اعلانهای خواندهنشده بازگردانده میشوند.",
+            ),
+            *CURSOR_PAGINATION_PARAMETERS,
+        ],
+        responses={
+            200: paginated_response(
+                UserNotificationSerializer,
+                name="PaginatedUserNotification",
+                include_total=True,
+            )
+        },
         tags=["Donor - Notifications"],
     )
     def get(self, request: Request) -> Response:

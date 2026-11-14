@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
@@ -28,18 +28,27 @@ from apps.contributions.serializers import (
     AdminPaymentSerializer,
     AmbassadorCreateInputSerializer,
     AmbassadorLinkSerializer,
+    CampaignSupporterOutputSerializer,
+    CampaignTransparencyOutputSerializer,
     CheckoutInitiateInputSerializer,
     CheckoutInitiateResponseSerializer,
     ContributionUserSerializer,
+    DedicationCertificateOutputSerializer,
+    DonorDashboardOutputSerializer,
     ExpressConfirmInputSerializer,
     ExpressStartInputSerializer,
     ExpressStartResponseSerializer,
     ExternalContributionSerializer,
     ExternalContributionWriteSerializer,
+    MerkleInclusionProofOutputSerializer,
     MerkleProofVerifyInputSerializer,
+    MerkleProofVerifyOutputSerializer,
     PaymentCallbackVerifyInputSerializer,
     PaymentRefundInputSerializer,
     PaymentVerifyResponseSerializer,
+    ReceiptVerificationOutputSerializer,
+    RefundResultOutputSerializer,
+    SandboxPaymentOutputSerializer,
 )
 from apps.contributions.services import (
     confirm_express_checkout,
@@ -55,19 +64,21 @@ from apps.core.errors import NotFoundError
 from apps.core.idempotency import IDEMPOTENCY_HEADER, execute_idempotent
 from apps.core.money import rial_to_toman
 from apps.core.pagination import UserListCursorPagination
+from apps.core.schema import CURSOR_PAGINATION_PARAMETERS, paginated_response
 from apps.identity.permissions import (
     HasFreshMfa,
     IsFinanceOrSuperAdmin,
     IsStaffRole,
     authenticated_user,
 )
-from apps.identity.throttles import OtpRequestThrottle, OtpVerifyThrottle
+from apps.identity.throttles import CheckoutThrottle, OtpRequestThrottle, OtpVerifyThrottle
 
 
 class ContributionInitiateView(APIView):
     """آغاز مشارکت آنلاین (رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز آزاد قلک عام) با پشتیبانی Idempotency-Key."""
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [CheckoutThrottle]
 
     @extend_schema(
         operation_id="v1_contributions_checkout_create",
@@ -217,6 +228,22 @@ class PaymentCallbackVerifyView(APIView):
     @extend_schema(
         operation_id="v1_payments_callback_get",
         summary="بازگشت GET از درگاه پرداخت اینترنتی (Authority & Status)",
+        parameters=[
+            OpenApiParameter(
+                name="Authority",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=True,
+                description="شناسهٔ authority دریافتشده از درگاه (زرینپال / Sandbox).",
+            ),
+            OpenApiParameter(
+                name="Status",
+                type=str,
+                location=OpenApiParameter.QUERY,
+                required=False,
+                description="وضعیت اعلامشدهٔ درگاه (OK / NOK)؛ صرفاً سیگنال اولیه است.",
+            ),
+        ],
         responses={200: PaymentVerifyResponseSerializer},
         tags=["Public - Payments & Receipts"],
     )
@@ -256,17 +283,7 @@ class SandboxPaymentDetailView(APIView):
     @extend_schema(
         operation_id="v1_payments_sandbox_retrieve",
         summary="اطلاعات تراکنش درگاه تعاملی Sandbox",
-        responses={
-            200: {
-                "type": "object",
-                "properties": {
-                    "authority": {"type": "string"},
-                    "amount_rial": {"type": "integer"},
-                    "amount_toman": {"type": "integer"},
-                    "status": {"type": "string"},
-                },
-            }
-        },
+        responses={200: SandboxPaymentOutputSerializer},
         tags=["Public - Payments & Receipts"],
     )
     def get(self, request: Request, authority: str) -> Response:
@@ -296,7 +313,7 @@ class PublicCampaignSupportersView(APIView):
     @extend_schema(
         operation_id="v1_campaigns_supporters_list",
         summary="فهرست همراهان حرکت خیرخواهانه (با حفظ گمنامی خیرین ناشناس)",
-        responses={200: {"type": "array", "items": {"type": "object"}}},
+        responses={200: CampaignSupporterOutputSerializer(many=True)},
         tags=["Public - Campaigns"],
     )
     def get(self, request: Request, identifier: str) -> Response:
@@ -313,7 +330,7 @@ class PublicCampaignTransparencyView(APIView):
     @extend_schema(
         operation_id="v1_campaigns_transparency_retrieve",
         summary="گزارش شفافیت مالی، تفکیک منابع آنلاین/آفلاین و ریشه درخت مرکل حرکت",
-        responses={200: {"type": "object"}},
+        responses={200: CampaignTransparencyOutputSerializer},
         tags=["Public - Cryptographic Transparency"],
     )
     def get(self, request: Request, identifier: str) -> Response:
@@ -331,13 +348,7 @@ class PublicMerkleVerifyView(APIView):
         operation_id="v1_transparency_verify_merkle_proof",
         summary="راستی‌آزمایی ریاضی اثبات شمول مرکل (Merkle Inclusion Proof)",
         request=MerkleProofVerifyInputSerializer,
-        responses={
-            200: {
-                "type": "object",
-                "properties": {"valid": {"type": "boolean"}},
-                "required": ["valid"],
-            }
-        },
+        responses={200: MerkleProofVerifyOutputSerializer},
         tags=["Public - Cryptographic Transparency"],
     )
     def post(self, request: Request) -> Response:
@@ -360,7 +371,7 @@ class PublicReceiptVerifyView(APIView):
     @extend_schema(
         operation_id="v1_receipts_verify_retrieve",
         summary="استعلام اصالت رسید رسمی مشارکت با کد رهگیری",
-        responses={200: {"type": "object"}},
+        responses={200: ReceiptVerificationOutputSerializer},
         tags=["Public - Payments & Receipts"],
     )
     def get(self, request: Request, verification_code: str) -> Response:
@@ -377,7 +388,7 @@ class PublicDedicationCertificateView(APIView):
     @extend_schema(
         operation_id="v1_dedications_retrieve",
         summary="مشاهدهٔ گواهی نیت‌نامه و کارت هدیه معنوی با توکن عمومی",
-        responses={200: {"type": "object"}},
+        responses={200: DedicationCertificateOutputSerializer},
         tags=["Public - Dedication Certificates"],
     )
     def get(self, request: Request, public_token: str) -> Response:
@@ -396,7 +407,7 @@ class MeDonorDashboardView(APIView):
     @extend_schema(
         operation_id="v1_me_dashboard_retrieve",
         summary="داشبورد جامع و انگیزه‌بخش خیر (کارنامهٔ معنوی، مالی، سفیران و مژده‌های میدانی)",
-        responses={200: {"type": "object"}},
+        responses={200: DonorDashboardOutputSerializer},
         tags=["Donor - Motivation Dashboard"],
     )
     def get(self, request: Request) -> Response:
@@ -412,7 +423,14 @@ class MeContributionListView(APIView):
     @extend_schema(
         operation_id="v1_me_contributions_list",
         summary="تاریخچهٔ تمام مشارکت‌های من در حرکت‌ها و قلک‌ها",
-        responses={200: ContributionUserSerializer(many=True)},
+        parameters=CURSOR_PAGINATION_PARAMETERS,
+        responses={
+            200: paginated_response(
+                ContributionUserSerializer,
+                name="PaginatedContributionUser",
+                include_total=True,
+            )
+        },
         tags=["Donor - Motivation Dashboard"],
     )
     def get(self, request: Request) -> Response:
@@ -431,7 +449,7 @@ class MeContributionMerkleProofView(APIView):
     @extend_schema(
         operation_id="v1_me_contributions_merkle_proof_retrieve",
         summary="دریافت گواهی اثبات شمول مرکل (Merkle Inclusion Proof) برای مشارکت من",
-        responses={200: {"type": "object"}},
+        responses={200: MerkleInclusionProofOutputSerializer},
         tags=["Public - Cryptographic Transparency"],
     )
     def get(self, request: Request, contribution_id: str) -> Response:
@@ -496,6 +514,7 @@ class AdminPaymentListView(APIView):
     @extend_schema(
         operation_id="v1_admin_payments_list",
         summary="فهرست مدیریتی تراکنش‌های درگاه پرداخت",
+        parameters=[OpenApiParameter(name="status", type=str, required=False)],
         responses={200: AdminPaymentSerializer(many=True)},
         tags=["Admin - Payments & Refunds"],
     )
@@ -514,16 +533,7 @@ class AdminPaymentRefundView(APIView):
         operation_id="v1_admin_payments_refund",
         summary="ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA)",
         request=PaymentRefundInputSerializer,
-        responses={
-            200: {
-                "type": "object",
-                "properties": {
-                    "refund_id": {"type": "string"},
-                    "amount_rial": {"type": "integer"},
-                    "status": {"type": "string"},
-                },
-            }
-        },
+        responses={200: RefundResultOutputSerializer},
         tags=["Admin - Payments & Refunds"],
     )
     def post(self, request: Request, payment_id: str) -> Response:

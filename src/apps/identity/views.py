@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.pagination import StaffTableCursorPagination
+from apps.core.schema import CURSOR_PAGINATION_PARAMETERS, paginated_response
 from apps.identity.choices import OtpPurpose
 from apps.identity.permissions import (
     HasFreshMfa,
@@ -64,7 +65,11 @@ from apps.identity.services import (
     verify_otp_and_get_user,
     verify_staff_mfa,
 )
-from apps.identity.throttles import OtpRequestThrottle, OtpVerifyThrottle
+from apps.identity.throttles import (
+    MfaVerifyThrottle,
+    OtpRequestThrottle,
+    OtpVerifyThrottle,
+)
 
 
 def _format_auth_bundle(bundle: IssuedAuthTokens) -> dict[str, Any]:
@@ -381,6 +386,7 @@ class StaffMfaVerifyView(APIView):
     """تأیید TOTP یا کد بازیابی روی نشست فعال (هم برای ورود و هم Step-Up تازه)."""
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [MfaVerifyThrottle]
 
     @extend_schema(
         operation_id="v1_auth_mfa_verify",
@@ -418,8 +424,9 @@ class AdminUserListView(APIView):
         parameters=[
             OpenApiParameter(name="q", type=str, required=False),
             OpenApiParameter(name="role", type=str, required=False),
+            *CURSOR_PAGINATION_PARAMETERS,
         ],
-        responses={200: AdminUserOutputSerializer(many=True)},
+        responses={200: paginated_response(AdminUserOutputSerializer, name="PaginatedAdminUser")},
         tags=["Admin - Identity"],
     )
     def get(self, request: Request) -> Response:
@@ -500,8 +507,13 @@ class AdminAuthRiskListView(APIView):
     @extend_schema(
         operation_id="v1_admin_auth_risks_list",
         summary="فهرست سیگنال‌های ریسک امنیتی ورود و توکن‌ها",
-        parameters=[OpenApiParameter(name="status", type=str, required=False)],
-        responses={200: AuthRiskSignalOutputSerializer(many=True)},
+        parameters=[
+            OpenApiParameter(name="status", type=str, required=False),
+            *CURSOR_PAGINATION_PARAMETERS,
+        ],
+        responses={
+            200: paginated_response(AuthRiskSignalOutputSerializer, name="PaginatedAuthRiskSignal")
+        },
         tags=["Admin - Identity"],
     )
     def get(self, request: Request) -> Response:

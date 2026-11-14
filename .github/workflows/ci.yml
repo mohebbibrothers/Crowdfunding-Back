@@ -1,4 +1,4 @@
-name: CI — Quality, Security, Contract & MariaDB Suite
+name: CI — Quality, Security, Contract, TypeScript & MariaDB Suite
 
 on:
   push:
@@ -59,17 +59,25 @@ jobs:
           enable-cache: true
           python-version: "3.12"
 
+      - name: Set up Node.js 20 for frontend type checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Sync locked dependencies
         run: uv sync --frozen --all-extras
 
       - name: Ruff formatting check
-        run: uv run ruff format --check src
+        run: uv run ruff format --check src scripts deploy/cpanel/passenger_wsgi.py
 
       - name: Ruff lint & security rules
-        run: uv run ruff check src
+        run: uv run ruff check src scripts deploy/cpanel/passenger_wsgi.py
 
       - name: Strict Mypy type checking
         run: uv run mypy
+
+      - name: TypeScript strict check of the frontend handoff kit
+        run: npx --yes --package typescript@5.9.3 tsc --noEmit -p docs/frontend/tsconfig.json
 
       - name: Bandit SAST scan
         run: uv run bandit -c pyproject.toml -r src
@@ -103,6 +111,13 @@ jobs:
         run: |
           uv run python src/manage.py spectacular --api-version v1 --file /tmp/openapi.ci.yaml --validate --fail-on-warn
           diff -u docs/api/v1/openapi.yaml /tmp/openapi.ci.yaml
+
+      - name: Verify frontend handoff kit is in sync with the contract
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.development
+        run: |
+          uv run python scripts/build_frontend_kit.py
+          git diff --exit-code -- docs/frontend docs/api/v1/openapi.yaml
 
       - name: Run Pytest suite with >= 85% branch coverage on MariaDB
         run: uv run pytest --cov=apps --cov-branch --cov-report=term-missing --cov-fail-under=85

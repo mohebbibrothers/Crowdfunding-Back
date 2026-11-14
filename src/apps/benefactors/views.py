@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -51,6 +51,10 @@ class PublicBenefactorListView(APIView):
     @extend_schema(
         operation_id="v1_benefactors_list",
         summary="فهرست خیریه‌ها و نهادهای نیکوکاری فعال",
+        parameters=[
+            OpenApiParameter(name="province", type=str, required=False),
+            OpenApiParameter(name="q", type=str, required=False),
+        ],
         responses={200: BenefactorPublicSerializer(many=True)},
         tags=["Public - Benefactors & Jars"],
     )
@@ -106,6 +110,7 @@ class PublicCharityJarListView(APIView):
     @extend_schema(
         operation_id="v1_jars_list",
         summary="فهرست قلک‌های عام فعال خیریه‌ها",
+        parameters=[OpenApiParameter(name="benefactor", type=str, required=False)],
         responses={200: CharityJarPublicSerializer(many=True)},
         tags=["Public - Benefactors & Jars"],
     )
@@ -165,6 +170,7 @@ class AdminBenefactorListCreateView(APIView):
     @extend_schema(
         operation_id="v1_admin_benefactors_list",
         summary="فهرست مدیریتی تمام خیریه‌ها",
+        parameters=[OpenApiParameter(name="active_only", type=bool, required=False)],
         responses={200: BenefactorAdminSerializer(many=True)},
         tags=["Admin - Benefactors & Jars"],
     )
@@ -228,6 +234,7 @@ class AdminBenefactorDetailView(APIView):
     @extend_schema(
         operation_id="v1_admin_benefactors_destroy",
         summary="حذف خیریهٔ بدون سابقه یا غیرفعال‌سازی ایمن آن",
+        parameters=[OpenApiParameter(name="reason", type=str, required=False)],
         responses={
             200: {
                 "type": "object",

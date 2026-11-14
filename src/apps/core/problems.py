@@ -41,9 +41,15 @@ class ProblemJSONRenderer(JSONRenderer):
 
 
 def problem_type_uri(code: str) -> str:
-    """ساخت نشانی پایدار نوع خطا بر پایهٔ دامنهٔ مستندات سامانه."""
-    base = getattr(settings, "PROBLEM_DOCS_BASE_URL", "https://docs.crowdfunding.ir/problems")
-    return f"{base.rstrip('/')}/{code}"
+    """ساخت نشانی پایدار و قابل استناد نوع خطا (لنگر واقعی در فهرست کدهای خطا)."""
+    template = str(
+        getattr(
+            settings,
+            "PROBLEM_TYPE_URI_TEMPLATE",
+            "https://github.com/mohebbibrothers/Crowdfunding-Back/blob/main/docs/frontend/ERRORS.md#error-{code}",
+        )
+    )
+    return template.format(code=code)
 
 
 def _extract_trace_id(request: Any) -> str:

@@ -1,0 +1,5558 @@
+{
+  "info": {
+    "description": "تولیدشدهٔ خودکار از docs/api/v1/openapi.yaml | خطاها RFC 9457 | مبالغ ریال صحیح + معادل تومانی | تاریخها شمسی",
+    "name": "Crowdfunding-Back API v1 — بستهٔ تحویل فرانتاند",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "name": "فهرست رکوردهای زنجیرهٔ حسابرسی با فیلتر کنش و هدف",
+          "request": {
+            "description": "`v1_admin_audit_logs_list` — فهرست رکوردهای زنجیرهٔ حسابرسی با فیلتر کنش و هدف\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "audit",
+                "logs"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "action",
+                  "value": "<action>"
+                },
+                {
+                  "description": "مکاننمای رمزگذاریشدهٔ صفحهٔ بعد/قبل (دقیقاً از meta.next/meta.previous بردار).",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "اندازهٔ صفحه (پیشفرض ۲۰؛ سقف ۵۰ برای جداول ادمین و ۱۰۰ برای سایر فهرستها).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "target_id",
+                  "value": "<target_id>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "target_type",
+                  "value": "<target_type>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/audit/logs",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "بررسی سلامت زنجیرهٔ هش حسابرسی و لنگرهای امضاشده",
+          "request": {
+            "description": "`v1_admin_audit_verify` — بررسی سلامت زنجیرهٔ هش حسابرسی و لنگرهای امضاشده\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "audit",
+                "verify"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/audit/verify",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Audit"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست مدیریتی تمام خیریه‌ها",
+          "request": {
+            "description": "`v1_admin_benefactors_list` — فهرست مدیریتی تمام خیریه‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "benefactors"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "active_only",
+                  "value": "<active_only>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/benefactors",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ایجاد خیریه/نهاد نیکوکاری جدید",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_benefactors_create` — ایجاد خیریه/نهاد نیکوکاری جدید\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "benefactors"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/benefactors",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "حذف خیریهٔ بدون سابقه یا غیرفعال‌سازی ایمن آن",
+          "request": {
+            "description": "`v1_admin_benefactors_destroy` — حذف خیریهٔ بدون سابقه یا غیرفعال‌سازی ایمن آن\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "DELETE",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "benefactors",
+                ":benefactor_id"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "reason",
+                  "value": "<reason>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/benefactors/:benefactor_id",
+              "variable": [
+                {
+                  "key": "benefactor_id",
+                  "value": "<benefactor_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت مشخصات کامل مدیریتی خیریه",
+          "request": {
+            "description": "`v1_admin_benefactors_retrieve` — دریافت مشخصات کامل مدیریتی خیریه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "benefactors",
+                ":benefactor_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/benefactors/:benefactor_id",
+              "variable": [
+                {
+                  "key": "benefactor_id",
+                  "value": "<benefactor_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ویرایش جزئی مشخصات خیریه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_benefactors_partial_update` — ویرایش جزئی مشخصات خیریه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "benefactors",
+                ":benefactor_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/benefactors/:benefactor_id",
+              "variable": [
+                {
+                  "key": "benefactor_id",
+                  "value": "<benefactor_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست مدیریتی قلک‌های عام خیریه‌ها",
+          "request": {
+            "description": "`v1_admin_jars_list` — فهرست مدیریتی قلک‌های عام خیریه‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "jars"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/jars",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ایجاد قلک عام جدید برای خیریه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_jars_create` — ایجاد قلک عام جدید برای خیریه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "jars"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/jars",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ویرایش تنظیمات قلک عام خیریه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_jars_partial_update` — ویرایش تنظیمات قلک عام خیریه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "jars",
+                ":jar_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/jars/:jar_id",
+              "variable": [
+                {
+                  "key": "jar_id",
+                  "value": "<jar_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Benefactors & Jars"
+    },
+    {
+      "item": [
+        {
+          "name": "ایجاد دسته‌بندی موضوعی حرکت",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaign_categories_create` — ایجاد دسته‌بندی موضوعی حرکت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaign-categories"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaign-categories",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست مدیریتی همهٔ حرکت‌ها",
+          "request": {
+            "description": "`v1_admin_campaigns_list` — فهرست مدیریتی همهٔ حرکت‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "benefactor_id",
+                  "value": "<benefactor_id>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تعریف حرکت خیرخواهانهٔ سهم‌محور جدید",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaigns_create` — تعریف حرکت خیرخواهانهٔ سهم‌محور جدید\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت جزئیات مدیریتی یک حرکت",
+          "request": {
+            "description": "`v1_admin_campaigns_retrieve` — دریافت جزئیات مدیریتی یک حرکت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns",
+                ":campaign_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns/:campaign_id",
+              "variable": [
+                {
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ویرایش حرکت (محافظت از قیمت سهم و خیریه پس از اولین مشارکت)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaigns_partial_update` — ویرایش حرکت (محافظت از قیمت سهم و خیریه پس از اولین مشارکت)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns",
+                ":campaign_id"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns/:campaign_id",
+              "variable": [
+                {
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "انتشار گزارش پیشرفت میدانی حرکت برای سهام‌داران",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaigns_impact_updates_create` — انتشار گزارش پیشرفت میدانی حرکت برای سهام‌داران\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns",
+                ":campaign_id",
+                "impact-updates"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns/:campaign_id/impact-updates",
+              "variable": [
+                {
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ثبت تعهد حامی مضاعف‌کننده برای حرکت",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaigns_matching_grants_create` — ثبت تعهد حامی مضاعف‌کننده برای حرکت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns",
+                ":campaign_id",
+                "matching-grants"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns/:campaign_id/matching-grants",
+              "variable": [
+                {
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Campaigns"
+    },
+    {
+      "item": [
+        {
+          "name": "دانلود گزارش اکسل ۸ کاربرگهٔ اجرایی، مالی و مغایرت‌گیری (مهرشده با SHA-256)",
+          "request": {
+            "description": "`v1_admin_reports_excel_export` — دانلود گزارش اکسل ۸ کاربرگهٔ اجرایی، مالی و مغایرت‌گیری (مهرشده با SHA-256)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reports",
+                "excel"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "benefactor_id",
+                  "value": "<benefactor_id>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "date_from",
+                  "value": "<date_from>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "date_to",
+                  "value": "<date_to>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "include_raw_phones",
+                  "value": "<include_raw_phones>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "reason",
+                  "value": "<reason>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/reports/excel",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست ممیزی و هش SHA-256 گزارش‌های اکسل صادرشده",
+          "request": {
+            "description": "`v1_admin_reports_export_history_list` — فهرست ممیزی و هش SHA-256 گزارش‌های اکسل صادرشده\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reports",
+                "exports-history"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/reports/exports-history",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Executive Excel Reports"
+    },
+    {
+      "item": [
+        {
+          "name": "مشاهدهٔ فهرست سیاست‌های زمان اجرا و وضعیت کلیدهای قابلیت‌ها",
+          "request": {
+            "description": "`v1_admin_policies_list` — مشاهدهٔ فهرست سیاست‌های زمان اجرا و وضعیت کلیدهای قابلیت‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "policies"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/policies",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تغییر نسخه‌دار یک سیاست سامانه با الزام دلیل و Step-Up MFA",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_policies_update` — تغییر نسخه‌دار یک سیاست سامانه با الزام دلیل و Step-Up MFA\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "policies",
+                ":policy_key"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/policies/:policy_key",
+              "variable": [
+                {
+                  "key": "policy_key",
+                  "value": "<policy_key>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Governance"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست سیگنال‌های ریسک امنیتی ورود و توکن‌ها",
+          "request": {
+            "description": "`v1_admin_auth_risks_list` — فهرست سیگنال‌های ریسک امنیتی ورود و توکن‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "auth",
+                "risk-signals"
+              ],
+              "query": [
+                {
+                  "description": "مکاننمای رمزگذاریشدهٔ صفحهٔ بعد/قبل (دقیقاً از meta.next/meta.previous بردار).",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "اندازهٔ صفحه (پیشفرض ۲۰؛ سقف ۵۰ برای جداول ادمین و ۱۰۰ برای سایر فهرستها).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/auth/risk-signals",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "بررسی و تعیین وضعیت سیگنال ریسک احراز هویت",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_auth_risks_review` — بررسی و تعیین وضعیت سیگنال ریسک احراز هویت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "auth",
+                "risk-signals",
+                ":signal_id",
+                "review"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/auth/risk-signals/:signal_id/review",
+              "variable": [
+                {
+                  "key": "signal_id",
+                  "value": "<signal_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست کاربران سامانه (با تلفن پوشانده در حالت عادی)",
+          "request": {
+            "description": "`v1_admin_users_list` — فهرست کاربران سامانه (با تلفن پوشانده در حالت عادی)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "description": "مکاننمای رمزگذاریشدهٔ صفحهٔ بعد/قبل (دقیقاً از meta.next/meta.previous بردار).",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "اندازهٔ صفحه (پیشفرض ۲۰؛ سقف ۵۰ برای جداول ادمین و ۱۰۰ برای سایر فهرستها).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "q",
+                  "value": "<q>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "role",
+                  "value": "<role>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/users",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "مشاهدهٔ شماره موبایل کامل خیر با ثبت هدف ممیزی و Step-Up MFA",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_users_reveal_phone` — مشاهدهٔ شماره موبایل کامل خیر با ثبت هدف ممیزی و Step-Up MFA\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                ":user_id",
+                "reveal-phone"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/users/:user_id/reveal-phone",
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "<user_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تغییر نقش کاربر با الزام Step-Up MFA و ثبت دلیل",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_users_role_update` — تغییر نقش کاربر با الزام Step-Up MFA و ثبت دلیل\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                ":user_id",
+                "role"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/users/:user_id/role",
+              "variable": [
+                {
+                  "key": "user_id",
+                  "value": "<user_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Identity"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست درخواست‌های تسویه با خیریه‌ها",
+          "request": {
+            "description": "`v1_admin_disbursements_list` — فهرست درخواست‌های تسویه با خیریه‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "disbursements"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/disbursements",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ثبت درخواست تسویه وجه با خیریه (گام Maker)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_disbursements_create` — ثبت درخواست تسویه وجه با خیریه (گام Maker)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "disbursements"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/disbursements",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تأیید یا رد چهارچشمی درخواست تسویه با خیریه (Checker + Step-Up MFA)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_disbursements_review` — تأیید یا رد چهارچشمی درخواست تسویه با خیریه (Checker + Step-Up MFA)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "disbursements",
+                ":disbursement_id",
+                "review"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/disbursements/:disbursement_id/review",
+              "variable": [
+                {
+                  "key": "disbursement_id",
+                  "value": "<disbursement_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "مشاهدهٔ تراز سرفصل‌های دفترکل حسابداری دوطرفه",
+          "request": {
+            "description": "`v1_admin_ledger_accounts_list` — مشاهدهٔ تراز سرفصل‌های دفترکل حسابداری دوطرفه\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "ledger",
+                "accounts"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/ledger/accounts",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "محاسبه و ثبت اسنپ‌شات کنترل تراز دفترکل و انطباق شمارنده‌ها",
+          "request": {
+            "description": "`v1_admin_ledger_control_snapshot_create` — محاسبه و ثبت اسنپ‌شات کنترل تراز دفترکل و انطباق شمارنده‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "ledger",
+                "control-snapshot"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/ledger/control-snapshot",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست اسناد روزنامهٔ حسابداری",
+          "request": {
+            "description": "`v1_admin_ledger_entries_list` — فهرست اسناد روزنامهٔ حسابداری\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "ledger",
+                "entries"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "kind",
+                  "value": "<kind>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/ledger/entries",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست دسته‌های مغایرت‌گیری درگاه پرداخت",
+          "request": {
+            "description": "`v1_admin_reconciliations_list` — فهرست دسته‌های مغایرت‌گیری درگاه پرداخت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reconciliations"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/reconciliations",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_reconciliations_create` — اجرای مغایرت‌گیری فایل تسویه درگاه پرداخت با دفتر داخلی\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reconciliations"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/reconciliations",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Ledger & Disbursements"
+    },
+    {
+      "item": [
+        {
+          "name": "ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_admin_campaigns_external_contributions_create` — ثبت سهم‌های تامین‌شده خارج از درگاه آنلاین در حساب انتظامی مجزا\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaigns",
+                ":campaign_id",
+                "external-contributions"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/campaigns/:campaign_id/external-contributions",
+              "variable": [
+                {
+                  "key": "campaign_id",
+                  "value": "<campaign_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست مدیریتی تراکنش‌های درگاه پرداخت",
+          "request": {
+            "description": "`v1_admin_payments_list` — فهرست مدیریتی تراکنش‌های درگاه پرداخت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payments"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/admin/payments",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"reason\": \"درخواست رسمی خیر\",\n  \"amount_rial\": 1500000\n}"
+            },
+            "description": "`v1_admin_payments_refund` — ثبت استرداد وجه پرداخت و آزادسازی سهم‌ها (نیازمند Step-Up MFA)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "payments",
+                ":payment_id",
+                "refund"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/admin/payments/:payment_id/refund",
+              "variable": [
+                {
+                  "key": "payment_id",
+                  "value": "<payment_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - Payments & Refunds"
+    },
+    {
+      "item": [
+        {
+          "name": "بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی",
+          "request": {
+            "description": "`v1_health_detailed` — بررسی عمیق سلامت دیتابیس، کش، Outbox و زنجیرهٔ حسابرسی\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health",
+                "detailed"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/health/detailed",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Admin - System"
+    },
+    {
+      "item": [
+        {
+          "name": "خروج از نشست جاری",
+          "request": {
+            "description": "`v1_auth_logout` — خروج از نشست جاری\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ابطال تمام نشست‌های دیگر به‌جز دستگاه فعلی",
+          "request": {
+            "description": "`v1_auth_logout_others` — ابطال تمام نشست‌های دیگر به‌جز دستگاه فعلی\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout-others"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/logout-others",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "درخواست کد یک‌بارمصرف پیامکی (ورود / ثبت‌نام)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"phone\": \"09121112233\"\n}"
+            },
+            "description": "`v1_auth_otp_request` — درخواست کد یک‌بارمصرف پیامکی (ورود / ثبت‌نام)\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "otp",
+                "request"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/otp/request",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تأیید کد پیامکی و دریافت نشست (Cookie + JWT)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"phone\": \"09121112233\",\n  \"code\": \"48321\"\n}"
+            },
+            "description": "`v1_auth_otp_verify` — تأیید کد پیامکی و دریافت نشست (Cookie + JWT)\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "otp",
+                "verify"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/otp/verify",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ورود کارکنان با شماره موبایل و گذرواژه",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_auth_staff_password_login` — ورود کارکنان با شماره موبایل و گذرواژه\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "staff",
+                "password-login"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/staff/password-login",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "نوسازی چرخشی توکن JWT با تشخیص سرقت توکن",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"refresh_token\": \"<opaque-jwt-string>\"\n}"
+            },
+            "description": "`v1_auth_token_refresh` — نوسازی چرخشی توکن JWT با تشخیص سرقت توکن\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "token",
+                "refresh"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/token/refresh",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Auth"
+    },
+    {
+      "item": [
+        {
+          "name": "مشاهدهٔ وضعیت تأیید دومرحله‌ای کارمند",
+          "request": {
+            "description": "`v1_auth_mfa_status` — مشاهدهٔ وضعیت تأیید دومرحله‌ای کارمند\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "mfa",
+                "status"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/mfa/status",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تأیید نهایی دستگاه TOTP و دریافت کدهای بازیابی",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_auth_mfa_totp_confirm` — تأیید نهایی دستگاه TOTP و دریافت کدهای بازیابی\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "mfa",
+                "totp",
+                "confirm"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/mfa/totp/confirm",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "شروع راه‌اندازی TOTP کارمند و دریافت QR SVG",
+          "request": {
+            "description": "`v1_auth_mfa_totp_setup` — شروع راه‌اندازی TOTP کارمند و دریافت QR SVG\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "mfa",
+                "totp",
+                "setup"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/mfa/totp/setup",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تأیید کد دومرحله‌ای روی نشست فعال یا ارتقای Step-Up",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_auth_mfa_verify` — تأیید کد دومرحله‌ای روی نشست فعال یا ارتقای Step-Up\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "mfa",
+                "verify"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/mfa/verify",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Auth - Staff MFA"
+    },
+    {
+      "item": [
+        {
+          "name": "رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز به قلک و دریافت لینک درگاه پرداخت",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"target_kind\": \"campaign_shares\",\n  \"campaign_id\": \"<uuid>\",\n  \"shares_count\": 3,\n  \"is_anonymous\": false,\n  \"public_note\": \"به نیت سلامتی همهٔ همراهان\",\n  \"gateway_name\": \"sandbox\"\n}"
+            },
+            "description": "`v1_contributions_checkout_create` — رزرو ۱۵ دقیقه‌ای سهم حرکت یا واریز به قلک و دریافت لینک درگاه پرداخت\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contributions",
+                "checkout"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/contributions/checkout",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Donor - Contributions & Checkout"
+    },
+    {
+      "item": [
+        {
+          "name": "تاریخچهٔ تمام مشارکت‌های من در حرکت‌ها و قلک‌ها",
+          "request": {
+            "description": "`v1_me_contributions_list` — تاریخچهٔ تمام مشارکت‌های من در حرکت‌ها و قلک‌ها\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "contributions"
+              ],
+              "query": [
+                {
+                  "description": "مکاننمای رمزگذاریشدهٔ صفحهٔ بعد/قبل (دقیقاً از meta.next/meta.previous بردار).",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "اندازهٔ صفحه (پیشفرض ۲۰؛ سقف ۵۰ برای جداول ادمین و ۱۰۰ برای سایر فهرستها).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/me/contributions",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "داشبورد جامع و انگیزه‌بخش خیر (کارنامهٔ معنوی، مالی، سفیران و مژده‌های میدانی)",
+          "request": {
+            "description": "`v1_me_dashboard_retrieve` — داشبورد جامع و انگیزه‌بخش خیر (کارنامهٔ معنوی، مالی، سفیران و مژده‌های میدانی)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "dashboard"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/dashboard",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Donor - Motivation Dashboard"
+    },
+    {
+      "item": [
+        {
+          "name": "مشاهدهٔ فهرست اعلان‌ها و مژده‌های حرکت‌های همراهی‌شده",
+          "request": {
+            "description": "`v1_me_notifications_list` — مشاهدهٔ فهرست اعلان‌ها و مژده‌های حرکت‌های همراهی‌شده\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "notifications"
+              ],
+              "query": [
+                {
+                  "description": "مکاننمای رمزگذاریشدهٔ صفحهٔ بعد/قبل (دقیقاً از meta.next/meta.previous بردار).",
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": "<cursor>"
+                },
+                {
+                  "description": "اندازهٔ صفحه (پیشفرض ۲۰؛ سقف ۵۰ برای جداول ادمین و ۱۰۰ برای سایر فهرستها).",
+                  "disabled": true,
+                  "key": "page_size",
+                  "value": "<page_size>"
+                },
+                {
+                  "description": "اگر true باشد فقط اعلانهای خواندهنشده بازگردانده میشوند.",
+                  "disabled": true,
+                  "key": "unread",
+                  "value": "<unread>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/me/notifications",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "علامت‌گذاری تمام اعلان‌های من به‌عنوان خوانده‌شده",
+          "request": {
+            "description": "`v1_me_notifications_read_all` — علامت‌گذاری تمام اعلان‌های من به‌عنوان خوانده‌شده\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "notifications",
+                "read-all"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/notifications/read-all",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ثبت مطالعهٔ یک اعلان",
+          "request": {
+            "description": "`v1_me_notifications_read` — ثبت مطالعهٔ یک اعلان\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "notifications",
+                ":notification_id",
+                "read"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/notifications/:notification_id/read",
+              "variable": [
+                {
+                  "key": "notification_id",
+                  "value": "<notification_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Donor - Notifications"
+    },
+    {
+      "item": [
+        {
+          "name": "مشاهدهٔ اطلاعات حساب و پروفایل کاربر جاری",
+          "request": {
+            "description": "`v1_me_profile_retrieve` — مشاهدهٔ اطلاعات حساب و پروفایل کاربر جاری\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تکمیل یا ویرایش پروفایل خیر (نام، استان، شهر، کد ملی رمزشده)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_me_profile_update` — تکمیل یا ویرایش پروفایل خیر (نام، استان، شهر، کد ملی رمزشده)\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "PATCH",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "مشاهدهٔ فهرست دستگاه‌ها و نشست‌های فعال من",
+          "request": {
+            "description": "`v1_me_sessions_list` — مشاهدهٔ فهرست دستگاه‌ها و نشست‌های فعال من\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "sessions"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/sessions",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ابطال یک نشست مشخص از راه دور",
+          "request": {
+            "description": "`v1_me_sessions_revoke` — ابطال یک نشست مشخص از راه دور\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "sessions",
+                ":session_id",
+                "revoke"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/sessions/:session_id/revoke",
+              "variable": [
+                {
+                  "key": "session_id",
+                  "value": "<session_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Donor - Profile & Sessions"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست خیریه‌ها و نهادهای نیکوکاری فعال",
+          "request": {
+            "description": "`v1_benefactors_list` — فهرست خیریه‌ها و نهادهای نیکوکاری فعال\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "benefactors"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "province",
+                  "value": "<province>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "q",
+                  "value": "<q>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/benefactors",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت جزئیات خیریه و قلک‌های عام آن",
+          "request": {
+            "description": "`v1_benefactors_retrieve` — دریافت جزئیات خیریه و قلک‌های عام آن\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "benefactors",
+                ":slug"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/benefactors/:slug",
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "<slug>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست قلک‌های عام فعال خیریه‌ها",
+          "request": {
+            "description": "`v1_jars_list` — فهرست قلک‌های عام فعال خیریه‌ها\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "jars"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "benefactor",
+                  "value": "<benefactor>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/jars",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "جزئیات قلک عام خیریه از روی نامک یا کد پیوندک",
+          "request": {
+            "description": "`v1_jars_retrieve` — جزئیات قلک عام خیریه از روی نامک یا کد پیوندک\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "jars",
+                ":identifier"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/jars/:identifier",
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "<identifier>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Benefactors & Jars"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست دسته‌بندی‌های موضوعی حرکت‌ها",
+          "request": {
+            "description": "`v1_campaign_categories_list` — فهرست دسته‌بندی‌های موضوعی حرکت‌ها\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign-categories"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/campaign-categories",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست حرکت‌های خیرخواهانه با رتبه‌بندی توزیع منصفانه",
+          "request": {
+            "description": "`v1_campaigns_list` — فهرست حرکت‌های خیرخواهانه با رتبه‌بندی توزیع منصفانه\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaigns"
+              ],
+              "query": [
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "benefactor",
+                  "value": "<benefactor>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "category",
+                  "value": "<category>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "has_matching",
+                  "value": "<has_matching>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "order",
+                  "value": "<order>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "province",
+                  "value": "<province>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "q",
+                  "value": "<q>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "status",
+                  "value": "<status>"
+                },
+                {
+                  "description": "",
+                  "disabled": true,
+                  "key": "urgency",
+                  "value": "<urgency>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/campaigns",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "مشاهدهٔ جزئیات حرکت خیرخواهانه، سهم‌های آزاد و گزارش‌های میدانی",
+          "request": {
+            "description": "`v1_campaigns_retrieve` — مشاهدهٔ جزئیات حرکت خیرخواهانه، سهم‌های آزاد و گزارش‌های میدانی\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaigns",
+                ":identifier"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/campaigns/:identifier",
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "<identifier>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "فهرست همراهان حرکت خیرخواهانه (با حفظ گمنامی خیرین ناشناس)",
+          "request": {
+            "description": "`v1_campaigns_supporters_list` — فهرست همراهان حرکت خیرخواهانه (با حفظ گمنامی خیرین ناشناس)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaigns",
+                ":identifier",
+                "supporters"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/campaigns/:identifier/supporters",
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "<identifier>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Campaigns"
+    },
+    {
+      "item": [
+        {
+          "name": "گزارش شفافیت مالی، تفکیک منابع آنلاین/آفلاین و ریشه درخت مرکل حرکت",
+          "request": {
+            "description": "`v1_campaigns_transparency_retrieve` — گزارش شفافیت مالی، تفکیک منابع آنلاین/آفلاین و ریشه درخت مرکل حرکت\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaigns",
+                ":identifier",
+                "transparency"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/campaigns/:identifier/transparency",
+              "variable": [
+                {
+                  "key": "identifier",
+                  "value": "<identifier>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت گواهی اثبات شمول مرکل (Merkle Inclusion Proof) برای مشارکت من",
+          "request": {
+            "description": "`v1_me_contributions_merkle_proof_retrieve` — دریافت گواهی اثبات شمول مرکل (Merkle Inclusion Proof) برای مشارکت من\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "contributions",
+                ":contribution_id",
+                "merkle-proof"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/contributions/:contribution_id/merkle-proof",
+              "variable": [
+                {
+                  "key": "contribution_id",
+                  "value": "<contribution_id>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "راستی‌آزمایی ریاضی اثبات شمول مرکل (Merkle Inclusion Proof)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"leaf_hash\": \"<sha256-hex>\",\n  \"merkle_root\": \"<sha256-hex>\",\n  \"proof\": [\n    {\n      \"position\": \"left\",\n      \"hash\": \"<sha256-hex>\"\n    }\n  ]\n}"
+            },
+            "description": "`v1_transparency_verify_merkle_proof` — راستی‌آزمایی ریاضی اثبات شمول مرکل (Merkle Inclusion Proof)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "transparency",
+                "verify-proof"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/transparency/verify-proof",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Cryptographic Transparency"
+    },
+    {
+      "item": [
+        {
+          "name": "مشاهدهٔ گواهی نیت‌نامه و کارت هدیه معنوی با توکن عمومی",
+          "request": {
+            "description": "`v1_dedications_retrieve` — مشاهدهٔ گواهی نیت‌نامه و کارت هدیه معنوی با توکن عمومی\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dedications",
+                ":public_token"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/dedications/:public_token",
+              "variable": [
+                {
+                  "key": "public_token",
+                  "value": "<public_token>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Dedication Certificates"
+    },
+    {
+      "item": [
+        {
+          "name": "مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۲ (تایید OTP، ورود خودکار و دریافت لینک درگاه)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_contributions_express_confirm` — مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۲ (تایید OTP، ورود خودکار و دریافت لینک درگاه)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contributions",
+                "express",
+                "confirm"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/contributions/express/confirm",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۱ (ثبت نیت خرید و ارسال OTP)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"phone\": \"09121112233\",\n  \"target_kind\": \"campaign_shares\",\n  \"campaign_id\": \"<uuid>\",\n  \"shares_count\": 1\n}"
+            },
+            "description": "`v1_contributions_express_start` — مشارکت سریع ۳۰ ثانیه‌ای مهمان — گام ۱ (ثبت نیت خرید و ارسال OTP)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contributions",
+                "express",
+                "start"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/contributions/express/start",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Express 30s Checkout"
+    },
+    {
+      "item": [
+        {
+          "name": "بازگشت GET از درگاه پرداخت اینترنتی (Authority & Status)",
+          "request": {
+            "description": "`v1_payments_callback_get` — بازگشت GET از درگاه پرداخت اینترنتی (Authority & Status)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "callback"
+              ],
+              "query": [
+                {
+                  "description": "شناسهٔ authority دریافتشده از درگاه (زرینپال / Sandbox).",
+                  "disabled": true,
+                  "key": "Authority",
+                  "value": "<Authority>"
+                },
+                {
+                  "description": "وضعیت اعلامشدهٔ درگاه (OK / NOK)؛ صرفاً سیگنال اولیه است.",
+                  "disabled": true,
+                  "key": "Status",
+                  "value": "<Status>"
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/payments/callback",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "تأیید تراکنش درگاه پرداخت از طریق فرانت‌اند (POST)",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{}"
+            },
+            "description": "`v1_payments_verify_post` — تأیید تراکنش درگاه پرداخت از طریق فرانت‌اند (POST)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "callback"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/payments/callback",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "اطلاعات تراکنش درگاه تعاملی Sandbox",
+          "request": {
+            "description": "`v1_payments_sandbox_retrieve` — اطلاعات تراکنش درگاه تعاملی Sandbox\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "sandbox",
+                ":authority"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/payments/sandbox/:authority",
+              "variable": [
+                {
+                  "key": "authority",
+                  "value": "<authority>"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "استعلام اصالت رسید رسمی مشارکت با کد رهگیری",
+          "request": {
+            "description": "`v1_receipts_verify_retrieve` — استعلام اصالت رسید رسمی مشارکت با کد رهگیری\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "receipts",
+                "verify",
+                ":verification_code"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/receipts/verify/:verification_code",
+              "variable": [
+                {
+                  "key": "verification_code",
+                  "value": "<verification_code>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Payments & Receipts"
+    },
+    {
+      "item": [
+        {
+          "name": "فهرست لینک‌های سفیر اجتماعی من و آمار اثرگذاری هرکدام",
+          "request": {
+            "description": "`v1_me_ambassador_links_list` — فهرست لینک‌های سفیر اجتماعی من و آمار اثرگذاری هرکدام\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "ambassador-links"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/ambassador-links",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ساخت لینک اختصاصی سفیر اجتماعی برای دعوت به حرکت یا قلک",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"campaign_id\": \"<uuid>\"\n}"
+            },
+            "description": "`v1_me_ambassador_links_create` — ساخت لینک اختصاصی سفیر اجتماعی برای دعوت به حرکت یا قلک\nخطاها: application/problem+json | سیاست: required",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": false,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "{{csrfToken}}"
+              },
+              {
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "UUID یکتا برای عملیات نوشتنی مالی. ارسال مجدد همان کلید با همان بدنه، پاسخ قبلی را بازپخش میکند (هدر X-Idempotent-Replayed: true).",
+                "disabled": true,
+                "key": "Idempotency-Key",
+                "value": "<Idempotency-Key>"
+              },
+              {
+                "description": "توکن دریافتشده از GET /api/v1/auth/csrf؛ ویژهٔ نشست کوکیمحور.",
+                "disabled": true,
+                "key": "X-CSRFToken",
+                "value": "<X-CSRFToken>"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me",
+                "ambassador-links"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/me/ambassador-links",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "حل نشانی پیوندک کوتاه (حرکت، قلک عام یا لینک سفیر اجتماعی)",
+          "request": {
+            "description": "`v1_short_links_resolve` — حل نشانی پیوندک کوتاه (حرکت، قلک عام یا لینک سفیر اجتماعی)\nخطاها: application/problem+json | سیاست: none",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "short-links",
+                ":short_code"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/short-links/:short_code",
+              "variable": [
+                {
+                  "key": "short_code",
+                  "value": "<short_code>"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Public - Short-Links & Ambassadors"
+    },
+    {
+      "item": [
+        {
+          "name": "دریافت و کاشت توکن CSRF برای نشست‌های کوکی‌محور",
+          "request": {
+            "description": "`v1_csrf_bootstrap` — دریافت و کاشت توکن CSRF برای نشست‌های کوکی‌محور\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "csrf"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/auth/csrf",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "بررسی زنده بودن فرآیند برنامه (Liveness)",
+          "request": {
+            "description": "`v1_health_live` — بررسی زنده بودن فرآیند برنامه (Liveness)\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health",
+                "live"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/health/live",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "بررسی آمادگی دیتابیس و کش (Readiness)",
+          "request": {
+            "description": "`v1_health_ready` — بررسی آمادگی دیتابیس و کش (Readiness)\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health",
+                "ready"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/health/ready",
+              "variable": []
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "دریافت متادیتای نسخهٔ API و قابلیت‌های فعال سامانه",
+          "request": {
+            "description": "`v1_meta_retrieve` — دریافت متادیتای نسخهٔ API و قابلیت‌های فعال سامانه\nخطاها: application/problem+json | سیاست: optional",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "{{$guid}}"
+              },
+              {
+                "disabled": true,
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "description": "شناسهٔ ردیابی دلخواه (۸ تا ۶۴ کاراکتر امن)؛ در غیر این صورت سرور یک UUIDv7 تولید کرده و در همان هدر پاسخ و فیلد trace_id خطاها برمیگرداند.",
+                "disabled": true,
+                "key": "X-Request-ID",
+                "value": "<X-Request-ID>"
+              },
+              {
+                "description": "ETag ذخیرهشده؛ در صورت عدم تغییر پاسخ 304 Not Modified دریافت میشود.",
+                "disabled": true,
+                "key": "If-None-Match",
+                "value": "<If-None-Match>"
+              }
+            ],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "meta"
+              ],
+              "query": [],
+              "raw": "{{baseUrl}}/api/v1/meta",
+              "variable": []
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "System"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.charity.example.org"
+    },
+    {
+      "key": "accessToken",
+      "value": "<JWT access token>"
+    },
+    {
+      "key": "csrfToken",
+      "value": "<GET /api/v1/auth/csrf>"
+    }
+  ]
+}

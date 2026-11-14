@@ -278,3 +278,244 @@ class AdminPaymentSerializer(serializers.Serializer[Any]):
         if c.charity_jar is not None:
             return c.charity_jar.title
         return c.benefactor.name
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# قرارداد خروجی تایپشدهٔ نقاط پایانی شفافیت، رسید، نیتنامه و داشبورد خیر
+# (پیشتر بهصورت {"type": "object"} بدون اسکیما به فرانتاند تحویل میشد)
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class SandboxPaymentOutputSerializer(serializers.Serializer[Any]):
+    """اطلاعات تراکنش درگاه تعاملی Sandbox جهت رندر شبیهساز پرداخت."""
+
+    authority = serializers.CharField()
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    status = serializers.CharField()
+
+
+class CampaignSupporterOutputSerializer(serializers.Serializer[Any]):
+    """یک ردیف از دیوار عمومی همراهان حرکت (با احترام به گمنامی خیر)."""
+
+    supporter_name = serializers.CharField()
+    shares_count = serializers.IntegerField()
+    matched_shares_awarded = serializers.IntegerField()
+    public_note = serializers.CharField(allow_blank=True, allow_null=True)
+    honoree_name = serializers.CharField(allow_blank=True, allow_null=True)
+    paid_at = serializers.DateTimeField(allow_null=True)
+    paid_at_jalali = serializers.CharField()
+
+
+class MerkleAnchorOutputSerializer(serializers.Serializer[Any]):
+    """لنگر امضاشدهٔ ریشهٔ درخت مرکل منتشرشده برای یک حرکت."""
+
+    merkle_root = serializers.CharField()
+    leaf_count = serializers.IntegerField()
+    signature_hmac = serializers.CharField()
+    captured_at = serializers.DateTimeField()
+    captured_at_jalali = serializers.CharField()
+
+
+class ExternalTransparencyItemSerializer(serializers.Serializer[Any]):
+    """یک کمک ثبتشده خارج از درگاه در گزارش شفافیت عمومی."""
+
+    donor_display_name = serializers.CharField()
+    shares_count = serializers.IntegerField()
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    reference_code = serializers.CharField()
+    recorded_at_jalali = serializers.CharField()
+
+
+class SharesBreakdownOutputSerializer(serializers.Serializer[Any]):
+    """تفکیک سهام حرکت به آنلاین، مضاعفشده، آفلاین، رزروشده و باقیمانده."""
+
+    total_shares = serializers.IntegerField()
+    paid_online_shares = serializers.IntegerField()
+    matched_sponsor_shares = serializers.IntegerField()
+    external_offline_shares = serializers.IntegerField()
+    reserved_shares = serializers.IntegerField()
+    remaining_shares = serializers.IntegerField()
+
+
+class AmountsBreakdownOutputSerializer(serializers.Serializer[Any]):
+    """تفکیک مبالغ ریالی/تومانی هدف، جمعآوریشده، مضاعف، آفلاین و تسویهشده."""
+
+    target_amount_rial = serializers.IntegerField()
+    target_amount_toman = serializers.IntegerField()
+    collected_online_rial = serializers.IntegerField()
+    collected_online_toman = serializers.IntegerField()
+    matched_amount_rial = serializers.IntegerField()
+    matched_amount_toman = serializers.IntegerField()
+    external_amount_rial = serializers.IntegerField()
+    external_amount_toman = serializers.IntegerField()
+    disbursed_to_benefactor_rial = serializers.IntegerField()
+    disbursed_to_benefactor_toman = serializers.IntegerField()
+
+
+class CampaignTransparencyOutputSerializer(serializers.Serializer[Any]):
+    """گزارش کامل شفافیت مالی و رمزنگاری یک حرکت خیرخواهانه."""
+
+    campaign_id = serializers.UUIDField()
+    campaign_slug = serializers.CharField()
+    campaign_title = serializers.CharField()
+    benefactor_name = serializers.CharField()
+    shares_breakdown = SharesBreakdownOutputSerializer()
+    amounts_breakdown = AmountsBreakdownOutputSerializer()
+    merkle_anchor = MerkleAnchorOutputSerializer(allow_null=True)
+    external_contributions = ExternalTransparencyItemSerializer(many=True)
+
+
+class MerkleProofVerifyOutputSerializer(serializers.Serializer[Any]):
+    """نتیجهٔ راستیآزمایی ریاضی مستقل اثبات شمول مرکل."""
+
+    valid = serializers.BooleanField()
+
+
+class ReceiptVerificationOutputSerializer(serializers.Serializer[Any]):
+    """استعلام عمومی اصالت رسید رسمی مشارکت (بدون افشای شماره موبایل خیر)."""
+
+    valid = serializers.BooleanField()
+    status = serializers.CharField()
+    receipt_number = serializers.CharField()
+    verification_code = serializers.CharField()
+    signature_hmac = serializers.CharField()
+    donor_display_name = serializers.CharField()
+    benefactor_name = serializers.CharField()
+    target_kind = serializers.CharField()
+    target_title = serializers.CharField()
+    shares_count = serializers.IntegerField()
+    matched_shares_awarded = serializers.IntegerField()
+    amount_rial = serializers.IntegerField()
+    amount_toman = serializers.IntegerField()
+    paid_at = serializers.DateTimeField(allow_null=True)
+    paid_at_jalali = serializers.CharField()
+
+
+class DedicationCertificateOutputSerializer(serializers.Serializer[Any]):
+    """گواهی عمومی نیتنامه/کارت هدیهٔ معنوی (بدون نمایش هیچ مبلغ ریالی)."""
+
+    public_token = serializers.CharField()
+    dedication_type = serializers.CharField()
+    honoree_name = serializers.CharField()
+    dedicator_display_name = serializers.CharField()
+    message = serializers.CharField(allow_blank=True)
+    benefactor_name = serializers.CharField()
+    benefactor_logo_url = serializers.CharField(allow_blank=True, allow_null=True)
+    target_kind = serializers.CharField()
+    target_title = serializers.CharField()
+    target_slug = serializers.CharField(allow_blank=True)
+    participation_badge = serializers.CharField()
+    signature_hmac = serializers.CharField()
+    issued_at = serializers.DateTimeField()
+    issued_at_jalali = serializers.CharField()
+
+
+class MerkleInclusionProofOutputSerializer(serializers.Serializer[Any]):
+    """گواهی اثبات شمول یک مشارکت قطعی در درخت مرکل حرکت."""
+
+    contribution_id = serializers.UUIDField()
+    campaign_id = serializers.UUIDField()
+    campaign_slug = serializers.CharField()
+    leaf_index = serializers.IntegerField()
+    total_leaves = serializers.IntegerField()
+    leaf_hash = serializers.CharField()
+    merkle_root = serializers.CharField()
+    proof = serializers.ListField(child=serializers.DictField())
+    verified = serializers.BooleanField()
+
+
+class DashboardUserOutputSerializer(serializers.Serializer[Any]):
+    """هویت نمایشی خیر در داشبورد انگیزشی."""
+
+    id = serializers.UUIDField()
+    display_name = serializers.CharField()
+    phone = serializers.CharField()
+
+
+class DashboardSummaryOutputSerializer(serializers.Serializer[Any]):
+    """کارنامهٔ کمی خیر (همهٔ مبالغ جفت ریال/تومان دارند)."""
+
+    total_contributions_count = serializers.IntegerField()
+    campaign_shares_bought = serializers.IntegerField()
+    matched_shares_unlocked = serializers.IntegerField()
+    total_effective_shares = serializers.IntegerField()
+    charity_jar_donations_count = serializers.IntegerField()
+    charity_jar_total_rial = serializers.IntegerField()
+    charity_jar_total_toman = serializers.IntegerField()
+    total_contributed_rial = serializers.IntegerField()
+    total_contributed_toman = serializers.IntegerField()
+    total_impact_with_matching_rial = serializers.IntegerField()
+    total_impact_with_matching_toman = serializers.IntegerField()
+    backed_campaigns_count = serializers.IntegerField()
+    completed_backed_campaigns_count = serializers.IntegerField()
+    benefactors_supported_count = serializers.IntegerField()
+    active_dedications_count = serializers.IntegerField()
+    unread_notifications_count = serializers.IntegerField()
+
+
+class AmbassadorImpactLinkOutputSerializer(serializers.Serializer[Any]):
+    """خلاصهٔ اثر یک لینک سفیر اجتماعی."""
+
+    code = serializers.CharField()
+    target_title = serializers.CharField(allow_blank=True)
+    click_count = serializers.IntegerField()
+    referred_donors_count = serializers.IntegerField()
+    attributed_shares = serializers.IntegerField()
+    attributed_amount_rial = serializers.IntegerField()
+    attributed_amount_toman = serializers.IntegerField()
+
+
+class DashboardAmbassadorImpactOutputSerializer(serializers.Serializer[Any]):
+    """کارنامهٔ کلی سفیر اجتماعی خیر."""
+
+    links_count = serializers.IntegerField()
+    total_clicks = serializers.IntegerField()
+    referred_donors_count = serializers.IntegerField()
+    attributed_shares = serializers.IntegerField()
+    attributed_amount_rial = serializers.IntegerField()
+    attributed_amount_toman = serializers.IntegerField()
+    links = AmbassadorImpactLinkOutputSerializer(many=True)
+
+
+class MotivationBadgeOutputSerializer(serializers.Serializer[Any]):
+    """یک نشان افتخار (قفل/باز) در کارنامهٔ معنوی خیر."""
+
+    code = serializers.CharField()
+    title = serializers.CharField()
+    description = serializers.CharField()
+    earned = serializers.BooleanField()
+    current = serializers.IntegerField()
+    target = serializers.IntegerField()
+
+
+class DashboardMotivationOutputSerializer(serializers.Serializer[Any]):
+    """انگیزهبخشی: استمرار ماهانه و نشانهای افتخار."""
+
+    active_months_streak = serializers.IntegerField()
+    earned_badges_count = serializers.IntegerField()
+    total_badges_count = serializers.IntegerField()
+    badges = MotivationBadgeOutputSerializer(many=True)
+
+
+class DonorDashboardOutputSerializer(serializers.Serializer[Any]):
+    """داشبورد جامع خیر: کارنامه، سفیر، انگیزه، رزروها، تایملاین و پیشنهادها."""
+
+    user = DashboardUserOutputSerializer()
+    summary = DashboardSummaryOutputSerializer()
+    ambassador_impact = DashboardAmbassadorImpactOutputSerializer()
+    motivation = DashboardMotivationOutputSerializer()
+    active_reservations = serializers.ListField(child=serializers.DictField())
+    backed_campaigns = serializers.ListField(child=serializers.DictField())
+    backed_impact_timeline = serializers.ListField(child=serializers.DictField())
+    recent_contributions = serializers.ListField(child=serializers.DictField())
+    recommended_campaigns = serializers.ListField(child=serializers.DictField())
+
+
+class RefundResultOutputSerializer(serializers.Serializer[Any]):
+    """نتیجهٔ استرداد وجه همراه با سند معکوس دفترکل."""
+
+    refund_id = serializers.UUIDField()
+    amount_rial = serializers.IntegerField()
+    status = serializers.CharField()

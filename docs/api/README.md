@@ -12,13 +12,13 @@
 4. **استاندارد خطای RFC 9457 (`application/problem+json`)**: تمامی خطاهای سامانه بدون استثنا در قالب یکنواخت زیر برگردانده می‌شوند:
    ```json
    {
-     "type": "https://api.crowdfunding.ir/problems/validation-error",
+     "type": "https://github.com/mohebbibrothers/Crowdfunding-Back/blob/main/docs/frontend/ERRORS.md#error-validation_error",
      "title": "خطای اعتبارسنجی داده‌های ورودی",
      "status": 422,
      "detail": "تعداد سهام درخواستی بیش از ظرفیت آزاد حرکت است.",
      "code": "validation_error",
      "instance": "/api/v1/contributions/checkout",
-     "request_id": "019a78f0-1234-7abc-8def-0123456789ab"
+     "trace_id": "019a78f0-1234-7abc-8def-0123456789ab"
    }
    ```
 
@@ -27,6 +27,7 @@
 ## فهرست نسخه‌های فعال
 
 - **[نسخهٔ ۱ (`/api/v1`) — پایدار و فعال](./v1/README.md)**
+  🎯 ویژهٔ تحویل به فرانتاند: [`docs/frontend/`](../frontend/README.md) (پورتال، تایپها، کلاینت، خطاها، Postman و چکلیست)
   - فایل طرحوارهٔ کامل OpenAPI 3.1.0: [`docs/api/v1/openapi.yaml`](./v1/openapi.yaml)
   - اعتبارسنجی خودکار بدون هشدار:
     ```bash
